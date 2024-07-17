@@ -1,0 +1,13 @@
+image: node:14
+
+stages:
+  - test
+test:
+  stage: test
+  script:
+    - npm install     
+    - npm test        
+  artifacts:
+    paths:
+      - coverage/     
+  coverage: '/All files\s+\|\s+(\d+[.,]?\d*)%/'  

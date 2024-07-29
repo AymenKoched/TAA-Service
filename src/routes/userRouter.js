@@ -1,16 +1,23 @@
 import { Router } from "express";
-import { userController } from "../controllers";
+import { authController } from "../controllers";
+import passport from "@/utils/passport";
+import authorizeRoles from "@/middleware";
 
 const userRouter = new Router();
 
-userRouter.get("/api/users", userController.getAllTheUsers);
+userRouter.post("/api/login", authController.login);
 
-userRouter.post("/api/users", userController.createUser);
+userRouter.post("/api/register", authController.register);
 
-userRouter.put("/api/users/:userId", userController.updateUser);
 
-userRouter.get("/api/users/:userId", userController.getOneUser);
+userRouter.get("/api/protected",passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.status(200).json({ message: "Welcome to the User API" });
+});
 
-userRouter.delete("/api/users/:userId", userController.deleteUser);
+userRouter.get("/api/protected/adminonly",passport.authenticate('jwt', { session: false }), 
+  authorizeRoles.default('admin'), (req, res) => {
+    res.status(200).json({
+      message: "Welcome to the User API" });
+  });
 
 export default userRouter;

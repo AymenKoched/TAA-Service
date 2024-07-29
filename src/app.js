@@ -3,6 +3,7 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import cors from "cors";
 import routes from "@/routes";
+import passport from "@/utils/passport";
 
 const app = new Express();
 
@@ -42,5 +43,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 routes.forEach(route => app.use(route));
 
 app.use(cors());
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 export default app;

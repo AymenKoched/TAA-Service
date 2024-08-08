@@ -1,4 +1,4 @@
-import * as authController from "./authController";
+import  authController from "./authController";
+import * as adminController from "./adminController";
 
-// eslint-disable-next-line import/prefer-default-export
-export { authController };
+export { authController, adminController };

@@ -43,7 +43,5 @@ User.init(
   }
 );
 
-// eslint-disable-next-line no-console
-console.log(User === sequelize.models.User); // true
-// eslint-disable-next-line import/prefer-default-export
-export { User as UserModel };
+
+export default User;

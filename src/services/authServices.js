@@ -1,30 +1,6 @@
-import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { RoleModel, UserModel } from "../models";
 import passport from "@/utils/passport";
 import { getEnv } from "@/utils";
-
-
-async function registerUser(userInput) {
-  const { password } = userInput;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = await UserModel.build({
-    ...userInput,
-    password: hashedPassword,
-    passwordDecrypt: password
-  });
-  await newUser.save();
-
-  let userRole = await RoleModel.findOne({ where: { name: 'user' } });
-  if (!userRole) {
-    userRole = await RoleModel.create({ name: 'user' });
-  }
-  await newUser.addRole(userRole);
-
-
-  return newUser;
-}
-
 
 async function login(req, res, next) {
   return passport.authenticate('local', { session: false }, (err, user, info) => {
@@ -38,4 +14,4 @@ async function login(req, res, next) {
   })(req, res, next);
 }
 
-export { registerUser, login };
+export default {login} ;

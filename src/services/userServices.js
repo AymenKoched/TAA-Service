@@ -9,5 +9,4 @@ async function getUserByEmail(email) {
 
 
 
-// eslint-disable-next-line import/prefer-default-export
-export { getUserByEmail };
+export default  getUserByEmail ;

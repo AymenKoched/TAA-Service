@@ -1,3 +1,3 @@
 import * as authorizeRoles from './authMiddelware';
 
-export default authorizeRoles ;
+export default  authorizeRoles ;

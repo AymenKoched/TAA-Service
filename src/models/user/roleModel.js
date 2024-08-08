@@ -2,6 +2,12 @@ import { sequelize } from "@/utils";
 
 const { DataTypes, Model } = require("sequelize");
 
+const ALLOWED_ROLES = Object.freeze({
+  ADMIN : 'admin',
+  MEMBER : 'member',
+  SUBSCRIBER : 'subscriber'
+})
+
 class Role extends Model {
   static associate(models) {
     this.belongsToMany(models.User, {
@@ -15,7 +21,8 @@ class Role extends Model {
 Role.init(
   {
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM,
+      values: Object.values(ALLOWED_ROLES),
       allowNull: false,
       unique: true
     }
@@ -23,9 +30,10 @@ Role.init(
   {
     sequelize,
     modelName: "Roles",
-    timestamps: true
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false
   }
 );
 
-// eslint-disable-next-line import/prefer-default-export
-export { Role as RoleModel };
+export default Role;

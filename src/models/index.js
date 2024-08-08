@@ -1,8 +1,10 @@
-import { UserModel } from "./user/userModel";
-import { RoleModel } from "./user/roleModel";
+import User from "./user/userModel";
+import Role from "./user/roleModel";
+
+const UserModel = User;
+const RoleModel = Role;
 
 UserModel.associate({ Role: RoleModel });
 RoleModel.associate({ User: UserModel });
 
-// eslint-disable-next-line import/prefer-default-export
 export { UserModel, RoleModel };

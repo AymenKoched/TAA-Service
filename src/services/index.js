@@ -1,5 +1,5 @@
-import * as userService from "./userServices";
-import * as authService from "./authServices";
+import userService from "./userServices";
+import authService   from "./authServices";
+import * as adminService from "./adminServices";
 
-// eslint-disable-next-line import/prefer-default-export
-export { userService, authService };
+export { userService, authService, adminService };

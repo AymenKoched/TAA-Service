@@ -24,7 +24,10 @@ adminRouter.get("/api/admin/users/:id",
   adminController.getUserById
 );
 
-adminRouter.post("/api/admin/users", adminController.createUser);
+adminRouter.post("/api/admin/users",
+  passport.authenticate('jwt', { session: false }),
+  authorizeRoles.default('admin'), 
+  adminController.createUser);
 
 adminRouter.put("/api/admin/users/:id", 
   passport.authenticate('jwt', { session: false }),

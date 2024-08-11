@@ -37,12 +37,26 @@ async function getUserById(req,res){
   }
 }
 
-// eslint-disable-next-line
-async function updateUser(userId,userInput){
+async function updateUser(req,res){
+  const userId = req.params.id;
+  const userInput = req.body;
+  const updatedUser = await adminService.updateUser(userId, userInput);
+  if (updatedUser) {
+    res.status(200).json(updatedUser);
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+    
 }
 
-// eslint-disable-next-line
-async function deleteUser(userId){
+async function deleteUser(req,res){
+  const userId = req.params.id;
+  const user = await adminService.deleteUser(userId)
+  if (user) {
+    res.status(204).json();
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
 }
 
 

@@ -26,13 +26,17 @@ adminRouter.get("/api/admin/users/:id",
 
 adminRouter.post("/api/admin/users", adminController.createUser);
 
-adminRouter.put("/api/admin/users/:id", (req, res) => {
-  res.status(200).json({ message: 'Welcome to the put Admin API' });
-});
+adminRouter.put("/api/admin/users/:id", 
+  passport.authenticate('jwt', { session: false }),
+  authorizeRoles.default('admin'),
+  adminController.updateUser
+);
 
-adminRouter.delete("/api/admin/users/:id", (req, res) => {
-  res.status(200).json({ message: 'Welcome to delete the Admin API' });
-});
+adminRouter.delete("/api/admin/users/:id", 
+  passport.authenticate('jwt', { session: false }),
+  authorizeRoles.default('admin'),
+  adminController.deleteUser
+);
 
 
 export default adminRouter;

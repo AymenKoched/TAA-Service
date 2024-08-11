@@ -151,4 +151,69 @@ describe('admin routes',()=>{
         }));
     });
   });
-})
+  describe('PUT /api/admin/users/:id', () => {
+    it('should update an existing user', async () => {
+      const newUser = await request('http://localhost:3000')
+        .post('/api/admin/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          firstName: 'John',
+          lastName: 'Doe',
+          phone: '1234567890',
+          email: 'john@gmail.com',
+          password: 'password123',
+          role: ['member']
+        }); 
+  
+      const updatedUser = await request('http://localhost:3000')
+        .put(`/api/admin/users/${newUser.body.id}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          firstName: 'John',
+          lastName: 'Smith',
+          phone: '0987654321',
+          role: ['subscriber']
+        }); 
+  
+      expect(updatedUser.statusCode).toEqual(200);
+      expect(updatedUser.body).toEqual(
+        expect.objectContaining({
+          id: newUser.body. id,
+          firstName: 'John',
+          lastName: 'Smith',
+          phone: '0987654321',
+          email: 'john@gmail.com',
+          roles: [{ name: 'subscriber' }]
+        })
+      );
+    });
+  });
+  
+  describe('DELETE /api/admin/users/:id', () => {
+    it('should delete a user', async () => {
+      const newUser = await request('http://localhost:3000')
+        .post('/api/admin/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          firstName: 'John',
+          lastName: 'Doe',
+          phone: '1234567890',
+          email: 'john@gmail.com',
+          password: 'password123',
+          role: ['member']
+        });
+  
+      const deleteUserResponse = await request('http://localhost:3000')
+        .delete(`/api/admin/users/${newUser.body.id}`)
+        .set('Authorization', `Bearer ${adminToken}`);
+  
+      expect(deleteUserResponse.statusCode).toEqual(204 );
+  
+      const checkUser = await request('http://localhost:3000')
+        .get(`/api/admin/users/${newUser.body.id}`)
+        .set('Authorization', `Bearer ${adminToken}`);
+  
+      expect(checkUser.statusCode).toEqual(404);
+    });
+  });
+});   

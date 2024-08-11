@@ -79,12 +79,44 @@ async function getUserById(userId) {
 
 async function updateUser(userId, userInput) {
   const user = await UserModel.findByPk(userId);
+  if (!user) {
+    return null;
+  }
+  const { password, role } = userInput;
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const updatedUserInput = {
+      ...userInput,
+      password: hashedPassword,
+      passwordDecrypt: password
+    };
+    await user.update(updatedUserInput);
+  }
   await user.update(userInput);
-  return user;
+
+  if (Array.isArray(role)) {
+    await user.setRoles([]);
+    const rolePromise = role.map(async (roleName) => {
+      const userRole = await RoleModel.findOne({ where: { name: roleName } });
+      if (userRole) {
+        await user.addRole(userRole);
+      }
+    });
+    await Promise.all(rolePromise);
+  }
+  const updatedUser = await getUserById(userId);  
+  return updatedUser;
 }
 
-// eslint-disable-next-line
-async function deleteUser(userId) {}
+async function deleteUser(userId) {
+  const user = await UserModel.findByPk(userId);
+  if (!user) {
+    return null;
+  }
+  await user.setRoles([]);
+  await user.destroy();
+  return user;
+}
 
 async function getRoles() {
   const roles = await RoleModel.findAll();

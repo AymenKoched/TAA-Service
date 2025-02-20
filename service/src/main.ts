@@ -1,0 +1,58 @@
+import { HttpStatus, ValidationError, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/get-body-parser-options.util';
+import { json, urlencoded } from 'body-parser';
+import cookieParser from 'cookie-parser';
+import { initializeTransactionalContext } from 'typeorm-transactional';
+
+import { AppModule } from './app.module';
+import {
+  bootstrapDatabase,
+  CommonErrors,
+  parseValidationErrors,
+  ServiceError,
+} from './common';
+import { conf } from './configuration';
+
+async function bootstrap() {
+  console.log({ conf });
+
+  if (conf.database) {
+    initializeTransactionalContext();
+    await bootstrapDatabase(conf.database);
+  }
+
+  const app = await NestFactory.create(AppModule, { rawBody: false });
+  app.enableShutdownHooks();
+  app.enableCors(conf.cors);
+  app.use(urlencoded({ extended: true }));
+  app.use(
+    json(
+      getBodyParserOptions(true, {
+        limit: '20mb',
+      }),
+    ),
+  );
+  app.use(cookieParser());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        const errors = parseValidationErrors(validationErrors);
+        return new ServiceError<Record<string, string>>(
+          {
+            errorCode: CommonErrors.ValidationError,
+            errorMessage: 'A validation error has occurred.',
+            data: errors,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      },
+    }),
+  );
+
+  await app.listen(conf.server.port);
+}
+bootstrap();

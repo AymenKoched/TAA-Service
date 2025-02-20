@@ -9,7 +9,10 @@
     "preinstall": "husky install",
     "commit": "git-cz",
     "lint:fix": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run lint:fix",
-    "lint": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run lint"
+    "lint": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run lint",
+    "build": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run build",
+    "stack:up": "docker-compose -f ./docker-compose.yml up -d",
+    "stack:down": "docker-compose -f ./docker-compose.yml down"
   },
   "lint-staged": {
     "*{.tsx,.ts}": [

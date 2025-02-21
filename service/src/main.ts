@@ -1,5 +1,10 @@
-import { HttpStatus, ValidationError, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import {
+  ClassSerializerInterceptor,
+  HttpStatus,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/get-body-parser-options.util';
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -58,6 +63,13 @@ async function bootstrap() {
           HttpStatus.BAD_REQUEST,
         );
       },
+    }),
+  );
+
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector), {
+      strategy: 'excludeAll',
+      excludeExtraneousValues: true,
     }),
   );
 

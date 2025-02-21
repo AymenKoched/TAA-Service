@@ -10,12 +10,7 @@ export interface AppConfig {
   server: ServerConfig;
   database?: DatabaseConfiguration;
   app?: AppInfos;
-  front: FrontConfig;
   cors: CorsOptions;
-}
-
-export interface FrontConfig {
-  baseUrl: string;
 }
 
 export enum Environment {

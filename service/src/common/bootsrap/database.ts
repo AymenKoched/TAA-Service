@@ -94,19 +94,21 @@ export async function runMigration(
   }
 }
 
-export function getDatabaseModule(conf?: TypeOrmModuleOptions) {
-  return TypeOrmModule.forRootAsync({
-    useFactory: () => conf,
-    dataSourceFactory: async (opts) => {
-      if (!opts) {
-        throw new Error(
-          `Invalid options passed to init datasource ${JSON.stringify(opts)}`,
-        );
-      }
+export async function runDatabaseMigration(appConfig: AppConfig) {
+  console.log(`Database migration is starting...`);
 
-      return addTransactionalDataSource(new DataSource(opts));
-    },
-  });
+  const database = appConfig.database;
+  if (database) {
+    try {
+      await runMigration({
+        ...database,
+      });
+      console.log(`Database migration finished.`);
+    } catch (e) {
+      console.log(`Database migration failed: ${e.message}!`);
+      process.exit(1);
+    }
+  }
 }
 
 const dataSources: Map<string, DataSource> = new Map();
@@ -162,19 +164,17 @@ export async function closeAllDataSources() {
   dataSources.clear();
 }
 
-export async function runDatabaseMigration(appConfig: AppConfig) {
-  console.log(`Database migration is starting...`);
+export function getDatabaseModule(conf?: TypeOrmModuleOptions) {
+  return TypeOrmModule.forRootAsync({
+    useFactory: () => conf,
+    dataSourceFactory: async (opts) => {
+      if (!opts) {
+        throw new Error(
+          `Invalid options passed to init datasource ${JSON.stringify(opts)}`,
+        );
+      }
 
-  const database = appConfig.database;
-  if (database) {
-    try {
-      await runMigration({
-        ...database,
-      });
-      console.log(`Database migration finished.`);
-    } catch (e) {
-      console.log(`Database migration failed: ${e.message}!`);
-      process.exit(1);
-    }
-  }
+      return addTransactionalDataSource(new DataSource(opts));
+    },
+  });
 }

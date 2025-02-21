@@ -34,23 +34,6 @@ export async function bootstrapDatabase(database: DatabaseConfiguration) {
   }
 }
 
-export async function runDatabaseMigration(appConfig: AppConfig) {
-  console.log(`Database migration is starting...`);
-
-  const database = appConfig.database;
-  if (database) {
-    try {
-      await runMigration({
-        ...database,
-      });
-      console.log(`Database migration finished.`);
-    } catch (e) {
-      console.log(`Database migration failed: ${e.message}!`);
-      process.exit(1);
-    }
-  }
-}
-
 async function timer(time: number): Promise<void> {
   return new Promise<void>((resolve) => setTimeout(() => resolve(), time));
 }
@@ -177,4 +160,21 @@ export async function closeAllDataSources() {
   );
 
   dataSources.clear();
+}
+
+export async function runDatabaseMigration(appConfig: AppConfig) {
+  console.log(`Database migration is starting...`);
+
+  const database = appConfig.database;
+  if (database) {
+    try {
+      await runMigration({
+        ...database,
+      });
+      console.log(`Database migration finished.`);
+    } catch (e) {
+      console.log(`Database migration failed: ${e.message}!`);
+      process.exit(1);
+    }
+  }
 }

@@ -10,12 +10,20 @@ import {
   bootstrapDatabase,
   CommonErrors,
   parseValidationErrors,
+  runDatabaseMigration,
   ServiceError,
 } from './common';
 import { conf } from './configuration';
 
+const args = process.argv.slice(2);
+
 async function bootstrap() {
   console.log({ conf });
+
+  if (args.find((arg) => arg === 'migrate')) {
+    await runDatabaseMigration(conf);
+    process.exit();
+  }
 
   if (conf.database) {
     initializeTransactionalContext();

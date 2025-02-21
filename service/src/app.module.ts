@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
 
-import { getDatabaseModule } from './common';
+import { BaseModule, getDatabaseModule } from './common';
 import { conf } from './configuration';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
+import { controllers } from './controllers';
+import { services } from './services';
 
 @Module({
   imports: [getDatabaseModule(conf.database)],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [...controllers],
+  providers: [...services],
 })
-export class AppModule {}
+export class AppModule extends BaseModule {
+  constructor() {
+    super(conf);
+  }
+}

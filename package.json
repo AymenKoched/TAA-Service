@@ -1,0 +1,44 @@
+{
+  "name": "taa-service",
+  "version": "1.0.0",
+  "description": "TAA backend service",
+  "author": "Aymen Koched",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "preinstall": "husky install",
+    "commit": "git-cz",
+    "lint:fix": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run lint:fix",
+    "lint": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run lint",
+    "build": "yarn workspaces foreach --parallel --jobs 2 --topological-dev --verbose run build",
+    "stack:up": "docker-compose -f ./docker-compose.yml up -d",
+    "stack:down": "docker-compose -f ./docker-compose.yml down"
+  },
+  "lint-staged": {
+    "*{.tsx,.ts}": [
+      "yarn lint:fix"
+    ],
+    "*{.md,.json}": [
+      "prettier --write"
+    ]
+  },
+  "workspaces": [
+    "service"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "17.1.2",
+    "@commitlint/config-conventional": "17.1.0",
+    "@commitlint/prompt": "17.1.2",
+    "@nestjs/cli": "9.2.0",
+    "commitizen": "4.1.2",
+    "husky": "7.0.4",
+    "lint-staged": "12.3.7",
+    "ts-node": "10.9.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/prompt"
+    }
+  },
+  "packageManager": "yarn@3.2.3"
+}

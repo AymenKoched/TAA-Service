@@ -1,0 +1,19 @@
+{
+  "environment": "development",
+  "server": {
+    "port": 7001
+  },
+  "database": {
+    "type": "postgres",
+    "host": "postgres",
+    "port": 5432,
+    "database": "service_taa",
+    "username": "root",
+    "password": "my-password",
+    "synchronize": false,
+    "logging": true,
+    "entities": ["src/entities/**/*.ts"],
+    "migrations": ["src/db/migrations/**/*.ts"],
+    "migrationsRun": true
+  }
+}

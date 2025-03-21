@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import bcrypt from 'bcrypt';
 import { isEqual } from 'lodash';
 
-import { RoleAccess } from '../common';
+import {
+  DEFAULT_SUPER_ADMIN_PASSWORD,
+  RoleAccess,
+  SALT_ROUNDS,
+} from '../common';
 import { Admin, Role, UserRole } from '../entities';
 import {
   AdminsRepository,
@@ -38,10 +43,14 @@ export class SeedService {
     )) as UserRole[];
 
     if (!userRole || !userRole.length) {
+      const password = await bcrypt.hash(
+        DEFAULT_SUPER_ADMIN_PASSWORD,
+        SALT_ROUNDS,
+      );
       const admin = await this.adminsRepository.repo.save(
         new Admin({
           email: 'taa.admin@yopmail.com',
-          password: 'password',
+          password,
           name: 'SuperAdmin',
           inscriptionDate: new Date(),
         }),

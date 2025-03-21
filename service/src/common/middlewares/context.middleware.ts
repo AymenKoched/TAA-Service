@@ -1,10 +1,12 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { RequestContext, RequestTags } from '../models';
 import { getIp } from '../utils';
 
 type NextCallback = (e?: Error | any) => void;
+
+const logger = new Logger('API');
 
 @Injectable()
 export class ContextMiddleware implements NestMiddleware<Request, Response> {
@@ -25,14 +27,14 @@ export class ContextMiddleware implements NestMiddleware<Request, Response> {
       });
     }
     RequestContext.cls.enterWith(context);
-    console.log(
+    logger.debug(
       `Request: HTTP ${req.method.toUpperCase()} : ${
         req.baseUrl + req.url
       } Payload: ${JSON.stringify(req.body)}`,
     );
     res.on('finish', () => {
       const delay = Date.now() - startTime;
-      console.log(
+      logger.debug(
         `Response: HTTP  ${
           req.baseUrl + req.url
         } ${req.method.toUpperCase()} (${res.statusCode}) - ${delay}ms`,

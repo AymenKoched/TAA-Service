@@ -15,5 +15,13 @@
     "entities": ["src/entities/**/*.ts"],
     "migrations": ["src/db/migrations/**/*.ts"],
     "migrationsRun": true
+  },
+  "jwt": {
+    "publicKeyPath": "./conf/certs/dev.public_key.pem",
+    "privateKeyPath": "./conf/certs/dev.private_key.pem",
+    "signOptions": {
+      "expiresIn": "1h",
+      "algorithm": "RS256"
+    }
   }
 }

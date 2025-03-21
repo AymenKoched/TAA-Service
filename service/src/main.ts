@@ -1,10 +1,10 @@
 import {
-  ClassSerializerInterceptor,
   HttpStatus,
+  Logger,
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/get-body-parser-options.util';
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -23,6 +23,8 @@ import { conf } from './configuration';
 const args = process.argv.slice(2);
 
 async function bootstrap() {
+  const logger = new Logger('Server');
+
   console.log({ conf });
 
   if (args.find((arg) => arg === 'migrate')) {
@@ -53,8 +55,9 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        const logger = new Logger('Validation Error');
         const errors = parseValidationErrors(validationErrors);
-        return new ServiceError<Record<string, string>>(
+        const error = new ServiceError<Record<string, string>>(
           {
             errorCode: CommonErrors.ValidationError,
             errorMessage: 'A validation error has occurred.',
@@ -62,17 +65,16 @@ async function bootstrap() {
           },
           HttpStatus.BAD_REQUEST,
         );
+        logger.error(error.cause.message);
+        return error;
       },
     }),
   );
 
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'excludeAll',
-      excludeExtraneousValues: true,
-    }),
-  );
+  logger.log(`Server is starting...`);
 
   await app.listen(conf.server.port);
+
+  logger.debug(`Listening on port: ${conf.server.port}`);
 }
 bootstrap();

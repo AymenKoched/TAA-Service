@@ -45,6 +45,7 @@ export abstract class User extends BaseEntity {
   inscriptionDate?: Date;
 
   @ApiProperty()
+  @Expose()
   @Column({
     length: 100,
     nullable: true,
@@ -64,7 +65,7 @@ export abstract class User extends BaseEntity {
   @Expose()
   @Type(() => UserRole)
   @OneToMany(() => UserRole, (userRole) => userRole.user)
-  roles: UserRole[];
+  roles!: UserRole[];
 }
 
 @ChildEntity(UserType.Admin)

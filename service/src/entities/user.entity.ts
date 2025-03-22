@@ -65,7 +65,17 @@ export abstract class User extends BaseEntity {
   @Expose()
   @Type(() => UserRole)
   @OneToMany(() => UserRole, (userRole) => userRole.user)
-  roles!: UserRole[];
+  roles?: UserRole[];
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    name: 'is_active',
+    type: Boolean,
+    nullable: false,
+    default: true,
+  })
+  isActive!: boolean;
 }
 
 @ChildEntity(UserType.Admin)

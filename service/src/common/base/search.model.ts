@@ -16,12 +16,12 @@ import {
 
 import { BaseModel, ModelConstructor } from '../base';
 import { IsOptional } from '../decorators';
+import { NumberArray, StringArray } from '../models';
 import {
   BooleanTransformer,
   NumberTransformer,
   StringArrayTransformer,
 } from '../transformers';
-import { NumberArray, StringArray } from './arrays.model';
 import { LikeOperator, SearchOperator } from './operators.model';
 
 export type DeepPartial<T> =

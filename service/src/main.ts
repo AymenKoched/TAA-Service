@@ -65,7 +65,7 @@ async function bootstrap() {
           },
           HttpStatus.BAD_REQUEST,
         );
-        logger.error(error.cause.message);
+        logger.error(error?.cause?.message);
         return error;
       },
     }),

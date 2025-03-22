@@ -8,8 +8,8 @@ import { Reflector } from '@nestjs/core';
 import { TransformFnParams } from 'class-transformer';
 import { map, Observable } from 'rxjs';
 
+import { PagedResult, SearchQuery } from '../base';
 import { CONVERT_RESPONSE_TYPE } from '../decorators';
-import { PagedResult, SearchQuery } from '../models';
 import { ModelTransformer } from '../transformers';
 
 @Injectable()

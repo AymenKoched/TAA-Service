@@ -16,5 +16,5 @@ export class RoleResponse extends BaseResponseModel {
   @ApiProperty()
   @Transform(ModelTransformer(() => UserRoleResponse))
   @Type(() => UserRoleResponse)
-  users!: UserRoleResponse[];
+  users?: UserRoleResponse[];
 }

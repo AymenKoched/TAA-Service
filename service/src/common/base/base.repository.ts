@@ -31,23 +31,26 @@ import {
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
+import { BaseEntity } from './base.entity';
+import { EntityConstructor } from './constructors';
 import {
-  DeepPartial,
-  GetQuery,
   GreaterThanOperator,
   GreaterThanOrEqualOperator,
   LessThanOperator,
   LessThanOrEqualOperator,
   LikeOperator,
-  PagedResult,
   SearchOperator,
+} from './operators.model';
+import {
+  DeepPartial,
+  GetQuery,
+  PagedResult,
   SearchQuery,
   SearchResult,
-} from '../models';
-import { BaseEntity } from './base.entity';
-import { EntityConstructor } from './constructors';
+} from './search.model';
 
 const logger = new Logger('Entity');
+
 const OperatorsMap = {
   [LikeOperator.name]: ILike,
   [GreaterThanOperator.name]: MoreThan,

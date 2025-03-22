@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { isEqual } from 'lodash';
+import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
+  DEFAULT_SUPER_ADMIN_EMAIL,
   DEFAULT_SUPER_ADMIN_PASSWORD,
   RoleAccess,
   SALT_ROUNDS,
@@ -22,6 +24,7 @@ export class SeedService {
     private readonly rolesRepository: RolesRepository,
   ) {}
 
+  @Transactional({ propagation: Propagation.REQUIRED })
   async seedSuperAdmin(): Promise<void> {
     const superAdminAccesses = [RoleAccess.SuperAdminAccess];
 
@@ -49,7 +52,7 @@ export class SeedService {
       );
       const admin = await this.adminsRepository.repo.save(
         new Admin({
-          email: 'taa.admin@yopmail.com',
+          email: DEFAULT_SUPER_ADMIN_EMAIL,
           password,
           name: 'SuperAdmin',
           inscriptionDate: new Date(),

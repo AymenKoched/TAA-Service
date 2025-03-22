@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 import { BaseModule, getDatabaseModule, interceptors } from './common';
 import { conf } from './configuration';
@@ -11,6 +12,7 @@ import { services } from './services';
 @Module({
   imports: [
     getDatabaseModule(conf.database),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({ ...conf.jwt, global: true }),
   ],
   controllers: [...controllers],

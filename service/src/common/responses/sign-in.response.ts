@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
 import { BaseResponseModel } from '../base';
+import { ApiProperty } from '../decorators';
 import { ModelTransformer } from '../transformers';
 import { TokenResponse } from './token.response';
 

@@ -17,22 +17,22 @@ export abstract class BaseEntity extends BaseModel {
   @ApiProperty()
   @PrimaryColumn()
   @Expose()
-  id: string;
+  id!: string;
 
   @ApiProperty()
   @CreateDateColumn({ name: 'created_at' })
   @Expose()
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty()
   @UpdateDateColumn({ name: 'updated_at' })
   @Expose()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ApiProperty()
   @DeleteDateColumn({ name: 'deleted_at' })
   @Expose()
-  deletedAt: Date;
+  deletedAt!: Date;
 
   @BeforeInsert()
   onBeforeInsert() {

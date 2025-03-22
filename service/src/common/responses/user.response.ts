@@ -22,10 +22,13 @@ export class UserResponse extends BaseResponseModel {
   @ApiPropertyOptional()
   location?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @Transform(ModelTransformer(() => UserRoleResponse))
   @Type(() => UserRoleResponse)
-  roles!: UserRoleResponse[];
+  roles?: UserRoleResponse[];
+
+  @ApiProperty()
+  isActive!: boolean;
 }
 
 export class AdminResponse extends UserResponse {}

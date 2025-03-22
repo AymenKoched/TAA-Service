@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateUserAndRole1742579744570 implements MigrationInterface {
-  name = 'CreateUserAndRole1742579744570';
+export class CreateUserAndRole1742659299727 implements MigrationInterface {
+  name = 'CreateUserAndRole1742659299727';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -14,10 +14,7 @@ export class CreateUserAndRole1742579744570 implements MigrationInterface {
       `CREATE UNIQUE INDEX "IDX_60b4fcc83e7713c917d6dd7736" ON "roles" ("name") WHERE deleted_at is null`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user_roles" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "user_id" character varying NOT NULL, "role_id" character varying NOT NULL, CONSTRAINT "PK_8acd5cf26ebd158416f477de799" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "users" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "name" character varying(100) NOT NULL, "email" character varying(200) NOT NULL, "password" character varying(100) NOT NULL, "inscription_date" date, "phone" character varying(100), "location" character varying(100), "type" character varying NOT NULL, CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "users" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "name" character varying(100) NOT NULL, "email" character varying(200) NOT NULL, "password" character varying(100) NOT NULL, "inscription_date" date, "phone" character varying(100), "location" character varying(100), "is_active" boolean NOT NULL DEFAULT true, "type" character varying NOT NULL, CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_2c5976093867fb0006754843e1" ON "users" ("email") WHERE deleted_at is null and email <> ''`,
@@ -27,6 +24,9 @@ export class CreateUserAndRole1742579744570 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_94e2000b5f7ee1f9c491f0f8a8" ON "users" ("type") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "user_roles" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "user_id" character varying NOT NULL, "role_id" character varying NOT NULL, CONSTRAINT "PK_8acd5cf26ebd158416f477de799" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `ALTER TABLE "user_roles" ADD CONSTRAINT "FK_87b8888186ca9769c960e926870" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -43,6 +43,7 @@ export class CreateUserAndRole1742579744570 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "user_roles" DROP CONSTRAINT "FK_87b8888186ca9769c960e926870"`,
     );
+    await queryRunner.query(`DROP TABLE "user_roles"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_94e2000b5f7ee1f9c491f0f8a8"`,
     );
@@ -53,7 +54,6 @@ export class CreateUserAndRole1742579744570 implements MigrationInterface {
       `DROP INDEX "public"."IDX_2c5976093867fb0006754843e1"`,
     );
     await queryRunner.query(`DROP TABLE "users"`);
-    await queryRunner.query(`DROP TABLE "user_roles"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_60b4fcc83e7713c917d6dd7736"`,
     );

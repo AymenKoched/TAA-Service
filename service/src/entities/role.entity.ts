@@ -31,5 +31,5 @@ export class Role extends BaseEntity {
   @Expose()
   @Type(() => UserRole)
   @OneToMany(() => UserRole, (userRole) => userRole.role)
-  users?: UserRole[];
+  roleUsers?: UserRole[];
 }

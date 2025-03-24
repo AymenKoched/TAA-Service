@@ -65,7 +65,7 @@ export abstract class User extends BaseEntity {
   @Expose()
   @Type(() => UserRole)
   @OneToMany(() => UserRole, (userRole) => userRole.user)
-  roles?: UserRole[];
+  userRoles?: UserRole[];
 
   @ApiProperty()
   @Expose()

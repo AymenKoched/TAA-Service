@@ -1,8 +1,11 @@
-import { Transform, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
+import { includes, map, some } from 'lodash';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
+import { RoleAccess } from '../enums';
 import { ModelTransformer, PhoneTransformer } from '../transformers';
+import { RoleResponse } from './role.response';
 import { UserRoleResponse } from './user-role.response';
 
 export class UserResponse extends BaseResponseModel {
@@ -23,12 +26,31 @@ export class UserResponse extends BaseResponseModel {
   location?: string;
 
   @ApiPropertyOptional()
-  @Transform(ModelTransformer(() => UserRoleResponse))
   @Type(() => UserRoleResponse)
-  roles?: UserRoleResponse[];
+  @Transform(ModelTransformer(() => UserRoleResponse))
+  userRoles?: UserRoleResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => RoleResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      RoleResponse,
+      map(obj.userRoles, ({ role }) => role) || [],
+    ]),
+  )
+  roles?: RoleResponse[];
 
   @ApiProperty()
   isActive!: boolean;
+
+  @Expose()
+  @ApiProperty()
+  get isSuperAdmin(): boolean {
+    return some(this.roles, (role) =>
+      includes(role.accesses, RoleAccess.SuperAdminAccess),
+    );
+  }
 }
 
 export class AdminResponse extends UserResponse {}

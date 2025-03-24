@@ -5,16 +5,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
-import { includes, some } from 'lodash';
 
-import {
-  AppRequest,
-  AuthErrors,
-  RoleAccess,
-  UserResponse,
-  UserRoleResponse,
-} from '../common';
-import { UserRolesRepository } from '../repositories';
+import { AppRequest, AuthErrors, UserResponse } from '../common';
 
 const logger = new Logger('BaseAccessGuard');
 
@@ -39,21 +31,7 @@ export abstract class BaseAccessGuard<TOptions> implements CanActivate {
 
     const options = this.getOptions(ctx);
 
-    const userRoles = (await this.moduleRef
-      .get(UserRolesRepository, { strict: false })
-      .search(
-        { expands: ['role'] },
-        { userId: user?.id },
-      )) as UserRoleResponse[];
-
-    const hasSuperAdminRole = some(
-      userRoles,
-      (userRole) =>
-        userRole.role &&
-        includes(userRole.role.accesses, RoleAccess.SuperAdminAccess),
-    );
-
-    if (hasSuperAdminRole) {
+    if (user.isSuperAdmin) {
       return true;
     }
 

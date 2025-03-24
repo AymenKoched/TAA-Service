@@ -25,8 +25,6 @@ const args = process.argv.slice(2);
 async function bootstrap() {
   const logger = new Logger('Server');
 
-  console.log({ conf });
-
   if (args.find((arg) => arg === 'migrate')) {
     await runDatabaseMigration(conf);
     process.exit();

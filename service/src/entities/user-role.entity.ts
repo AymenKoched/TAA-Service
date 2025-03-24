@@ -21,7 +21,7 @@ export class UserRole extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Type(() => User)
-  @ManyToOne(() => User, (user) => user.roles)
+  @ManyToOne(() => User, (user) => user.userRoles)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
@@ -36,7 +36,7 @@ export class UserRole extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Type(() => Role)
-  @ManyToOne(() => Role, (role) => role.users)
+  @ManyToOne(() => Role, (role) => role.roleUsers)
   @JoinColumn({ name: 'role_id' })
   role!: Role;
 }

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 import { AppRequest, AuthErrors, UserResponse } from '../common';
 import { UsersService } from '../services';
@@ -56,13 +57,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   private async getUserDetails(userId: string): Promise<UserResponse> {
     const user = await this.users.getById(userId, {
-      search: { expands: ['roles.role'] },
+      search: { expands: ['userRoles.role'] },
     });
 
     if (!user.isActive) {
       throw new UnauthorizedException(AuthErrors.AccessDenied, 'Access denied');
     }
 
-    return new UserResponse(user);
+    return new UserResponse(
+      plainToInstance(UserResponse, instanceToPlain(user)),
+    );
   }
 }

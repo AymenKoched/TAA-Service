@@ -9,8 +9,7 @@ import {
 import { ModuleRef, Reflector } from '@nestjs/core';
 import { every, includes, isArray, some } from 'lodash';
 
-import { RoleAccess, UserRoleResponse } from '../common';
-import { UserRolesRepository } from '../repositories';
+import { RoleAccess, RoleResponse } from '../common';
 import { JwtAuthGuard } from './auth.guard';
 import { AccessContext, BaseAccessGuard } from './base-access.guard';
 
@@ -49,25 +48,15 @@ export class RoleAccessGuard extends BaseAccessGuard<RoleAccessOptions> {
       ? options.accesses
       : [options.accesses];
 
-    const userRoles = (await this.moduleRef
-      .get(UserRolesRepository, { strict: false })
-      .search(
-        { expands: ['role'] },
-        { userId: user?.id },
-      )) as UserRoleResponse[];
-
-    return hasRequiredAccesses(accesses, userRoles);
+    return hasRequiredAccesses(accesses, user.roles);
   }
 }
 
 function hasRequiredAccesses(
   requiredAccesses: RoleAccess[],
-  userRoles: UserRoleResponse[],
+  roles: RoleResponse[],
 ): boolean {
   return every(requiredAccesses, (access) =>
-    some(
-      userRoles,
-      (userRole) => userRole.role && includes(userRole.role.accesses, access),
-    ),
+    some(roles, (role) => includes(role.accesses, access)),
   );
 }

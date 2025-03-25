@@ -1,16 +1,14 @@
-import { AdherentsRepository } from './adherents.repository';
-import { AdminsRepository } from './admins.repository';
-import { ClientsRepository } from './clients.repository';
-import { RolesRepository } from './roles.repository';
-import { UserRolesRepository } from './user-roles.repository';
-import { UsersRepository } from './users.repository';
+import { RolesRepository, UserRolesRepository } from './roles';
+import {
+  AdherentsRepository,
+  AdminsRepository,
+  ClientsRepository,
+  TokensRepository,
+  UsersRepository,
+} from './users';
 
-export * from './adherents.repository';
-export * from './admins.repository';
-export * from './clients.repository';
-export * from './roles.repository';
-export * from './user-roles.repository';
-export * from './users.repository';
+export * from './roles';
+export * from './users';
 
 export const repositories = [
   UsersRepository,
@@ -19,4 +17,5 @@ export const repositories = [
   AdherentsRepository,
   RolesRepository,
   UserRolesRepository,
+  TokensRepository,
 ];

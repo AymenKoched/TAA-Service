@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { BaseModule, getDatabaseModule, interceptors } from './common';
+import { BaseModule, filters, getDatabaseModule, interceptors } from './common';
 import { conf } from './configuration';
 import { controllers } from './controllers';
 import { guards } from './guards';
@@ -23,6 +23,10 @@ import { services } from './services';
     ...interceptors.map((interceptor) => ({
       provide: 'APP_INTERCEPTOR',
       useClass: interceptor,
+    })),
+    ...filters.map((filter) => ({
+      provide: 'APP_FILTER',
+      useClass: filter,
     })),
   ],
 })

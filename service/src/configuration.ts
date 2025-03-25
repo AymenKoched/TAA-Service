@@ -13,6 +13,8 @@ export interface AppConfig {
   app?: AppInfos;
   cors: CorsOptions;
   jwt: JwtConfig;
+  mailer: MailerConfig;
+  front: FrontConfig;
 }
 
 export enum Environment {
@@ -34,6 +36,21 @@ export interface AppInfos {
 export interface JwtConfig extends JwtModuleOptions {
   privateKeyPath: string;
   publicKeyPath: string;
+}
+
+export interface MailerConfig {
+  mailHost: string;
+  mailPort: number;
+  mailUser: string;
+  mailPassword: string;
+  mailSender: string;
+  mailSenderName: string;
+}
+
+export interface FrontConfig {
+  baseUrl: string;
+  resetPasswordUri: string;
+  activateAccountUri: string;
 }
 
 export const conf: AppConfig = loadFromDirectory<AppConfig>(`${__dirname}/..`);

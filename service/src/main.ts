@@ -25,6 +25,8 @@ const args = process.argv.slice(2);
 async function bootstrap() {
   const logger = new Logger('Server');
 
+  console.log(conf);
+
   if (args.find((arg) => arg === 'migrate')) {
     await runDatabaseMigration(conf);
     process.exit();
@@ -53,9 +55,8 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
-        const logger = new Logger('Validation Error');
         const errors = parseValidationErrors(validationErrors);
-        const error = new ServiceError<Record<string, string>>(
+        return new ServiceError<Record<string, string>>(
           {
             errorCode: CommonErrors.ValidationError,
             errorMessage: 'A validation error has occurred.',
@@ -63,8 +64,6 @@ async function bootstrap() {
           },
           HttpStatus.BAD_REQUEST,
         );
-        logger.error(error?.cause?.message);
-        return error;
       },
     }),
   );

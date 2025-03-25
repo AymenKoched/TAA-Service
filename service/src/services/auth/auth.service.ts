@@ -7,8 +7,8 @@ import {
   SignInRequest,
   SignInResponse,
   UserResponse,
-} from '../common';
-import { UsersService } from './users.service';
+} from '../../common';
+import { UsersService } from '../users';
 
 @Injectable()
 export class AuthService {

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { BaseEntity, UserType } from '../common';
+import { Token } from './token.entity';
 import { UserRole } from './user-role.entity';
 
 @Entity({ name: 'users' })
@@ -76,6 +77,12 @@ export abstract class User extends BaseEntity {
     default: true,
   })
   isActive!: boolean;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => Token)
+  @OneToMany(() => Token, (token) => token.user)
+  tokens?: Token[];
 }
 
 @ChildEntity(UserType.Admin)

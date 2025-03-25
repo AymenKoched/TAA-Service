@@ -23,5 +23,18 @@
       "expiresIn": "1h",
       "algorithm": "RS256"
     }
+  },
+  "mailer": {
+    "mailHost": "smtp.gmail.com",
+    "mailPort": 587,
+    "mailUser": "maz.dev.team@gmail.com",
+    "mailPassword": "lakf acgr mkzf dtvz",
+    "mailSender": "maz.dev.team@gmail.com",
+    "mailSenderName": "TAA application"
+  },
+  "front": {
+    "baseUrl": "http://localhost:3000",
+    "resetPasswordUri": "auth/create-new-password",
+    "activateAccountUri": "auth/activate-account"
   }
 }

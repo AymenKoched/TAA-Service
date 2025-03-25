@@ -7,6 +7,7 @@ import { RoleAccess } from '../enums';
 import { ModelTransformer, PhoneTransformer } from '../transformers';
 import { RoleResponse } from './role.response';
 import { UserRoleResponse } from './user-role.response';
+import { UserTokenResponse } from './user-token.response';
 
 export class UserResponse extends BaseResponseModel {
   @ApiProperty()
@@ -40,6 +41,11 @@ export class UserResponse extends BaseResponseModel {
     ]),
   )
   roles?: RoleResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => UserTokenResponse)
+  @Transform(ModelTransformer(() => UserTokenResponse))
+  tokens?: UserTokenResponse[];
 
   @ApiProperty()
   isActive!: boolean;

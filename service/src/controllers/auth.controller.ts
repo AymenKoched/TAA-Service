@@ -9,7 +9,7 @@ export class AuthController {
 
   @Post('sign-in')
   @ConvertResponse(SignInResponse)
-  SignIn(@Body() payload: SignInRequest): Promise<SignInResponse> {
+  public async SignIn(@Body() payload: SignInRequest): Promise<SignInResponse> {
     return this.authService.signIn(payload);
   }
 }

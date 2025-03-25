@@ -5,8 +5,8 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../common';
 import { User } from './user.entity';
 
-@Entity({ name: 'tokens' })
-export class Token extends BaseEntity {
+@Entity({ name: 'users_tokens' })
+export class UserToken extends BaseEntity {
   keyPrefix = 'tkn_';
 
   @ApiProperty()
@@ -24,10 +24,10 @@ export class Token extends BaseEntity {
   @Expose()
   @Column({
     name: 'expiration_date',
-    type: 'date',
-    nullable: false,
+    type: 'timestamp without time zone',
+    nullable: true,
   })
-  expirationDate!: Date;
+  expirationDate?: Date;
 
   @ApiProperty()
   @Expose()

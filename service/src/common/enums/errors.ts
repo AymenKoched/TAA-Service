@@ -1,6 +1,7 @@
 export enum AuthErrors {
   UserNotFound = 'user_not_found',
   UserRoleNotFound = 'user_role_not_found',
+  UnsupportedUserType = 'unsupported_user_type',
   RoleNotFound = 'role_not_found',
   TokenNotFound = 'token_not_found',
   WrongCredentials = 'wrong_user_credentials',
@@ -8,4 +9,5 @@ export enum AuthErrors {
   ExpiredToken = 'expired_token',
   InvalidToken = 'invalid_token',
   AccessDenied = 'access_denied',
+  LinkExpired = 'link_expired',
 }

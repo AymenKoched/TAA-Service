@@ -8,7 +8,7 @@ export class SeedController {
 
   @Post('super-admin')
   @HttpCode(HttpStatus.NO_CONTENT)
-  seedSuperAdmin(): Promise<void> {
+  public async seedSuperAdmin(): Promise<void> {
     return this.seedService.seedSuperAdmin();
   }
 }

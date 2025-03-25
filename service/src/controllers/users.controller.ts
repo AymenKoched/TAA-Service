@@ -1,4 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 
 import {
   ConvertResponse,
@@ -16,7 +24,13 @@ export class UsersController {
   @Post()
   @HasRoleAccess({ accesses: RoleAccess.CreateUser })
   @ConvertResponse(UserResponse)
-  async CreateUser(@Body() payload: UserRequest) {
-    return await this.users.createUser(payload);
+  public async CreateUser(@Body() payload: UserRequest): Promise<UserResponse> {
+    return this.users.createUser(payload);
+  }
+
+  @Put(':token/activate')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async ActivateUser(@Param('token') token: string): Promise<void> {
+    return this.users.activateUser(token);
   }
 }

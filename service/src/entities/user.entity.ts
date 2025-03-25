@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 
 import { BaseEntity, UserType } from '../common';
-import { Token } from './token.entity';
 import { UserRole } from './user-role.entity';
+import { UserToken } from './user-token.entity';
 
 @Entity({ name: 'users' })
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
@@ -80,9 +80,9 @@ export abstract class User extends BaseEntity {
 
   @ApiProperty()
   @Expose()
-  @Type(() => Token)
-  @OneToMany(() => Token, (token) => token.user)
-  tokens?: Token[];
+  @Type(() => UserToken)
+  @OneToMany(() => UserToken, (token) => token.user)
+  tokens?: UserToken[];
 }
 
 @ChildEntity(UserType.Admin)

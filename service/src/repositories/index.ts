@@ -3,8 +3,8 @@ import {
   AdherentsRepository,
   AdminsRepository,
   ClientsRepository,
-  TokensRepository,
   UsersRepository,
+  UserTokensRepository,
 } from './users';
 
 export * from './roles';
@@ -17,5 +17,5 @@ export const repositories = [
   AdherentsRepository,
   RolesRepository,
   UserRolesRepository,
-  TokensRepository,
+  UserTokensRepository,
 ];

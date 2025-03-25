@@ -7,8 +7,8 @@ import {
   AdherentsService,
   AdminsService,
   ClientsService,
-  TokensService,
   UsersService,
+  UserTokensService,
 } from './users';
 
 export * from './app.service';
@@ -29,5 +29,5 @@ export const services = [
   UserRolesService,
   RolesService,
   MailerService,
-  TokensService,
+  UserTokensService,
 ];

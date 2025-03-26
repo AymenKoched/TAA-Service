@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import {
   filter,
@@ -30,21 +31,25 @@ import {
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
+import { BaseEntity } from './base.entity';
+import { EntityConstructor } from './constructors';
 import {
-  DeepPartial,
-  GetQuery,
   GreaterThanOperator,
   GreaterThanOrEqualOperator,
   LessThanOperator,
   LessThanOrEqualOperator,
   LikeOperator,
-  PagedResult,
   SearchOperator,
+} from './operators.model';
+import {
+  DeepPartial,
+  GetQuery,
+  PagedResult,
   SearchQuery,
   SearchResult,
-} from '../models';
-import { BaseEntity } from './base.entity';
-import { EntityConstructor } from './constructors';
+} from './search.model';
+
+const logger = new Logger('Entity');
 
 const OperatorsMap = {
   [LikeOperator.name]: ILike,
@@ -105,11 +110,11 @@ export abstract class BaseRepository<TEntity extends BaseEntity = BaseEntity> {
     const criteria = { id } as FindOptionsWhere<TEntity>;
     const result = await this.repo.update(criteria, { ...partialEntity, id });
     if (!result.affected) {
-      console.log(
+      logger.log(
         `[${this.entityType.name}] UPDATE : No matching rows where found for update`,
       );
     } else {
-      console.log(
+      logger.log(
         `[${this.entityType.name}] UPDATE : ${
           result.affected
         } rows have been updated with the following data ${JSON.stringify(
@@ -130,11 +135,11 @@ export abstract class BaseRepository<TEntity extends BaseEntity = BaseEntity> {
     const result = await this.repo.update(criteria, partialEntity);
 
     if (!result.affected) {
-      console.log(
+      logger.log(
         `[${this.constructor.name}] UPDATE : No matching rows where found for update`,
       );
     } else {
-      console.log(
+      logger.log(
         `[${this.constructor.name}] UPDATE : ${
           result.affected
         } rows have been updated with the following data ${JSON.stringify(
@@ -193,7 +198,7 @@ export abstract class BaseRepository<TEntity extends BaseEntity = BaseEntity> {
       );
 
       if (existing) {
-        console.log(
+        logger.log(
           `Entity already exists with this criteria ${JSON.stringify(
             criteria,
           )}`,

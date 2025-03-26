@@ -1,0 +1,66 @@
+import { Expose, Transform, Type } from 'class-transformer';
+import { includes, map, some } from 'lodash';
+
+import { BaseResponseModel } from '../base';
+import { ApiProperty, ApiPropertyOptional } from '../decorators';
+import { RoleAccess } from '../enums';
+import { ModelTransformer, PhoneTransformer } from '../transformers';
+import { RoleResponse } from './role.response';
+import { UserRoleResponse } from './user-role.response';
+import { UserTokenResponse } from './user-token.response';
+
+export class UserResponse extends BaseResponseModel {
+  @ApiProperty()
+  name!: string;
+
+  @ApiProperty()
+  email!: string;
+
+  @ApiPropertyOptional()
+  inscriptionDate?: Date;
+
+  @ApiPropertyOptional()
+  @Transform(PhoneTransformer)
+  phone?: string;
+
+  @ApiPropertyOptional()
+  location?: string;
+
+  @ApiPropertyOptional()
+  @Type(() => UserRoleResponse)
+  @Transform(ModelTransformer(() => UserRoleResponse))
+  userRoles?: UserRoleResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => RoleResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      RoleResponse,
+      map(obj.userRoles, ({ role }) => role) || [],
+    ]),
+  )
+  roles?: RoleResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => UserTokenResponse)
+  @Transform(ModelTransformer(() => UserTokenResponse))
+  tokens?: UserTokenResponse[];
+
+  @ApiProperty()
+  isActive!: boolean;
+
+  @Expose()
+  @ApiProperty()
+  get isSuperAdmin(): boolean {
+    return some(this.roles, (role) =>
+      includes(role.accesses, RoleAccess.SuperAdminAccess),
+    );
+  }
+}
+
+export class AdminResponse extends UserResponse {}
+
+export class ClientResponse extends UserResponse {}
+
+export class AdherentResponse extends UserResponse {}

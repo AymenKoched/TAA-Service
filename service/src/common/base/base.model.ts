@@ -2,6 +2,8 @@ import 'reflect-metadata';
 
 import { pick } from 'lodash';
 
+import { SWAGGER_DECORATORS } from '../decorators';
+
 export type ModelConstructor<T = any> = new (raw?: any) => T;
 
 export abstract class BaseModel {
@@ -25,8 +27,9 @@ export abstract class BaseModel {
   }
 
   static getDeclaredProperties(self: BaseModel): string[] {
-    return Reflect.getMetadata('swagger/apiModelPropertiesArray', self)?.map(
-      (item: string) => item.substring(1),
-    );
+    return Reflect.getMetadata(
+      SWAGGER_DECORATORS.API_MODEL_PROPERTIES_ARRAY,
+      self,
+    )?.map((item: string) => item.substring(1));
   }
 }

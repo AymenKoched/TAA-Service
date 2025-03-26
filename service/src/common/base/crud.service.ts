@@ -3,15 +3,15 @@ import { isArray, isEmpty } from 'lodash';
 import { FindOptionsWhere, UpdateResult } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
+import { BaseEntity } from './base.entity';
+import { BaseRepository } from './base.repository';
 import {
   DeepPartial,
   GetQuery,
   PagedResult,
   SearchQuery,
   SearchResult,
-} from '../models';
-import { BaseEntity } from './base.entity';
-import { BaseRepository } from './base.repository';
+} from './search.model';
 
 export interface CrudGetOptions {
   silent?: boolean;

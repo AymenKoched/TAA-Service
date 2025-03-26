@@ -1,5 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-
+import { ApiProperty } from '../decorators';
 import { BaseModel } from './base.model';
 
 export class BaseResponseModel extends BaseModel {

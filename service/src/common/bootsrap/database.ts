@@ -1,4 +1,4 @@
-import { ServiceUnavailableException } from '@nestjs/common';
+import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { pick } from 'lodash';
 import { DataSource, MigrationExecutor } from 'typeorm';
@@ -8,12 +8,16 @@ import { v4 as uuid } from 'uuid';
 
 import { AppConfig } from '../../configuration';
 
+const logger = new Logger('Database');
+
 export type DatabaseConfiguration = PostgresConnectionOptions;
 
 export async function bootstrapDatabase(database: DatabaseConfiguration) {
   const WAIT_BEFORE_RESTART = 30; // seconds
   const MAX_DATABASE_RETRY = 10;
   let bootstrapDatabaseSuccess = false;
+
+  logger.log('Bootstrapping database..');
 
   for (
     let tries = 0;
@@ -26,6 +30,9 @@ export async function bootstrapDatabase(database: DatabaseConfiguration) {
       } as any);
       bootstrapDatabaseSuccess = true;
     } catch (e) {
+      logger.error('Application cannot connect to the database.');
+      logger.error(e);
+      logger.warn(`Retry create database in ${WAIT_BEFORE_RESTART} seconds.`);
       await timer(WAIT_BEFORE_RESTART * 1000);
     }
   }
@@ -61,11 +68,11 @@ export async function createDatabase(
       `SELECT 1 FROM pg_database WHERE datname = '${ormOptions.database}'`,
     );
     if (!dbExists.length) {
-      console.log(`Creating '${ormOptions.database}' database...`);
+      logger.log(`Creating '${ormOptions.database}' database...`);
       await conn.query(`CREATE DATABASE ${ormOptions.database}`);
-      console.log('Database created!');
+      logger.log('Database created!');
     } else {
-      console.log('Database already exists.');
+      logger.log('Database already exists.');
     }
   } finally {
     await conn.destroy();
@@ -95,7 +102,7 @@ export async function runMigration(
 }
 
 export async function runDatabaseMigration(appConfig: AppConfig) {
-  console.log(`Database migration is starting...`);
+  logger.log(`Database migration is starting...`);
 
   const database = appConfig.database;
   if (database) {
@@ -103,9 +110,9 @@ export async function runDatabaseMigration(appConfig: AppConfig) {
       await runMigration({
         ...database,
       });
-      console.log(`Database migration finished.`);
+      logger.log(`Database migration finished.`);
     } catch (e) {
-      console.log(`Database migration failed: ${e.message}!`);
+      logger.error(`Database migration failed: ${e.message}!`);
       process.exit(1);
     }
   }

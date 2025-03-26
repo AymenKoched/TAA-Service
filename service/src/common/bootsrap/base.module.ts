@@ -1,6 +1,7 @@
-import { OnModuleDestroy } from '@nestjs/common';
+import { MiddlewareConsumer, OnModuleDestroy } from '@nestjs/common';
 
 import { AppConfig } from '../../configuration';
+import { ContextMiddleware } from '../middlewares';
 import { closeAllDataSources } from './database';
 
 export class BaseModule implements OnModuleDestroy {
@@ -8,6 +9,10 @@ export class BaseModule implements OnModuleDestroy {
 
   constructor(conf: AppConfig) {
     this.conf = conf;
+  }
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ContextMiddleware).forRoutes('*');
   }
 
   async onModuleDestroy() {

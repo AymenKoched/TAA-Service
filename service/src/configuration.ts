@@ -1,4 +1,5 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { JwtModuleOptions } from '@nestjs/jwt';
 import { readFileSync } from 'fs';
 import { isEmpty } from 'lodash';
 import { hostname } from 'os';
@@ -11,6 +12,9 @@ export interface AppConfig {
   database?: DatabaseConfiguration;
   app?: AppInfos;
   cors: CorsOptions;
+  jwt: JwtConfig;
+  mailer: MailerConfig;
+  front: FrontConfig;
 }
 
 export enum Environment {
@@ -29,7 +33,34 @@ export interface AppInfos {
   appname: string;
 }
 
+export interface JwtConfig extends JwtModuleOptions {
+  privateKeyPath: string;
+  publicKeyPath: string;
+}
+
+export interface MailerConfig {
+  mailHost: string;
+  mailPort: number;
+  mailUser: string;
+  mailPassword: string;
+  mailSender: string;
+  mailSenderName: string;
+}
+
+export interface FrontConfig {
+  baseUrl: string;
+  resetPasswordUri: string;
+  activateAccountUri: string;
+}
+
 export const conf: AppConfig = loadFromDirectory<AppConfig>(`${__dirname}/..`);
+
+conf.jwt.publicKey = readFileSync(resolve(conf.jwt.publicKeyPath)).toString(
+  'utf8',
+);
+conf.jwt.privateKey = readFileSync(resolve(conf.jwt.privateKeyPath)).toString(
+  'utf8',
+);
 
 function loadFromDirectory<T extends AppConfig = AppConfig>(
   rootProjectPath: string,

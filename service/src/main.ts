@@ -1,10 +1,10 @@
 import {
-  ClassSerializerInterceptor,
   HttpStatus,
+  Logger,
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/get-body-parser-options.util';
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -23,7 +23,9 @@ import { conf } from './configuration';
 const args = process.argv.slice(2);
 
 async function bootstrap() {
-  console.log({ conf });
+  const logger = new Logger('Server');
+
+  console.log(conf);
 
   if (args.find((arg) => arg === 'migrate')) {
     await runDatabaseMigration(conf);
@@ -66,13 +68,10 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'excludeAll',
-      excludeExtraneousValues: true,
-    }),
-  );
+  logger.log(`Server is starting...`);
 
   await app.listen(conf.server.port);
+
+  logger.debug(`Listening on port: ${conf.server.port}`);
 }
 bootstrap();

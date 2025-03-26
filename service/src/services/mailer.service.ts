@@ -41,8 +41,14 @@ export class MailerService {
     finalPassword: string,
   ): string {
     const activationUrl = `${conf.front.baseUrl}/${conf.front.activateAccountUri}/${token}`;
-    return `<h1>Reset your password</h1>
+    return `<h1>Activate your account</h1>
             <p>Hello ${userName}, Click <a href="${activationUrl}">here</a> to activate your account.</p>
             <p>This is your password: <span>${finalPassword}</span>. You should change it as soon as possible.</p>`;
+  }
+
+  getResetPasswordEmailContent(userName: string, token: string): string {
+    const activationUrl = `${conf.front.baseUrl}/${conf.front.resetPasswordUri}/${token}`;
+    return `<h1>Reset your password</h1>
+            <p>Hello ${userName}, Click <a href="${activationUrl}">here</a> to reset your password.</p>`;
   }
 }

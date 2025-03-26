@@ -3,12 +3,12 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   Put,
 } from '@nestjs/common';
 
 import {
+  ActivateUserRequest,
   ConvertResponse,
   RoleAccess,
   UserRequest,
@@ -24,13 +24,15 @@ export class UsersController {
   @Post()
   @HasRoleAccess({ accesses: RoleAccess.CreateUser })
   @ConvertResponse(UserResponse)
-  public async CreateUser(@Body() payload: UserRequest): Promise<UserResponse> {
+  public async createUser(@Body() payload: UserRequest): Promise<UserResponse> {
     return this.users.createUser(payload);
   }
 
-  @Put(':token/activate')
+  @Put('activate')
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async ActivateUser(@Param('token') token: string): Promise<void> {
-    return this.users.activateUser(token);
+  public async activateUser(
+    @Body() payload: ActivateUserRequest,
+  ): Promise<void> {
+    return this.users.activateUser(payload);
   }
 }

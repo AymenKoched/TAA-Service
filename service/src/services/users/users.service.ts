@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
+  ActivateUserRequest,
   AuthErrors,
   CrudService,
   getRandomString,
@@ -27,13 +28,13 @@ export class UsersService extends CrudService<User> {
   protected notFoundErrorMessage = 'The searched user is not found';
 
   constructor(
-    private users: UsersRepository,
-    private admins: AdminsService,
-    private clients: ClientsService,
-    private adherents: AdherentsService,
-    private userRoles: UserRolesService,
-    private mailer: MailerService,
-    private tokens: UserTokensService,
+    private readonly users: UsersRepository,
+    private readonly admins: AdminsService,
+    private readonly clients: ClientsService,
+    private readonly adherents: AdherentsService,
+    private readonly userRoles: UserRolesService,
+    private readonly mailer: MailerService,
+    private readonly tokens: UserTokensService,
   ) {
     super(users);
   }
@@ -98,10 +99,10 @@ export class UsersService extends CrudService<User> {
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
-  async activateUser(token: string) {
-    const userToken = await this.tokens.verifyTokenValidity(token);
+  async activateUser(payload: ActivateUserRequest) {
+    const userToken = await this.tokens.verifyTokenValidity(payload.emailToken);
     const user = await this.getById(userToken.user.id);
     await this.updateById(user.id, { isActive: true });
-    await this.tokens.deleteByCriteria({ token });
+    await this.tokens.delete(userToken.id);
   }
 }

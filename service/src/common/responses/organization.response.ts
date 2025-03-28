@@ -16,9 +16,9 @@ export class OrganizationResponse extends BaseResponseModel {
   @ApiPropertyOptional()
   adherentId?: string;
 
-  @ApiPropertyOptional({ type: () => AdherentResponse })
-  @Transform(ModelTransformer(() => AdherentResponse))
+  @ApiPropertyOptional()
   @Type(() => AdherentResponse)
+  @Transform(ModelTransformer(() => AdherentResponse))
   adherent?: AdherentResponse;
 
   @ApiPropertyOptional()

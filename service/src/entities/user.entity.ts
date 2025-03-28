@@ -45,6 +45,11 @@ export abstract class User extends BaseEntity {
 
   @ApiProperty()
   @Expose()
+  @Column({ name: 'user_type', type: 'enum', enum: UserType })
+  userType!: UserType;
+
+  @ApiProperty()
+  @Expose()
   @Column({ name: 'inscription_date', type: 'date', nullable: true })
   inscriptionDate?: Date;
 

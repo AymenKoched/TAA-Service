@@ -9,6 +9,7 @@ import {
   RoleAccess,
   SALT_ROUNDS,
   UserRolesSearchFilter,
+  UserType,
 } from '../common';
 import { UserRole } from '../entities';
 import { RolesService, UserRolesService } from './roles';
@@ -62,6 +63,7 @@ export class SeedService {
         password,
         name: 'SuperAdmin',
         inscriptionDate: new Date(),
+        userType: UserType.Admin,
       });
 
       await this.userRoles.create({

@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateOrganization1743170102479 implements MigrationInterface {
-  name = 'CreateOrganization1743170102479';
+export class CreateOrganization1743177413374 implements MigrationInterface {
+  name = 'CreateOrganization1743177413374';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -24,6 +24,12 @@ export class CreateOrganization1743170102479 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_99de5ef06cbc83f9b7e3d97589" ON "organizations" ("phone") WHERE deleted_at is null and phone <> ''`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."users_user_type_enum" AS ENUM('admin', 'client', 'adherent')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" ADD "user_type" "public"."users_user_type_enum" NOT NULL`,
     );
     await queryRunner.query(
       `ALTER TABLE "users" ADD "organization_id" character varying`,
@@ -112,6 +118,8 @@ export class CreateOrganization1743170102479 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "users" DROP COLUMN "organization_id"`,
     );
+    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "user_type"`);
+    await queryRunner.query(`DROP TYPE "public"."users_user_type_enum"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_99de5ef06cbc83f9b7e3d97589"`,
     );

@@ -59,13 +59,22 @@ export class UsersService extends CrudService<User> {
     let user: User;
     switch (payload.type) {
       case UserType.Client:
-        user = await this.clients.create(userPayload);
+        user = await this.clients.create({
+          ...userPayload,
+          userType: UserType.Client,
+        });
         break;
       case UserType.Admin:
-        user = await this.admins.create(userPayload);
+        user = await this.admins.create({
+          ...userPayload,
+          userType: UserType.Admin,
+        });
         break;
       case UserType.Adherent:
-        user = await this.adherents.create(userPayload);
+        user = await this.adherents.create({
+          ...userPayload,
+          userType: UserType.Adherent,
+        });
         break;
       default:
         throw new BadRequestException(
@@ -107,13 +116,30 @@ export class UsersService extends CrudService<User> {
   async updateUser(userId: string, payload: UpdateUserRequest) {
     await this.checkPhone(payload.phone, userId);
 
-    await this.updateById(userId, omit(payload, 'roles'));
+    const user = await this.getById(userId, {
+      search: { expands: ['userRoles'] },
+    });
 
-    if (payload?.roles?.length) {
-      const user = await this.getById(userId, {
-        search: { expands: ['userRoles'] },
-      });
+    const userPayload = omit(payload, ['roles']);
 
+    switch (user.userType) {
+      case UserType.Client:
+        await this.clients.updateById(userId, userPayload);
+        break;
+      case UserType.Admin:
+        await this.admins.updateById(userId, userPayload);
+        break;
+      case UserType.Adherent:
+        await this.adherents.updateById(userId, userPayload);
+        break;
+      default:
+        throw new BadRequestException(
+          AuthErrors.UnsupportedUserType,
+          'Unsupported user type',
+        );
+    }
+
+    if (payload?.roles) {
       const currentRoleIds = map(user.userRoles, 'roleId');
       const newRoleIds = payload.roles;
 

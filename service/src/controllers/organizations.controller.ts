@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 
 import {
   ConvertResponse,
   OrganizationRequest,
   OrganizationResponse,
   RoleAccess,
+  UpdateOrganizationRequest,
 } from '../common';
 import { HasRoleAccess } from '../guards';
 import { OrganizationsService } from '../services';
@@ -28,5 +29,15 @@ export class OrganizationsController {
     @Body() payload: OrganizationRequest,
   ): Promise<OrganizationResponse> {
     return this.orgs.createOrganization(payload);
+  }
+
+  @Put(':organizationId')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async updateOrganization(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationRequest,
+  ): Promise<OrganizationResponse> {
+    return this.orgs.updateOrganization(organizationId, payload);
   }
 }

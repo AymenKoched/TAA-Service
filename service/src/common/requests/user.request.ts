@@ -109,4 +109,10 @@ export class UpdateUserRequest extends BaseModel {
   @Transform(StringArrayTransformer)
   @IsOptional()
   roles?: StringArray;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(100, { message: 'errors:field.max_length.100' })
+  @IsOptional()
+  position?: string;
 }

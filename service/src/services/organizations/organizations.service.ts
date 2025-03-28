@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { omit } from 'lodash';
+import { map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -7,6 +7,7 @@ import {
   CrudService,
   OrganizationRequest,
   OrganizationResponse,
+  UpdateOrganizationRequest,
   UserType,
 } from '../../common';
 import { Organization } from '../../entities';
@@ -29,6 +30,15 @@ export class OrganizationsService extends CrudService<Organization> {
     super(orgs);
   }
 
+  async getOrganization(organizationId: string) {
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: ['rAndDSites', 'otherLocations', 'adherent.userRoles.role'],
+      },
+    });
+    return new OrganizationResponse(organization);
+  }
+
   @Transactional({ propagation: Propagation.REQUIRED })
   async createOrganization(payload: OrganizationRequest) {
     await this.checkEmail(payload.email);
@@ -40,7 +50,7 @@ export class OrganizationsService extends CrudService<Organization> {
 
     if (payload.rAndDSites?.length) {
       await Promise.all(
-        payload.rAndDSites.map((rAndDSite) =>
+        map(payload.rAndDSites, (rAndDSite) =>
           this.rAndDSitesTags.create({
             organizationId: org.id,
             name: rAndDSite.name,
@@ -51,7 +61,7 @@ export class OrganizationsService extends CrudService<Organization> {
 
     if (payload.otherLocations?.length) {
       await Promise.all(
-        payload.otherLocations.map((otherLocation) =>
+        map(payload.otherLocations, (otherLocation) =>
           this.otherLocationsTags.create({
             organizationId: org.id,
             name: otherLocation.name,
@@ -72,12 +82,58 @@ export class OrganizationsService extends CrudService<Organization> {
     return new OrganizationResponse(org);
   }
 
-  async getOrganization(organizationId: string): Promise<OrganizationResponse> {
-    return new OrganizationResponse(
-      await this.getById(organizationId, {
-        search: { expands: ['rAndDSites', 'otherLocations', 'adherent'] },
-      }),
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganization(
+    organizationId: string,
+    payload: UpdateOrganizationRequest,
+  ) {
+    await this.checkPhone(payload.phone, organizationId);
+
+    const organization = await this.getById(organizationId, {
+      search: { expands: ['rAndDSites', 'otherLocations'] },
+    });
+
+    await this.updateById(
+      organizationId,
+      omit(payload, ['rAndDSites', 'otherLocations']),
     );
+
+    if (payload?.rAndDSites) {
+      await Promise.all(
+        map(organization?.rAndDSites, (rAndDSite) =>
+          this.rAndDSitesTags.delete(rAndDSite.id),
+        ),
+      );
+
+      await Promise.all([
+        map(payload.rAndDSites, (rAndDSite) =>
+          this.rAndDSitesTags.create({ name: rAndDSite.name, organizationId }),
+        ),
+      ]);
+    }
+
+    if (payload?.otherLocations) {
+      await Promise.all(
+        map(organization?.otherLocations, (location) =>
+          this.otherLocationsTags.delete(location.id),
+        ),
+      );
+
+      await Promise.all(
+        map(payload.otherLocations, (location) =>
+          this.otherLocationsTags.create({
+            name: location.name,
+            organizationId,
+          }),
+        ),
+      );
+    }
+
+    const updatedOrganization = await this.getById(organizationId, {
+      search: { expands: ['rAndDSites', 'otherLocations'] },
+    });
+
+    return new OrganizationResponse(updatedOrganization);
   }
 
   async checkEmail(email?: string, id?: string) {

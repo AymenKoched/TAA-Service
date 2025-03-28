@@ -3,7 +3,7 @@ import { includes, map, some } from 'lodash';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
-import { RoleAccess } from '../enums';
+import { RoleAccess, UserType } from '../enums';
 import { ModelTransformer, PhoneTransformer } from '../transformers';
 import { OrganizationResponse } from './organization.response';
 import { RoleResponse } from './role.response';
@@ -26,6 +26,9 @@ export class UserResponse extends BaseResponseModel {
 
   @ApiPropertyOptional()
   location?: string;
+
+  @ApiProperty()
+  userType!: UserType;
 
   @ApiPropertyOptional()
   @Type(() => UserRoleResponse)
@@ -75,4 +78,12 @@ export class AdherentResponse extends UserResponse {
 
   @ApiPropertyOptional()
   position?: string;
+
+  @Expose()
+  @ApiProperty()
+  get isSuperAdmin(): boolean {
+    return some(this.roles, (role) =>
+      includes(role.accesses, RoleAccess.SuperAdminAccess),
+    );
+  }
 }

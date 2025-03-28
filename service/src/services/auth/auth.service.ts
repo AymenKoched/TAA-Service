@@ -12,6 +12,7 @@ import {
   SignInRequest,
   SignInResponse,
   UserResponse,
+  UserTokenType,
 } from '../../common';
 import { MailerService } from '../mailer.service';
 import { UsersService, UserTokensService } from '../users';
@@ -43,7 +44,7 @@ export class AuthService {
     const user = await this.users.findOne({ email: request.email });
 
     const token = await this.userTokens.createUserToken({
-      name: 'user forgot password',
+      type: UserTokenType.ResetPassword,
       userId: user.id,
     });
 
@@ -65,6 +66,7 @@ export class AuthService {
   async changePassword(payload: ChangePasswordRequest): Promise<void> {
     const userToken = await this.userTokens.verifyTokenValidity(
       payload.emailToken,
+      UserTokenType.ResetPassword,
     );
     await this.users.updateById(userToken.userId, {
       password: await bcrypt.hash(payload.password, SALT_ROUNDS),

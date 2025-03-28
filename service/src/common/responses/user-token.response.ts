@@ -21,5 +21,5 @@ export class UserTokenResponse extends BaseResponseModel {
   @ApiProperty({ type: () => UserResponse })
   @Transform(ModelTransformer(() => UserResponse))
   @Type(() => UserResponse)
-  user!: UserResponse;
+  user?: UserResponse;
 }

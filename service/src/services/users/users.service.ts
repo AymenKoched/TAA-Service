@@ -11,6 +11,7 @@ import {
   SendEmailRequest,
   UserRequest,
   UserResponse,
+  UserTokenType,
   UserType,
 } from '../../common';
 import { User } from '../../entities';
@@ -59,6 +60,9 @@ export class UsersService extends CrudService<User> {
       case UserType.Admin:
         user = await this.admins.create(userPayload);
         break;
+      case UserType.Adherent:
+        user = await this.adherents.create(userPayload);
+        break;
       default:
         throw new BadRequestException(
           AuthErrors.UnsupportedUserType,
@@ -74,7 +78,7 @@ export class UsersService extends CrudService<User> {
       );
     }
     const token = await this.tokens.createUserToken({
-      name: 'user activation',
+      type: UserTokenType.ActivateAccount,
       userId: user.id,
     });
 
@@ -100,7 +104,10 @@ export class UsersService extends CrudService<User> {
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async activateUser(payload: ActivateUserRequest) {
-    const userToken = await this.tokens.verifyTokenValidity(payload.emailToken);
+    const userToken = await this.tokens.verifyTokenValidity(
+      payload.emailToken,
+      UserTokenType.ActivateAccount,
+    );
     const user = await this.getById(userToken.user.id);
     await this.updateById(user.id, { isActive: true });
     await this.tokens.delete(userToken.id);

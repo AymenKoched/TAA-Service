@@ -3,6 +3,8 @@ export enum AuthErrors {
   UserRoleNotFound = 'user_role_not_found',
   UnsupportedUserType = 'unsupported_user_type',
   RoleNotFound = 'role_not_found',
+  OrganizationNotFound = 'organization_not_found',
+  OrganizationTagNotFound = 'organization_tag_not_found',
   TokenNotFound = 'token_not_found',
   WrongCredentials = 'wrong_user_credentials',
   NoTokenProvided = 'no_token_provided',

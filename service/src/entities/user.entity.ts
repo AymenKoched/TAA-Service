@@ -5,11 +5,14 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   TableInheritance,
 } from 'typeorm';
 
 import { BaseEntity, UserType } from '../common';
+import { Organization } from './organization.entity';
 import { UserRole } from './user-role.entity';
 import { UserToken } from './user-token.entity';
 
@@ -39,6 +42,11 @@ export abstract class User extends BaseEntity {
     length: 100,
   })
   password!: string;
+
+  @ApiProperty()
+  @Expose()
+  @Column({ name: 'user_type', type: 'enum', enum: UserType })
+  userType!: UserType;
 
   @ApiProperty()
   @Expose()
@@ -98,4 +106,26 @@ export class Client extends User {
 @ChildEntity(UserType.Adherent)
 export class Adherent extends User {
   keyPrefix = 'adhr_';
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    name: 'organization_id',
+  })
+  organizationId!: string;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => Organization)
+  @OneToOne(() => Organization, (organization) => organization.adherent)
+  @JoinColumn({ name: 'organization_id' })
+  organization!: Organization;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    length: 100,
+    nullable: true,
+  })
+  position?: string;
 }

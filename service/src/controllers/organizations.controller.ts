@@ -1,0 +1,43 @@
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+
+import {
+  ConvertResponse,
+  OrganizationRequest,
+  OrganizationResponse,
+  RoleAccess,
+  UpdateOrganizationRequest,
+} from '../common';
+import { HasRoleAccess } from '../guards';
+import { OrganizationsService } from '../services';
+
+@Controller({ path: 'organizations' })
+export class OrganizationsController {
+  constructor(private readonly orgs: OrganizationsService) {}
+
+  @Get(':organizationId')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async getOrganization(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationResponse> {
+    return this.orgs.getOrganization(organizationId);
+  }
+
+  @Post()
+  @ConvertResponse(OrganizationResponse)
+  public async createOrganization(
+    @Body() payload: OrganizationRequest,
+  ): Promise<OrganizationResponse> {
+    return this.orgs.createOrganization(payload);
+  }
+
+  @Put(':organizationId')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async updateOrganization(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationRequest,
+  ): Promise<OrganizationResponse> {
+    return this.orgs.updateOrganization(organizationId, payload);
+  }
+}

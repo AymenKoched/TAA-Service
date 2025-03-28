@@ -4,4 +4,5 @@ export * from './model.transformer';
 export * from './name.transformer';
 export * from './number.transformer';
 export * from './phone.transformer';
+export * from './string.transformer';
 export * from './string-array.transformer';

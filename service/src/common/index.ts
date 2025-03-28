@@ -4,6 +4,7 @@ export * from './constants';
 export * from './decorators';
 export * from './enums';
 export * from './errors';
+export * from './filters';
 export * from './interceptors';
 export * from './middlewares';
 export * from './models';

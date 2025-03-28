@@ -11,4 +11,10 @@ export class SeedController {
   public async seedSuperAdmin(): Promise<void> {
     return this.seedService.seedSuperAdmin();
   }
+
+  @Post('roles')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async seedRoles(): Promise<void> {
+    return this.seedService.seedRoles();
+  }
 }

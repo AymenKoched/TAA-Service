@@ -7,6 +7,7 @@ import {
   CrudService,
   UserTokenRequest,
   UserTokenResponse,
+  UserTokenType,
 } from '../../common';
 import { UserToken } from '../../entities';
 import { UserTokensRepository } from '../../repositories';
@@ -30,17 +31,20 @@ export class UserTokensService extends CrudService<UserToken> {
       userId: request.userId,
       token,
       expirationDate,
-      name: request.name,
+      type: request.type,
     });
   }
 
-  async verifyTokenValidity(token: string): Promise<UserTokenResponse> {
+  async verifyTokenValidity(
+    token: string,
+    type: UserTokenType,
+  ): Promise<UserTokenResponse> {
     const userToken = await this.findOne(
       { token },
       { search: { expands: ['user'] } },
     );
 
-    if (!this.isValid(userToken)) {
+    if (!this.isValid(userToken, type)) {
       throw new BadRequestException(
         AuthErrors.LinkExpired,
         'The link has expired',
@@ -52,7 +56,10 @@ export class UserTokensService extends CrudService<UserToken> {
     );
   }
 
-  private isValid(userToken: UserToken) {
+  private isValid(userToken: UserToken, type: UserTokenType): boolean {
+    if (userToken.type !== type) {
+      return false;
+    }
     const date = new Date();
     if (!userToken.expirationDate) {
       return true;

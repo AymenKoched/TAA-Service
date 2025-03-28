@@ -1,6 +1,11 @@
 import { AppService } from './app.service';
 import { AuthService } from './auth';
 import { MailerService } from './mailer.service';
+import {
+  OrganizationsService,
+  OtherLocationsTagsService,
+  RDTagsService,
+} from './organizations';
 import { RolesService, UserRolesService } from './roles';
 import { SeedService } from './seed.service';
 import {
@@ -14,6 +19,7 @@ import {
 export * from './app.service';
 export * from './auth';
 export * from './mailer.service';
+export * from './organizations';
 export * from './roles';
 export * from './seed.service';
 export * from './users';
@@ -30,4 +36,7 @@ export const services = [
   RolesService,
   MailerService,
   UserTokensService,
+  OrganizationsService,
+  RDTagsService,
+  OtherLocationsTagsService,
 ];

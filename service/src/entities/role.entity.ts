@@ -14,7 +14,7 @@ export class Role extends BaseEntity {
   @Column({
     length: 100,
   })
-  @Index({ unique: true, where: `deleted_at is null` })
+  @Index({ unique: true, where: `deleted_at is null and name <> ''` })
   name!: string;
 
   @ApiProperty()

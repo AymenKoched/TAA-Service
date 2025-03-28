@@ -8,7 +8,6 @@ import {
   CrudService,
   getRandomString,
   SALT_ROUNDS,
-  SendEmailRequest,
   UserRequest,
   UserResponse,
   UserTokenType,
@@ -82,21 +81,10 @@ export class UsersService extends CrudService<User> {
       userId: user.id,
     });
 
-    await this.mailer.sendEmail(
-      new SendEmailRequest({
-        recipients: [
-          {
-            name: user.name,
-            address: user.email,
-          },
-        ],
-        subject: 'Activate your account',
-        html: this.mailer.getActivationEmailContent(
-          user.name,
-          token.token,
-          finalPassword,
-        ),
-      }),
+    await this.mailer.sendActivationEmail(
+      new UserResponse(user),
+      token.token,
+      finalPassword,
     );
 
     return new UserResponse(user);
@@ -108,8 +96,21 @@ export class UsersService extends CrudService<User> {
       payload.emailToken,
       UserTokenType.ActivateAccount,
     );
+
     const user = await this.getById(userToken.user.id);
     await this.updateById(user.id, { isActive: true });
+
     await this.tokens.delete(userToken.id);
+  }
+
+  async resendToken(userId: string): Promise<void> {
+    const user = await this.getById(userId);
+
+    const token = await this.tokens.createUserToken({
+      type: UserTokenType.ActivateAccount,
+      userId: user.id,
+    });
+
+    await this.mailer.sendActivationEmail(new UserResponse(user), token.token);
   }
 }

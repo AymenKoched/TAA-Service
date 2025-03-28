@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Put,
 } from '@nestjs/common';
@@ -34,5 +35,12 @@ export class UsersController {
     @Body() payload: ActivateUserRequest,
   ): Promise<void> {
     return this.users.activateUser(payload);
+  }
+
+  @Post(':userId/resend-activation-token')
+  @HasRoleAccess({ accesses: RoleAccess.CreateUser })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async resendToken(@Param('userId') userId: string): Promise<void> {
+    return this.users.resendToken(userId);
   }
 }

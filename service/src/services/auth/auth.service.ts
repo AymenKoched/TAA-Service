@@ -8,7 +8,6 @@ import {
   ChangePasswordRequest,
   ForgotPasswordRequest,
   SALT_ROUNDS,
-  SendEmailRequest,
   SignInRequest,
   SignInResponse,
   UserResponse,
@@ -48,17 +47,9 @@ export class AuthService {
       userId: user.id,
     });
 
-    await this.mailer.sendEmail(
-      new SendEmailRequest({
-        recipients: [
-          {
-            name: user.name,
-            address: user.email,
-          },
-        ],
-        subject: 'Reset your password',
-        html: this.mailer.getResetPasswordEmailContent(user.name, token.token),
-      }),
+    await this.mailer.sendResetPasswordEmail(
+      new UserResponse(user),
+      token.token,
     );
   }
 

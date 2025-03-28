@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
-import { SendEmailRequest } from '../common';
+import { SendEmailRequest, UserResponse } from '../common';
 import { conf } from '../configuration';
 
 @Injectable()
@@ -35,18 +35,50 @@ export class MailerService {
     return this.transporter.sendMail(mailOptions);
   }
 
-  getActivationEmailContent(
-    userName: string,
+  async sendActivationEmail(
+    user: UserResponse,
     token: string,
-    finalPassword: string,
-  ): string {
-    const activationUrl = `${conf.front.baseUrl}/${conf.front.activateAccountUri}/${token}`;
-    return `<h1>Activate your account</h1>
-            <p>Hello ${userName}, Click <a href="${activationUrl}">here</a> to activate your account.</p>
-            <p>This is your password: <span>${finalPassword}</span>. You should change it as soon as possible.</p>`;
+    finalPassword?: string,
+  ): Promise<void> {
+    const emailRequest = new SendEmailRequest({
+      recipients: [{ name: user.name, address: user.email }],
+      subject: 'Activate your account',
+      html: this.getActivationEmailContent(user.name, token, finalPassword),
+    });
+    await this.sendEmail(emailRequest);
   }
 
-  getResetPasswordEmailContent(userName: string, token: string): string {
+  async sendResetPasswordEmail(
+    user: UserResponse,
+    token: string,
+  ): Promise<void> {
+    const emailRequest = new SendEmailRequest({
+      recipients: [{ name: user.name, address: user.email }],
+      subject: 'Reset your password',
+      html: this.getResetPasswordEmailContent(user.name, token),
+    });
+    await this.sendEmail(emailRequest);
+  }
+
+  private getActivationEmailContent(
+    userName: string,
+    token: string,
+    finalPassword?: string,
+  ): string {
+    const activationUrl = `${conf.front.baseUrl}/${conf.front.activateAccountUri}/${token}`;
+    const passwordSection = finalPassword
+      ? `<p>This is your password: <span>${finalPassword}</span>. You should change it as soon as possible.</p>`
+      : '';
+
+    return `<h1>Activate your account</h1>
+            <p>Hello ${userName}, Click <a href="${activationUrl}">here</a> to activate your account.</p>
+            ${passwordSection}`;
+  }
+
+  private getResetPasswordEmailContent(
+    userName: string,
+    token: string,
+  ): string {
     const activationUrl = `${conf.front.baseUrl}/${conf.front.resetPasswordUri}/${token}`;
     return `<h1>Reset your password</h1>
             <p>Hello ${userName}, Click <a href="${activationUrl}">here</a> to reset your password.</p>`;

@@ -57,12 +57,14 @@ export class OrganizationsService extends CrudService<Organization> {
       );
     }
 
-    await this.users.createUser({
+    const adherent = await this.users.createUser({
       name: org.email.split('@')[0],
       email: org.email,
       type: UserType.Adherent,
       organizationId: org.id,
     });
+
+    await this.updateById(org.id, { adherentId: adherent.id });
 
     return new OrganizationResponse(org);
   }

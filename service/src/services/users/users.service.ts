@@ -48,7 +48,7 @@ export class UsersService extends CrudService<User> {
       ...payload,
       password: hashedPassword,
       inscriptionDate: payload.inscriptionDate ?? new Date(),
-      isActive: false,
+      isActive: payload.type === UserType.Adherent,
     };
 
     let user: User;
@@ -76,16 +76,24 @@ export class UsersService extends CrudService<User> {
         ),
       );
     }
-    const token = await this.tokens.createUserToken({
-      type: UserTokenType.ActivateAccount,
-      userId: user.id,
-    });
 
-    await this.mailer.sendActivationEmail(
-      new UserResponse(user),
-      token.token,
-      finalPassword,
-    );
+    if (payload.type === UserType.Adherent) {
+      await this.mailer.sendAdherentEmail(
+        new UserResponse(user),
+        finalPassword,
+      );
+    } else {
+      const token = await this.tokens.createUserToken({
+        type: UserTokenType.ActivateAccount,
+        userId: user.id,
+      });
+
+      await this.mailer.sendActivationEmail(
+        new UserResponse(user),
+        token.token,
+        finalPassword,
+      );
+    }
 
     return new UserResponse(user);
   }

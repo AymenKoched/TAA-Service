@@ -60,6 +60,18 @@ export class MailerService {
     await this.sendEmail(emailRequest);
   }
 
+  async sendAdherentEmail(
+    user: UserResponse,
+    finalPassword?: string,
+  ): Promise<void> {
+    const emailRequest = new SendEmailRequest({
+      recipients: [{ name: user.name, address: user.email }],
+      subject: 'Welcome aboard',
+      html: this.getAdherentEmailContent(user.name, finalPassword),
+    });
+    await this.sendEmail(emailRequest);
+  }
+
   private getActivationEmailContent(
     userName: string,
     token: string,
@@ -82,5 +94,13 @@ export class MailerService {
     const activationUrl = `${conf.front.baseUrl}/${conf.front.resetPasswordUri}/${token}`;
     return `<h1>Reset your password</h1>
             <p>Hello ${userName}, Click <a href="${activationUrl}">here</a> to reset your password.</p>`;
+  }
+
+  private getAdherentEmailContent(
+    userName: string,
+    finalPassword: string,
+  ): string {
+    return `<h1>Welcome to TAA platform</h1>
+            <p>Hello ${userName}, This is your password: <span>${finalPassword}</span>. You should change it as soon as possible.</p>`;
   }
 }

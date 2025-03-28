@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import bcrypt from 'bcrypt';
-import { isEqual } from 'lodash';
+import { isEqual, map } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -8,63 +8,98 @@ import {
   DEFAULT_SUPER_ADMIN_PASSWORD,
   RoleAccess,
   SALT_ROUNDS,
+  UserRolesSearchFilter,
+  UserType,
 } from '../common';
-import { Admin, Role, UserRole } from '../entities';
-import {
-  AdminsRepository,
-  RolesRepository,
-  UserRolesRepository,
-} from '../repositories';
+import { UserRole } from '../entities';
+import { RolesService, UserRolesService } from './roles';
+import { AdminsService } from './users';
+
+const logger = new Logger('Seed');
 
 @Injectable()
 export class SeedService {
   constructor(
-    private readonly adminsRepository: AdminsRepository,
-    private readonly userRolesRepository: UserRolesRepository,
-    private readonly rolesRepository: RolesRepository,
+    private readonly admins: AdminsService,
+    private readonly userRoles: UserRolesService,
+    private readonly roles: RolesService,
   ) {}
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async seedSuperAdmin(): Promise<void> {
+    logger.log('super admin seed started.');
+
     const superAdminAccesses = [RoleAccess.SuperAdminAccess];
 
-    let role = await this.rolesRepository.findOne({ name: 'SuperAdmin' });
+    let role = await this.roles.findOne(
+      { name: 'super_admin' },
+      { silent: true },
+    );
 
     if (!role) {
-      role = await this.rolesRepository.repo.save(
-        new Role({ name: 'SuperAdmin', accesses: superAdminAccesses }),
-      );
+      role = await this.roles.create({
+        name: 'SuperAdmin',
+        accesses: superAdminAccesses,
+      });
     } else if (!isEqual(role.accesses, superAdminAccesses)) {
-      await this.rolesRepository.updateById(role.id, {
+      await this.roles.updateById(role.id, {
         accesses: superAdminAccesses,
       });
     }
 
-    const userRole = (await this.userRolesRepository.search(
-      {},
-      { roleId: role.id },
+    const userRoles = (await this.userRoles.search(
+      new UserRolesSearchFilter({
+        roleId: role.id,
+      }),
     )) as UserRole[];
 
-    if (!userRole || !userRole.length) {
+    if (!userRoles || !userRoles.length) {
       const password = await bcrypt.hash(
         DEFAULT_SUPER_ADMIN_PASSWORD,
         SALT_ROUNDS,
       );
-      const admin = await this.adminsRepository.repo.save(
-        new Admin({
-          email: DEFAULT_SUPER_ADMIN_EMAIL,
-          password,
-          name: 'SuperAdmin',
-          inscriptionDate: new Date(),
-        }),
-      );
+      const admin = await this.admins.create({
+        email: DEFAULT_SUPER_ADMIN_EMAIL,
+        password,
+        name: 'SuperAdmin',
+        inscriptionDate: new Date(),
+        userType: UserType.Admin,
+      });
 
-      await this.userRolesRepository.repo.save(
-        new UserRole({
-          userId: admin.id,
-          roleId: role.id,
+      await this.userRoles.create({
+        userId: admin.id,
+        roleId: role.id,
+      });
+    }
+
+    logger.log('super admin seed ended.');
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async seedRoles(): Promise<void> {
+    logger.log('roles seed started.');
+
+    const roleNames = Object.values(RoleAccess);
+
+    if (roleNames.length) {
+      await Promise.all(
+        map(roleNames, async (roleName) => {
+          const existingRole = await this.roles.findOne(
+            {
+              name: roleName as string,
+            },
+            { silent: true },
+          );
+          if (!existingRole) {
+            await this.roles.create({
+              name: roleName as string,
+              accesses: [roleName as RoleAccess],
+            });
+          }
         }),
       );
     }
+
+    logger.log('roles seed ended.');
   }
 }

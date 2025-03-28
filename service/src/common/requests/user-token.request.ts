@@ -1,15 +1,14 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 import { BaseModel } from '../base';
 import { ApiProperty } from '../decorators';
-import { NameTransformer } from '../transformers';
+import { UserTokenType } from '../enums';
 
 export class UserTokenRequest extends BaseModel {
   @ApiProperty()
   @IsNotEmpty()
-  @Transform(NameTransformer)
-  name!: string;
+  @IsEnum(UserTokenType)
+  type!: UserTokenType;
 
   @ApiProperty()
   @IsNotEmpty()

@@ -61,7 +61,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     });
 
     if (!user.isActive) {
-      throw new UnauthorizedException(AuthErrors.AccessDenied, 'Access denied');
+      throw new UnauthorizedException(
+        AuthErrors.AccessDenied,
+        'Your account is not active',
+      );
     }
 
     return new UserResponse(

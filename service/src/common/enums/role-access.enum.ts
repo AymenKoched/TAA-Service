@@ -1,5 +1,5 @@
 export enum SuperAdminRoleAccess {
-  SuperAdminAccess = 'super_admin_access',
+  SuperAdminAccess = 'super_admin',
 }
 
 export enum OrganizationAccess {

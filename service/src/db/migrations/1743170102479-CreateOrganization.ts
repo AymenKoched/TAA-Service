@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateOrganization1743125415355 implements MigrationInterface {
-  name = 'CreateOrganization1743125415355';
+export class CreateOrganization1743170102479 implements MigrationInterface {
+  name = 'CreateOrganization1743170102479';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -18,9 +18,6 @@ export class CreateOrganization1743125415355 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE TABLE "organizations" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "name" character varying(100) NOT NULL, "email" character varying(200) NOT NULL, "adherent_id" character varying, "full_name" character varying(150), "head_office" character varying(100), "tax_number" character varying(100), "website_url" character varying(150), "phone" character varying(100), "address" character varying(100), "postal_code" character varying(100), "city" character varying(100), "country" character varying(100), "founding_year" integer, "description" text, "legal_status" character varying(100), "group_affiliation" character varying(150), "linkedin_url" character varying(150), "facebook_url" character varying(150), "twitter_url" character varying(150), CONSTRAINT "REL_ac3e17894c72ff93a3875d5101" UNIQUE ("adherent_id"), CONSTRAINT "PK_6b031fcd0863e3f6b44230163f9" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_7133ef8aacf7a839bdc2119675" ON "organizations" ("name") WHERE deleted_at is null and name <> ''`,
     );
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_eb6b3d20dc836e153f08cef79a" ON "organizations" ("email") WHERE deleted_at is null and email <> ''`,
@@ -120,9 +117,6 @@ export class CreateOrganization1743125415355 implements MigrationInterface {
     );
     await queryRunner.query(
       `DROP INDEX "public"."IDX_eb6b3d20dc836e153f08cef79a"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_7133ef8aacf7a839bdc2119675"`,
     );
     await queryRunner.query(`DROP TABLE "organizations"`);
     await queryRunner.query(

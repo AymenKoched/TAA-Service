@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import bcrypt from 'bcrypt';
+import { difference, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -8,6 +9,7 @@ import {
   CrudService,
   getRandomString,
   SALT_ROUNDS,
+  UpdateUserRequest,
   UserRequest,
   UserResponse,
   UserTokenType,
@@ -41,6 +43,9 @@ export class UsersService extends CrudService<User> {
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async createUser(payload: UserRequest) {
+    await this.checkEmail(payload.email);
+    await this.checkPhone(payload.phone);
+
     const finalPassword = payload.password ?? getRandomString(8);
     const hashedPassword = await bcrypt.hash(finalPassword, SALT_ROUNDS);
 
@@ -99,6 +104,47 @@ export class UsersService extends CrudService<User> {
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
+  async updateUser(userId: string, payload: UpdateUserRequest) {
+    await this.checkPhone(payload.phone, userId);
+
+    await this.updateById(userId, omit(payload, 'roles'));
+
+    if (payload?.roles?.length) {
+      const user = await this.getById(userId, {
+        search: { expands: ['userRoles'] },
+      });
+
+      const currentRoleIds = map(user.userRoles, 'roleId');
+      const newRoleIds = payload.roles;
+
+      const rolesToRemove = difference(currentRoleIds, newRoleIds);
+      const rolesToAdd = difference(newRoleIds, currentRoleIds);
+
+      if (rolesToRemove.length) {
+        await Promise.all(
+          map(rolesToRemove, (roleId) =>
+            this.userRoles.deleteByCriteria({ userId, roleId }),
+          ),
+        );
+      }
+
+      if (rolesToAdd.length) {
+        await Promise.all(
+          map(rolesToAdd, (roleId) =>
+            this.userRoles.create({ userId, roleId }),
+          ),
+        );
+      }
+    }
+
+    const updatedUser = await this.getById(userId, {
+      search: { expands: ['userRoles.role'] },
+    });
+
+    return new UserResponse(updatedUser);
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
   async activateUser(payload: ActivateUserRequest) {
     const userToken = await this.tokens.verifyTokenValidity(
       payload.emailToken,
@@ -111,7 +157,7 @@ export class UsersService extends CrudService<User> {
     await this.tokens.delete(userToken.id);
   }
 
-  async resendToken(userId: string): Promise<void> {
+  async resendToken(userId: string) {
     const user = await this.getById(userId);
 
     const token = await this.tokens.createUserToken({
@@ -120,5 +166,29 @@ export class UsersService extends CrudService<User> {
     });
 
     await this.mailer.sendActivationEmail(new UserResponse(user), token.token);
+  }
+
+  async checkEmail(email?: string, id?: string) {
+    if (email) {
+      const response = await this.users.findOne({ email });
+      if (!!response && response.id != id) {
+        throw new BadRequestException(
+          AuthErrors.EmailAlreadyExists,
+          'The email you attempt to use is already taken',
+        );
+      }
+    }
+  }
+
+  async checkPhone(phone?: string, id?: string) {
+    if (phone) {
+      const res = await this.users.findOne({ phone });
+      if (!!res && res.id != id) {
+        throw new BadRequestException(
+          AuthErrors.PhoneAlreadyExists,
+          'The phone number you attempt to use is already taken',
+        );
+      }
+    }
   }
 }

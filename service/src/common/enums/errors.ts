@@ -5,6 +5,8 @@ export enum AuthErrors {
   RoleNotFound = 'role_not_found',
   OrganizationNotFound = 'organization_not_found',
   OrganizationTagNotFound = 'organization_tag_not_found',
+  PhoneAlreadyExists = 'phone_already_exists',
+  EmailAlreadyExists = 'email_already_exists',
   TokenNotFound = 'token_not_found',
   WrongCredentials = 'wrong_user_credentials',
   NoTokenProvided = 'no_token_provided',

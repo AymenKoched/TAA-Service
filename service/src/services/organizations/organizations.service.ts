@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
@@ -31,6 +31,9 @@ export class OrganizationsService extends CrudService<Organization> {
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async createOrganization(payload: OrganizationRequest) {
+    await this.checkEmail(payload.email);
+    await this.checkPhone(payload.phone);
+
     const org = await this.create(
       omit(payload, ['rAndDSites', 'otherLocations']),
     );
@@ -75,5 +78,29 @@ export class OrganizationsService extends CrudService<Organization> {
         search: { expands: ['rAndDSites', 'otherLocations', 'adherent'] },
       }),
     );
+  }
+
+  async checkEmail(email?: string, id?: string) {
+    if (email) {
+      const response = await this.orgs.findOne({ email });
+      if (!!response && response.id != id) {
+        throw new BadRequestException(
+          AuthErrors.EmailAlreadyExists,
+          'The email you attempt to use is already taken',
+        );
+      }
+    }
+  }
+
+  async checkPhone(phone?: string, id?: string) {
+    if (phone) {
+      const res = await this.orgs.findOne({ phone });
+      if (!!res && res.id != id) {
+        throw new BadRequestException(
+          AuthErrors.PhoneAlreadyExists,
+          'The phone number you attempt to use is already taken',
+        );
+      }
+    }
   }
 }

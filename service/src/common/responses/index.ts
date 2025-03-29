@@ -4,5 +4,6 @@ export * from './sign-in.response';
 export * from './tag.response';
 export * from './token.response';
 export * from './user.response';
+export * from './user-details.response';
 export * from './user-role.response';
 export * from './user-token.response';

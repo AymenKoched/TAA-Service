@@ -1,6 +1,10 @@
 import {
+  ActivitiesRepository,
+  OrganizationActivitiesRepository,
+  OrganizationSitesRepository,
   OrganizationsRepository,
   OtherLocationsTagsRepository,
+  ProductsRepository,
   RDTagsRepository,
 } from './organizations';
 import { RolesRepository, UserRolesRepository } from './roles';
@@ -27,4 +31,8 @@ export const repositories = [
   OrganizationsRepository,
   RDTagsRepository,
   OtherLocationsTagsRepository,
+  ProductsRepository,
+  ActivitiesRepository,
+  OrganizationActivitiesRepository,
+  OrganizationSitesRepository,
 ];

@@ -143,24 +143,20 @@ export class UsersService extends CrudService<User> {
       const currentRoleIds = map(user.userRoles, 'roleId');
       const newRoleIds = payload.roles;
 
-      const rolesToRemove = difference(currentRoleIds, newRoleIds);
-      const rolesToAdd = difference(newRoleIds, currentRoleIds);
+      const { removed: rolesToRemove, added: rolesToAdd } = this.getDifferences(
+        newRoleIds,
+        currentRoleIds,
+      );
 
-      if (rolesToRemove.length) {
-        await Promise.all(
-          map(rolesToRemove, (roleId) =>
-            this.userRoles.deleteByCriteria({ userId, roleId }),
-          ),
-        );
-      }
+      await Promise.all(
+        map(rolesToRemove, (roleId) =>
+          this.userRoles.deleteByCriteria({ userId, roleId }),
+        ),
+      );
 
-      if (rolesToAdd.length) {
-        await Promise.all(
-          map(rolesToAdd, (roleId) =>
-            this.userRoles.create({ userId, roleId }),
-          ),
-        );
-      }
+      await this.userRoles.create(
+        map(rolesToAdd, (roleId) => ({ userId, roleId })),
+      );
     }
 
     const updatedUser = await this.getById(userId, {
@@ -194,7 +190,7 @@ export class UsersService extends CrudService<User> {
     await this.mailer.sendActivationEmail(new UserResponse(user), token.token);
   }
 
-  async checkEmail(email?: string, id?: string) {
+  private async checkEmail(email?: string, id?: string) {
     if (email) {
       const response = await this.users.findOne({ email });
       if (!!response && response.id != id) {
@@ -206,7 +202,7 @@ export class UsersService extends CrudService<User> {
     }
   }
 
-  async checkPhone(phone?: string, id?: string) {
+  private async checkPhone(phone?: string, id?: string) {
     if (phone) {
       const res = await this.users.findOne({ phone });
       if (!!res && res.id != id) {
@@ -216,5 +212,13 @@ export class UsersService extends CrudService<User> {
         );
       }
     }
+  }
+
+  private getDifferences(payload: string[], values: string[]) {
+    const removed: string[] = difference(values, payload);
+
+    const added: string[] = difference(payload, values);
+
+    return { added, removed };
   }
 }

@@ -2,8 +2,12 @@ import { AppService } from './app.service';
 import { AuthService } from './auth';
 import { MailerService } from './mailer.service';
 import {
+  ActivitiesService,
+  OrganizationActivitiesService,
+  OrganizationSitesService,
   OrganizationsService,
   OtherLocationsTagsService,
+  ProductsService,
   RDTagsService,
 } from './organizations';
 import { RolesService, UserRolesService } from './roles';
@@ -39,4 +43,8 @@ export const services = [
   OrganizationsService,
   RDTagsService,
   OtherLocationsTagsService,
+  ProductsService,
+  ActivitiesService,
+  OrganizationActivitiesService,
+  OrganizationSitesService,
 ];

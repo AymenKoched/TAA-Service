@@ -1,16 +1,20 @@
+import { Activity } from './activity.entity';
 import { Organization } from './organization.entity';
-import {
-  OrganizationTag,
-  OtherLocationsTag,
-  RAndDSiteTag,
-} from './organization-tag.entity';
+import { OrganizationActivity } from './organization-activity.entity';
+import { OrganizationSite } from './organization-site.entity';
+import { OrganizationTag } from './organization-tag.entity';
+import { Product } from './product.entity';
 import { Role } from './role.entity';
 import { Adherent, Admin, Client, User } from './user.entity';
 import { UserRole } from './user-role.entity';
 import { UserToken } from './user-token.entity';
 
+export * from './activity.entity';
 export * from './organization.entity';
+export * from './organization-activity.entity';
+export * from './organization-site.entity';
 export * from './organization-tag.entity';
+export * from './product.entity';
 export * from './role.entity';
 export * from './user.entity';
 export * from './user-role.entity';
@@ -26,6 +30,8 @@ export const entities = [
   UserToken,
   Organization,
   OrganizationTag,
-  RAndDSiteTag,
-  OtherLocationsTag,
+  Product,
+  OrganizationSite,
+  Activity,
+  OrganizationActivity,
 ];

@@ -12,6 +12,7 @@ import {
   UserType,
 } from '../common';
 import { UserRole } from '../entities';
+import { ActivitiesService } from './organizations';
 import { RolesService, UserRolesService } from './roles';
 import { AdminsService } from './users';
 
@@ -23,6 +24,7 @@ export class SeedService {
     private readonly admins: AdminsService,
     private readonly userRoles: UserRolesService,
     private readonly roles: RolesService,
+    private readonly activities: ActivitiesService,
   ) {}
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -101,5 +103,33 @@ export class SeedService {
     }
 
     logger.log('roles seed ended.');
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async seedActivities(): Promise<void> {
+    logger.log('activities seed started.');
+
+    const activityNames = [
+      'Design et développement du véhicule: Electrical wiring & harness',
+      'Design et développement du véhicule: Refurbishing',
+      'Design et développement du véhicule: Plastics & Rubber',
+      'Pièces et composants',
+      'Systèmes modules',
+      'Intégration des systèmes et assemblage final',
+      'Autre',
+    ];
+
+    await Promise.all(
+      map(activityNames, async (activityName) => {
+        const activity = await this.activities.findOne(
+          { name: activityName },
+          { silent: true },
+        );
+        if (!activity) {
+          await this.activities.create({ name: activityName });
+        }
+      }),
+    );
+    logger.log('activities seed ended.');
   }
 }

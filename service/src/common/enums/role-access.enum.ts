@@ -16,6 +16,10 @@ export enum UserAccess {
   ViewUser = 'view_user',
 }
 
+export enum ActivityAccess {
+  ViewActivity = 'view_activity',
+}
+
 export enum RoleAccess {
   SuperAdminAccess = SuperAdminRoleAccess.SuperAdminAccess,
 
@@ -28,4 +32,6 @@ export enum RoleAccess {
   UpdateUser = UserAccess.UpdateUser,
   DeleteUser = UserAccess.DeleteUser,
   ViewUser = UserAccess.ViewUser,
+
+  ViewActivity = ActivityAccess.ViewActivity,
 }

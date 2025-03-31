@@ -1,20 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  ChildEntity,
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  TableInheritance,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { BaseEntity, OrganizationTagType } from '../common';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_tags' })
-@TableInheritance({ column: { type: 'varchar', name: 'type' } })
-export abstract class OrganizationTag extends BaseEntity {
+export class OrganizationTag extends BaseEntity {
   keyPrefix = 'org_tag_';
 
   @ApiProperty()
@@ -25,31 +17,22 @@ export abstract class OrganizationTag extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Column({
+    type: 'enum',
+    enum: OrganizationTagType,
+  })
+  type!: OrganizationTagType;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
     name: 'organization_id',
   })
   organizationId!: string;
-}
-
-@ChildEntity(OrganizationTagType.RAndD)
-export class RAndDSiteTag extends OrganizationTag {
-  keyPrefix = 'org_tag_';
 
   @ApiProperty()
   @Expose()
   @Type(() => Organization)
-  @ManyToOne(() => Organization, (organization) => organization.rAndDSites)
-  @JoinColumn({ name: 'organization_id' })
-  organization!: Organization;
-}
-
-@ChildEntity(OrganizationTagType.OtherLocations)
-export class OtherLocationsTag extends OrganizationTag {
-  keyPrefix = 'org_tag_';
-
-  @ApiProperty()
-  @Expose()
-  @Type(() => Organization)
-  @ManyToOne(() => Organization, (organization) => organization.otherLocations)
+  @ManyToOne(() => Organization, (organization) => organization.tags)
   @JoinColumn({ name: 'organization_id' })
   organization!: Organization;
 }

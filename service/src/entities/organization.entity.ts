@@ -12,7 +12,7 @@ import {
 import { BaseEntity } from '../common';
 import { OrganizationActivity } from './organization-activity.entity';
 import { OrganizationSite } from './organization-site.entity';
-import { OtherLocationsTag, RAndDSiteTag } from './organization-tag.entity';
+import { OrganizationTag } from './organization-tag.entity';
 import { Product } from './product.entity';
 import { Adherent } from './user.entity';
 
@@ -97,15 +97,9 @@ export class Organization extends BaseEntity {
 
   @ApiProperty()
   @Expose()
-  @Type(() => RAndDSiteTag)
-  @OneToMany(() => RAndDSiteTag, (site) => site.organization)
-  rAndDSites?: RAndDSiteTag[];
-
-  @ApiProperty()
-  @Expose()
-  @Type(() => OtherLocationsTag)
-  @OneToMany(() => OtherLocationsTag, (location) => location.organization)
-  otherLocations?: OtherLocationsTag[];
+  @Type(() => OrganizationTag)
+  @OneToMany(() => OrganizationTag, (tag) => tag.organization)
+  tags?: OrganizationTag[];
 
   @ApiProperty()
   @Expose()

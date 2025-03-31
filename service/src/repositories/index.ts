@@ -3,9 +3,8 @@ import {
   OrganizationActivitiesRepository,
   OrganizationSitesRepository,
   OrganizationsRepository,
-  OtherLocationsTagsRepository,
+  OrganizationTagsRepository,
   ProductsRepository,
-  RDTagsRepository,
 } from './organizations';
 import { RolesRepository, UserRolesRepository } from './roles';
 import {
@@ -29,8 +28,7 @@ export const repositories = [
   UserRolesRepository,
   UserTokensRepository,
   OrganizationsRepository,
-  RDTagsRepository,
-  OtherLocationsTagsRepository,
+  OrganizationTagsRepository,
   ProductsRepository,
   ActivitiesRepository,
   OrganizationActivitiesRepository,

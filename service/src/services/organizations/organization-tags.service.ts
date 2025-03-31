@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
 import { AuthErrors, CrudService } from '../../common';
-import { RAndDSiteTag } from '../../entities';
-import { RDTagsRepository } from '../../repositories';
+import { OrganizationTag } from '../../entities';
+import { OrganizationTagsRepository } from '../../repositories';
 
 @Injectable()
-export class RDTagsService extends CrudService<RAndDSiteTag> {
+export class OrganizationTagsService extends CrudService<OrganizationTag> {
   protected notFoundErrorKey = AuthErrors.OrganizationTagNotFound;
   protected notFoundErrorMessage = 'The searched organization tag is not found';
 
-  constructor(private rdTags: RDTagsRepository) {
-    super(rdTags);
+  constructor(private tags: OrganizationTagsRepository) {
+    super(tags);
   }
 }

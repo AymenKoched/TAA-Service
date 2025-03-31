@@ -6,9 +6,8 @@ import {
   OrganizationActivitiesService,
   OrganizationSitesService,
   OrganizationsService,
-  OtherLocationsTagsService,
+  OrganizationTagsService,
   ProductsService,
-  RDTagsService,
 } from './organizations';
 import { RolesService, UserRolesService } from './roles';
 import { SeedService } from './seed.service';
@@ -41,8 +40,7 @@ export const services = [
   MailerService,
   UserTokensService,
   OrganizationsService,
-  RDTagsService,
-  OtherLocationsTagsService,
+  OrganizationTagsService,
   ProductsService,
   ActivitiesService,
   OrganizationActivitiesService,

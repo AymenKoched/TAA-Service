@@ -3,7 +3,11 @@ import { filter, map } from 'lodash';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
-import { OrganizationActivityType, OrganizationSiteType } from '../enums';
+import {
+  OrganizationActivityType,
+  OrganizationSiteType,
+  OrganizationTagType,
+} from '../enums';
 import { ModelTransformer } from '../transformers';
 import { ActivityResponse } from './activity.response';
 import { OrganizationActivityResponse } from './organization-activity.response';
@@ -45,11 +49,36 @@ export class OrganizationResponse extends BaseResponseModel {
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => TagResponse))
   @Type(() => TagResponse)
+  tags?: TagResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => TagResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      TagResponse,
+      filter(
+        map(obj.tags, (tag) =>
+          tag.type === OrganizationTagType.RAndD ? tag : null,
+        ),
+      ) || [],
+    ]),
+  )
   rAndDSites?: TagResponse[];
 
   @ApiPropertyOptional()
-  @Transform(ModelTransformer(() => TagResponse))
+  @Expose()
   @Type(() => TagResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      TagResponse,
+      filter(
+        map(obj.tags, (tag) =>
+          tag.type === OrganizationTagType.OtherLocations ? tag : null,
+        ),
+      ) || [],
+    ]),
+  )
   otherLocations?: TagResponse[];
 
   @ApiPropertyOptional()

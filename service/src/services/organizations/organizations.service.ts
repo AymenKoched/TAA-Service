@@ -10,6 +10,8 @@ import {
   OrganizationResponse,
   OrganizationSiteRequest,
   OrganizationSiteType,
+  OrganizationTagType,
+  TagRequest,
   UpdateOrganizationRequest,
   UserType,
 } from '../../common';
@@ -18,9 +20,8 @@ import { OrganizationsRepository } from '../../repositories';
 import { UsersService } from '../users';
 import { OrganizationActivitiesService } from './organization-activities.service';
 import { OrganizationSitesService } from './organization-sites.service';
-import { OtherLocationsTagsService } from './other-locations.tags.service';
+import { OrganizationTagsService } from './organization-tags.service';
 import { ProductsService } from './products.service';
-import { RDTagsService } from './r&d-tags.service';
 
 @Injectable()
 export class OrganizationsService extends CrudService<Organization> {
@@ -29,9 +30,8 @@ export class OrganizationsService extends CrudService<Organization> {
 
   constructor(
     private readonly orgs: OrganizationsRepository,
-    private readonly rAndDSitesTags: RDTagsService,
-    private readonly otherLocationsTags: OtherLocationsTagsService,
     private readonly products: ProductsService,
+    private readonly tags: OrganizationTagsService,
     private readonly organizationActivities: OrganizationActivitiesService,
     private readonly organizationSites: OrganizationSitesService,
     private readonly users: UsersService,
@@ -43,8 +43,7 @@ export class OrganizationsService extends CrudService<Organization> {
     const organization = await this.getById(organizationId, {
       search: {
         expands: [
-          'rAndDSites',
-          'otherLocations',
+          'tags',
           'adherent.userRoles.role',
           'products',
           'organizationActivities.activity',
@@ -74,25 +73,27 @@ export class OrganizationsService extends CrudService<Organization> {
       ]),
     );
 
-    if (payload?.rAndDSites?.length) {
-      await Promise.all(
-        map(payload.rAndDSites, (rAndDSite) =>
-          this.rAndDSitesTags.create({
-            organizationId: org.id,
-            name: rAndDSite.name,
-          }),
-        ),
+    const createTags = async (
+      tags: TagRequest[],
+      type: OrganizationTagType,
+    ) => {
+      await this.tags.create(
+        map(tags, (tag) => ({
+          name: tag.name,
+          type,
+          organizationId: org.id,
+        })),
       );
+    };
+
+    if (payload?.rAndDSites?.length) {
+      await createTags(payload.rAndDSites, OrganizationTagType.RAndD);
     }
 
     if (payload?.otherLocations?.length) {
-      await Promise.all(
-        map(payload.otherLocations, (otherLocation) =>
-          this.otherLocationsTags.create({
-            organizationId: org.id,
-            name: otherLocation.name,
-          }),
-        ),
+      await createTags(
+        payload.otherLocations,
+        OrganizationTagType.OtherLocations,
       );
     }
 
@@ -180,13 +181,7 @@ export class OrganizationsService extends CrudService<Organization> {
 
     const organization = await this.getById(organizationId, {
       search: {
-        expands: [
-          'rAndDSites',
-          'otherLocations',
-          'products',
-          'organizationActivities',
-          'sites',
-        ],
+        expands: ['tags', 'products', 'organizationActivities', 'sites'],
       },
     });
 
@@ -204,34 +199,35 @@ export class OrganizationsService extends CrudService<Organization> {
       ]),
     );
 
-    if (payload?.rAndDSites) {
-      await Promise.all(
-        map(organization?.rAndDSites, (rAndDSite) =>
-          this.rAndDSitesTags.delete(rAndDSite.id),
+    const updateTags = async (
+      newTags: TagRequest[],
+      type: OrganizationTagType,
+    ) => {
+      const currentTagsIds = map(
+        filter(
+          organization.tags,
+          (organizationTag) => organizationTag.type === type,
         ),
+        'id',
       );
+      await this.tags.deleteByIds(currentTagsIds);
+      await this.tags.create(
+        map(newTags, (newTag) => ({
+          name: newTag.name,
+          type,
+          organizationId,
+        })),
+      );
+    };
 
-      await Promise.all([
-        map(payload.rAndDSites, (rAndDSite) =>
-          this.rAndDSitesTags.create({ name: rAndDSite.name, organizationId }),
-        ),
-      ]);
+    if (payload?.rAndDSites) {
+      await updateTags(payload.rAndDSites, OrganizationTagType.RAndD);
     }
 
     if (payload?.otherLocations) {
-      await Promise.all(
-        map(organization?.otherLocations, (location) =>
-          this.otherLocationsTags.delete(location.id),
-        ),
-      );
-
-      await Promise.all(
-        map(payload.otherLocations, (location) =>
-          this.otherLocationsTags.create({
-            name: location.name,
-            organizationId,
-          }),
-        ),
+      await updateTags(
+        payload.otherLocations,
+        OrganizationTagType.OtherLocations,
       );
     }
 

@@ -1,9 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateProductsEntities1743346604373 implements MigrationInterface {
-  name = 'CreateProductsEntities1743346604373';
+export class CreateProductsEntities1743383070577 implements MigrationInterface {
+  name = 'CreateProductsEntities1743383070577';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_84015a28b6c51d16cf75e7cfb4"`,
+    );
     await queryRunner.query(
       `CREATE TABLE "activities" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "name" character varying(100) NOT NULL, CONSTRAINT "PK_7f4004429f731ffb9c88eb486a8" PRIMARY KEY ("id"))`,
     );
@@ -32,6 +35,31 @@ export class CreateProductsEntities1743346604373 implements MigrationInterface {
       `CREATE UNIQUE INDEX "unique_product_name_organization" ON "products" ("name", "organization_id") WHERE deleted_at is null and name <> ''`,
     );
     await queryRunner.query(
+      `ALTER TABLE "organization_tags" DROP COLUMN "type"`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."organization_tags_type_enum" AS ENUM('r&d', 'other_locations')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "organization_tags" ADD "type" "public"."organization_tags_type_enum" NOT NULL`,
+    );
+    await queryRunner.query(
+      `ALTER TYPE "public"."roles_accesses_enum" RENAME TO "roles_accesses_enum_old"`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."roles_accesses_enum" AS ENUM('super_admin', 'create_org', 'update_org', 'delete_org', 'view_org', 'create_user', 'update_user', 'delete_user', 'view_user', 'view_activity')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ALTER COLUMN "accesses" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ALTER COLUMN "accesses" TYPE "public"."roles_accesses_enum"[] USING "accesses"::"text"::"public"."roles_accesses_enum"[]`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ALTER COLUMN "accesses" SET DEFAULT '{}'`,
+    );
+    await queryRunner.query(`DROP TYPE "public"."roles_accesses_enum_old"`);
+    await queryRunner.query(
       `ALTER TABLE "organization_activities" ADD CONSTRAINT "FK_a3246bd1f31de02452aa5e2561d" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -59,6 +87,29 @@ export class CreateProductsEntities1743346604373 implements MigrationInterface {
       `ALTER TABLE "organization_activities" DROP CONSTRAINT "FK_a3246bd1f31de02452aa5e2561d"`,
     );
     await queryRunner.query(
+      `CREATE TYPE "public"."roles_accesses_enum_old" AS ENUM('super_admin', 'create_org', 'update_org', 'delete_org', 'view_org', 'create_user', 'update_user', 'delete_user', 'view_user')`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ALTER COLUMN "accesses" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ALTER COLUMN "accesses" TYPE "public"."roles_accesses_enum_old"[] USING "accesses"::"text"::"public"."roles_accesses_enum_old"[]`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "roles" ALTER COLUMN "accesses" SET DEFAULT '{}'`,
+    );
+    await queryRunner.query(`DROP TYPE "public"."roles_accesses_enum"`);
+    await queryRunner.query(
+      `ALTER TYPE "public"."roles_accesses_enum_old" RENAME TO "roles_accesses_enum"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "organization_tags" DROP COLUMN "type"`,
+    );
+    await queryRunner.query(`DROP TYPE "public"."organization_tags_type_enum"`);
+    await queryRunner.query(
+      `ALTER TABLE "organization_tags" ADD "type" character varying NOT NULL`,
+    );
+    await queryRunner.query(
       `DROP INDEX "public"."unique_product_name_organization"`,
     );
     await queryRunner.query(`DROP TABLE "products"`);
@@ -77,5 +128,8 @@ export class CreateProductsEntities1743346604373 implements MigrationInterface {
       `DROP INDEX "public"."IDX_7cedae58bea000cc9a11d4541e"`,
     );
     await queryRunner.query(`DROP TABLE "activities"`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_84015a28b6c51d16cf75e7cfb4" ON "organization_tags" ("type") `,
+    );
   }
 }

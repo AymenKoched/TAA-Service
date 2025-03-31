@@ -125,7 +125,6 @@ export class SeedService {
           { name: activityName },
           { silent: true },
         );
-        console.log({ activity });
         if (!activity) {
           await this.activities.create({ name: activityName });
         }

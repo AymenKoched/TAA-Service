@@ -2,11 +2,7 @@ import { Activity } from './activity.entity';
 import { Organization } from './organization.entity';
 import { OrganizationActivity } from './organization-activity.entity';
 import { OrganizationSite } from './organization-site.entity';
-import {
-  OrganizationTag,
-  OtherLocationsTag,
-  RAndDSiteTag,
-} from './organization-tag.entity';
+import { OrganizationTag } from './organization-tag.entity';
 import { Product } from './product.entity';
 import { Role } from './role.entity';
 import { Adherent, Admin, Client, User } from './user.entity';
@@ -34,8 +30,6 @@ export const entities = [
   UserToken,
   Organization,
   OrganizationTag,
-  RAndDSiteTag,
-  OtherLocationsTag,
   Product,
   OrganizationSite,
   Activity,

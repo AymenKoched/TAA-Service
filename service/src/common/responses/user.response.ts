@@ -63,9 +63,25 @@ export class UserResponse extends BaseResponseModel {
   }
 }
 
-export class AdminResponse extends UserResponse {}
+export class AdminResponse extends UserResponse {
+  @Expose()
+  @ApiProperty()
+  get isSuperAdmin(): boolean {
+    return some(this.roles, (role) =>
+      includes(role.accesses, RoleAccess.SuperAdminAccess),
+    );
+  }
+}
 
-export class ClientResponse extends UserResponse {}
+export class ClientResponse extends UserResponse {
+  @Expose()
+  @ApiProperty()
+  get isSuperAdmin(): boolean {
+    return some(this.roles, (role) =>
+      includes(role.accesses, RoleAccess.SuperAdminAccess),
+    );
+  }
+}
 
 export class AdherentResponse extends UserResponse {
   @ApiProperty()

@@ -10,7 +10,10 @@ import {
 } from 'typeorm';
 
 import { BaseEntity } from '../common';
-import { OtherLocationsTag, RAndDSiteTag } from './organization-tag.entity';
+import { OrganizationActivity } from './organization-activity.entity';
+import { OrganizationSite } from './organization-site.entity';
+import { OrganizationTag } from './organization-tag.entity';
+import { Product } from './product.entity';
 import { Adherent } from './user.entity';
 
 @Entity({ name: 'organizations' })
@@ -94,15 +97,9 @@ export class Organization extends BaseEntity {
 
   @ApiProperty()
   @Expose()
-  @Type(() => RAndDSiteTag)
-  @OneToMany(() => RAndDSiteTag, (site) => site.organization)
-  rAndDSites?: RAndDSiteTag[];
-
-  @ApiProperty()
-  @Expose()
-  @Type(() => OtherLocationsTag)
-  @OneToMany(() => OtherLocationsTag, (location) => location.organization)
-  otherLocations?: OtherLocationsTag[];
+  @Type(() => OrganizationTag)
+  @OneToMany(() => OrganizationTag, (tag) => tag.organization)
+  tags?: OrganizationTag[];
 
   @ApiProperty()
   @Expose()
@@ -200,4 +197,25 @@ export class Organization extends BaseEntity {
     length: 150,
   })
   twitter?: string;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => Product)
+  @OneToMany(() => Product, (product) => product.organization)
+  products?: Product[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationSite)
+  @OneToMany(() => OrganizationSite, (site) => site.organization)
+  sites?: OrganizationSite[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationActivity)
+  @OneToMany(
+    () => OrganizationActivity,
+    (organizationActivity) => organizationActivity.organization,
+  )
+  organizationActivities?: OrganizationActivity[];
 }

@@ -20,7 +20,7 @@ export class OrganizationsController {
   public async getOrganization(
     @Param('organizationId') organizationId: string,
   ): Promise<OrganizationResponse> {
-    return this.orgs.getOrganization(organizationId);
+    return await this.orgs.getOrganization(organizationId);
   }
 
   @Post()

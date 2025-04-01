@@ -83,7 +83,7 @@ function loadFromDirectory<T extends AppConfig = AppConfig>(
 
   if (isEmpty(devConf)) {
     try {
-      prodConf = readFileSync(envConfigPath).toString();
+      prodConf = JSON.parse(readFileSync(envConfigPath).toString());
     } catch (e) {
       console.error(e);
       prodConf = {};

@@ -56,7 +56,6 @@ export async function createDatabase(
       'port',
       'username',
       'password',
-      'ssl',
       'logging',
     ),
     database: 'postgres',

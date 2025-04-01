@@ -10,7 +10,6 @@ build:
   image: node:18
   services:
     - name: docker:dind
-      privileged: true
   variables:
     DOCKER_TLS_CERTDIR: ""  
   script:

@@ -8,7 +8,7 @@ stages:
 
 build:
   stage: build
-  image: node:18
+  image: node:18.12-bullseye-slim
   services:
     - docker:dind
   script:

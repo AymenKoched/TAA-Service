@@ -1,0 +1,55 @@
+image: docker:stable
+
+stages:
+  - build
+  - package
+  - deploy
+
+
+build:
+  stage: build
+  image: node:18
+  services:
+    - docker:dind
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+  only:
+    - main
+
+package:
+  stage: package
+  image: docker:24.0
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - echo "$CI_JOB_TOKEN" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - export IMAGE_NAME="$CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA"
+  after_script:
+    - docker logout "$CI_REGISTRY"
+  script:
+    - docker build --pull -t "$IMAGE_NAME" -f Dockerfile .
+    - docker push $IMAGE_NAME
+  only:
+    - main
+
+
+ansible-deploy:
+  stage: deploy
+  image: alpine/ansible:2.17.0
+  before_script:
+    - chmod 600 $SSH_KEY
+    - export IMAGE_NAME="$CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA"
+    - export DEPLOY_TARGET=dev
+    - cd ansible
+  script:
+    - ansible-playbook --key-file $SSH_KEY playbook.yml
+  after_script:
+    - cd ..
+  only:
+     - main

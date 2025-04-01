@@ -1,0 +1,44 @@
+---
+- name: Login docker
+  command: docker login -u {{ lookup('env','CI_REGISTRY_USER') }} -p {{ lookup('env','CI_JOB_TOKEN') }} {{ lookup('env','CI_REGISTRY') }}
+
+- name: Debug IMAGE_NAME
+  debug:
+    msg: "{{ lookup('env', 'IMAGE_NAME') }}"
+
+- name: Debug host_name
+  debug:
+    msg: '{{ host_name }}'
+
+- name: Debug host_name
+  debug:
+    msg: '{{ project_dir }}'
+
+- name: Create data directory
+  file:
+    path: '{{ project_dir }}/data'
+    state: directory
+    owner: '{{ ansible_ssh_user }}'
+    group: '{{ ansible_ssh_user }}'
+  become: true
+
+- name: Setup docker-compose.yml
+  template:
+    dest: '{{ project_dir }}/docker-compose.yml'
+    src: docker-compose.backend.yml.j2
+    owner: '{{ ansible_ssh_user }}'
+    group: '{{ ansible_ssh_user }}'
+
+- name: Stop and remove conflicting container
+  command: docker compose -p taa-backend  down
+  args:
+    chdir: '{{ project_dir }}'
+  ignore_errors: true
+
+
+
+- name: Run taa
+  command: docker compose -p taa-backend up -d --pull always --force-recreate --remove-orphans
+  args:
+    chdir: '{{ project_dir }}'
+  notify: Log out of DockerHub

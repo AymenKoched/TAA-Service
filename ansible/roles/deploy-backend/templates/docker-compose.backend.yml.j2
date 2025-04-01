@@ -1,0 +1,44 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container2
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: my-password
+      POSTGRES_DB: service_taa
+    volumes:
+      - taa_postgres_data:/var/lib/postgresql/data
+    networks:
+      - default
+  
+
+  taa_backend:
+    image: "{{ lookup('env','IMAGE_NAME') }}"
+    container_name: "{{ project_name }}"
+    restart: always
+    environment:
+      VIRTUAL_HOST: "{{ host_name }}"
+      LETSENCRYPT_HOST: "{{ host_name }}"
+      LETSENCRYPT_EMAIL: "{{ letsencrypt_email }}"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=nginx-proxy"
+      - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.entrypoints=https"
+      - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.rule=Host(`{{ host_name }}`)"
+      - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.tls=true"
+      - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.middlewares=security-headers"
+      - "traefik.http.services.{{ project_name }}-{{project_version}}-web.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.{{ project_name }}-{{project_version}}-web.headers.customRequestHeaders.X-Forwarded-Host={{ host_name }}"
+    networks:
+      - default
+networks:
+  default:
+    external:
+      name: "{{ docker_network }}"
+volumes:
+  taa_postgres_data:
+    name: taa_postgres_data

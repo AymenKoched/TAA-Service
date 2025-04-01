@@ -1,0 +1,4 @@
+project_version: develop
+project_name: eventizer-taa-backend
+host_name: api.taa.vayetek.com
+project_dir: "/server/{{ project_name }}/{{ project_version }}"

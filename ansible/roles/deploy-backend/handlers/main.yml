@@ -1,0 +1,2 @@
+- name: Log out of DockerHub
+  command: docker logout {{ lookup('env','CI_REGISTRY') }}

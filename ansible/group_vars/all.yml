@@ -1,0 +1,13 @@
+# Ansible
+ansible_python_interpreter: "/usr/bin/python3"
+
+# Ubuntu
+host_user: ubuntu
+host_group: master
+
+# Misc
+letsencrypt_email: vayetek@gmail.com
+
+# Docker
+docker_network: nginx-proxy
+

@@ -1,0 +1,5 @@
+---
+- name: Deploy
+  hosts: "{{ lookup('env','DEPLOY_TARGET') }}"
+  roles:
+    - deploy-backend

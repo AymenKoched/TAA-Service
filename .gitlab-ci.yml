@@ -1,24 +1,8 @@
 image: docker:stable
 
 stages:
-  - build
   - package
   - deploy
-
-
-build:
-  stage: build
-  image: node:18.12-bullseye-slim
-  services:
-    - docker:dind
-  script:
-    - npm install --legacy-peer-deps
-    - npm run build
-  artifacts:
-    paths:
-      - dist/
-  only:
-    - main
 
 package:
   stage: package

@@ -5,14 +5,16 @@ stages:
   - package
   - deploy
 
-
 build:
   stage: build
   image: node:18
   services:
-    - docker:dind
+    - name: docker:dind
+      privileged: true
+  variables:
+    DOCKER_TLS_CERTDIR: ""  
   script:
-    - npm install
+    - npm install --legacy-peer-deps
     - npm run build
   artifacts:
     paths:
@@ -24,7 +26,8 @@ package:
   stage: package
   image: docker:24.0
   services:
-    - docker:dind
+    - name: docker:dind
+      privileged: true
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
@@ -34,10 +37,9 @@ package:
     - docker logout "$CI_REGISTRY"
   script:
     - docker build --pull -t "$IMAGE_NAME" -f Dockerfile .
-    - docker push $IMAGE_NAME
+    - docker push "$IMAGE_NAME"
   only:
     - main
-
 
 ansible-deploy:
   stage: deploy
@@ -52,4 +54,4 @@ ansible-deploy:
   after_script:
     - cd ..
   only:
-     - main
+    - main

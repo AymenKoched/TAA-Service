@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.tls=true"
       - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.tls.certresolver=letsencrypt"
       - "traefik.http.routers.{{ project_name }}-{{project_version}}-web.middlewares=security-headers"
-      - "traefik.http.services.{{ project_name }}-{{project_version}}-web.loadbalancer.server.port=3000"
+      - "traefik.http.services.{{ project_name }}-{{project_version}}-web.loadbalancer.server.port=7001"
       - "traefik.http.middlewares.{{ project_name }}-{{project_version}}-web.headers.customRequestHeaders.X-Forwarded-Host={{ host_name }}"
     networks:
       - default

@@ -11,12 +11,14 @@ import {
   OrganizationSiteRequest,
   OrganizationSiteType,
   OrganizationTagType,
+  RoleAccess,
   TagRequest,
   UpdateOrganizationRequest,
   UserType,
 } from '../../common';
 import { Organization } from '../../entities';
 import { OrganizationsRepository } from '../../repositories';
+import { RolesService, UserRolesService } from '../roles';
 import { UsersService } from '../users';
 import { OrganizationActivitiesService } from './organization-activities.service';
 import { OrganizationSitesService } from './organization-sites.service';
@@ -35,6 +37,8 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly organizationActivities: OrganizationActivitiesService,
     private readonly organizationSites: OrganizationSitesService,
     private readonly users: UsersService,
+    private readonly roles: RolesService,
+    private readonly userRoles: UserRolesService,
   ) {
     super(orgs);
   }
@@ -166,6 +170,44 @@ export class OrganizationsService extends CrudService<Organization> {
       type: UserType.Adherent,
       organizationId: org.id,
     });
+
+    let [viewOrgRole, updateOrgRole] = await Promise.all([
+      this.roles.findOne(
+        { name: RoleAccess.ViewOrg.toString() },
+        { silent: true },
+      ),
+      this.roles.findOne(
+        { name: RoleAccess.UpdateOrg.toString() },
+        { silent: true },
+      ),
+    ]);
+
+    if (viewOrgRole) {
+      await this.roles.updateById(viewOrgRole.id, {
+        accesses: [RoleAccess.ViewOrg],
+      });
+    } else {
+      viewOrgRole = await this.roles.create({
+        name: RoleAccess.ViewOrg.toString(),
+        accesses: [RoleAccess.ViewOrg],
+      });
+    }
+
+    if (updateOrgRole) {
+      await this.roles.updateById(updateOrgRole.id, {
+        accesses: [RoleAccess.UpdateOrg],
+      });
+    } else {
+      updateOrgRole = await this.roles.create({
+        name: RoleAccess.UpdateOrg.toString(),
+        accesses: [RoleAccess.UpdateOrg],
+      });
+    }
+
+    await this.userRoles.create([
+      { userId: adherent.id, roleId: viewOrgRole.id },
+      { userId: adherent.id, roleId: updateOrgRole.id },
+    ]);
 
     await this.updateById(org.id, { adherentId: adherent.id });
 

@@ -35,3 +35,9 @@ export enum RoleAccess {
 
   ViewActivity = ActivityAccess.ViewActivity,
 }
+
+export const AdherentAccessList = [
+  RoleAccess.ViewOrg,
+  RoleAccess.UpdateOrg,
+  RoleAccess.ViewActivity,
+];

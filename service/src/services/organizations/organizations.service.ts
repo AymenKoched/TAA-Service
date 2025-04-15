@@ -3,6 +3,8 @@ import { difference, filter, find, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
+  ADHERENT_ROLE_NAME,
+  AdherentAccessList,
   AuthErrors,
   CrudService,
   OrganizationActivityType,
@@ -11,7 +13,6 @@ import {
   OrganizationSiteRequest,
   OrganizationSiteType,
   OrganizationTagType,
-  RoleAccess,
   TagRequest,
   UpdateOrganizationRequest,
   UserType,
@@ -171,43 +172,22 @@ export class OrganizationsService extends CrudService<Organization> {
       organizationId: org.id,
     });
 
-    let [viewOrgRole, updateOrgRole] = await Promise.all([
-      this.roles.findOne(
-        { name: RoleAccess.ViewOrg.toString() },
-        { silent: true },
-      ),
-      this.roles.findOne(
-        { name: RoleAccess.UpdateOrg.toString() },
-        { silent: true },
-      ),
-    ]);
+    let adherentRole = await this.roles.findOne(
+      { name: ADHERENT_ROLE_NAME },
+      { silent: true },
+    );
 
-    if (viewOrgRole) {
-      await this.roles.updateById(viewOrgRole.id, {
-        accesses: [RoleAccess.ViewOrg],
-      });
-    } else {
-      viewOrgRole = await this.roles.create({
-        name: RoleAccess.ViewOrg.toString(),
-        accesses: [RoleAccess.ViewOrg],
+    if (!adherentRole) {
+      adherentRole = await this.roles.create({
+        name: ADHERENT_ROLE_NAME,
+        accesses: AdherentAccessList,
       });
     }
 
-    if (updateOrgRole) {
-      await this.roles.updateById(updateOrgRole.id, {
-        accesses: [RoleAccess.UpdateOrg],
-      });
-    } else {
-      updateOrgRole = await this.roles.create({
-        name: RoleAccess.UpdateOrg.toString(),
-        accesses: [RoleAccess.UpdateOrg],
-      });
-    }
-
-    await this.userRoles.create([
-      { userId: adherent.id, roleId: viewOrgRole.id },
-      { userId: adherent.id, roleId: updateOrgRole.id },
-    ]);
+    await this.userRoles.create({
+      userId: adherent.id,
+      roleId: adherentRole.id,
+    });
 
     await this.updateById(org.id, { adherentId: adherent.id });
 

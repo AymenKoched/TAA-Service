@@ -5,9 +5,9 @@ services:
     container_name: postgres_container_taa
     restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: my-password
-      POSTGRES_DB: service_taa
+      POSTGRES_USER: {{ lookup('env','POSTGRES_USER') }}
+      POSTGRES_PASSWORD: {{ lookup('env','POSTGRES_PASSWORD') }}
+      POSTGRES_DB: {{ lookup('env','POSTGRES_DB') }}
     volumes:
       - taa_postgres_data:/var/lib/postgresql/data
     networks:
@@ -42,6 +42,7 @@ services:
       VIRTUAL_HOST: "{{ host_name }}"
       LETSENCRYPT_HOST: "{{ host_name }}"
       LETSENCRYPT_EMAIL: "{{ letsencrypt_email }}"
+      
 
     labels:
       - "traefik.enable=true"

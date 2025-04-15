@@ -4,6 +4,8 @@ import { isEqual, map } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
+  ADHERENT_ROLE_NAME,
+  AdherentAccessList,
   DEFAULT_SUPER_ADMIN_EMAIL,
   DEFAULT_SUPER_ADMIN_PASSWORD,
   RoleAccess,
@@ -100,6 +102,21 @@ export class SeedService {
           }
         }),
       );
+    }
+
+    const adherentRole = await this.roles.findOne(
+      { name: ADHERENT_ROLE_NAME },
+      { silent: true },
+    );
+    if (adherentRole) {
+      await this.roles.updateById(adherentRole.id, {
+        accesses: AdherentAccessList,
+      });
+    } else {
+      await this.roles.create({
+        name: ADHERENT_ROLE_NAME,
+        accesses: AdherentAccessList,
+      });
     }
 
     logger.log('roles seed ended.');

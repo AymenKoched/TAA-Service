@@ -33,7 +33,7 @@
     "mailSenderName": "TAA application"
   },
   "front": {
-    "baseUrl": "https://taa.vayetek.com",
+    "baseUrl": "http://localhost:5173",
     "resetPasswordUri": "auth/create-new-password",
     "activateAccountUri": "auth/activate-account"
   },

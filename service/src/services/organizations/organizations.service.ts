@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { difference, filter, find, map, omit } from 'lodash';
+import { difference, filter, find, isUndefined, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -31,6 +31,17 @@ export class OrganizationsService extends CrudService<Organization> {
   protected notFoundErrorKey = AuthErrors.OrganizationNotFound;
   protected notFoundErrorMessage = 'The searched organization is not found';
 
+  private readonly payloadOmit = [
+    'rAndDSites',
+    'otherLocations',
+    'products',
+    'primaryActivities',
+    'secondaryActivities',
+    'localSites',
+    'foreignImplantationSites',
+    'foreignExportationSites',
+  ];
+
   constructor(
     private readonly orgs: OrganizationsRepository,
     private readonly products: ProductsService,
@@ -44,16 +55,10 @@ export class OrganizationsService extends CrudService<Organization> {
     super(orgs);
   }
 
-  async getOrganization(organizationId: string) {
+  async getOrganization(organizationId: string, expands?: string[]) {
     const organization = await this.getById(organizationId, {
       search: {
-        expands: [
-          'tags',
-          'adherent.userRoles.role',
-          'products',
-          'organizationActivities.activity',
-          'sites',
-        ],
+        expands: isUndefined(expands) ? [] : expands,
       },
     });
 
@@ -195,7 +200,7 @@ export class OrganizationsService extends CrudService<Organization> {
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
-  async updateOrganization(
+  async updateOrganizationGeneral(
     organizationId: string,
     payload: UpdateOrganizationRequest,
   ) {
@@ -203,23 +208,11 @@ export class OrganizationsService extends CrudService<Organization> {
 
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['tags', 'products', 'organizationActivities', 'sites'],
+        expands: ['tags'],
       },
     });
 
-    await this.updateById(
-      organizationId,
-      omit(payload, [
-        'rAndDSites',
-        'otherLocations',
-        'products',
-        'primaryActivities',
-        'secondaryActivities',
-        'localSites',
-        'foreignImplantationSites',
-        'foreignExportationSites',
-      ]),
-    );
+    await this.updateById(organizationId, omit(payload, this.payloadOmit));
 
     const updateTags = async (
       newTags: TagRequest[],
@@ -252,6 +245,27 @@ export class OrganizationsService extends CrudService<Organization> {
         OrganizationTagType.OtherLocations,
       );
     }
+
+    return this.getOrganization(organizationId, [
+      'tags',
+      'adherent.userRoles.role',
+    ]);
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationProducts(
+    organizationId: string,
+    payload: UpdateOrganizationRequest,
+  ) {
+    await this.checkPhone(payload.phone, organizationId);
+
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: ['products', 'organizationActivities', 'sites'],
+      },
+    });
+
+    await this.updateById(organizationId, omit(payload, this.payloadOmit));
 
     if (payload?.products) {
       const existingProducts = organization.products;
@@ -388,7 +402,11 @@ export class OrganizationsService extends CrudService<Organization> {
       );
     }
 
-    return this.getOrganization(organizationId);
+    return this.getOrganization(organizationId, [
+      'sites',
+      'organizationActivities.activity',
+      'products',
+    ]);
   }
 
   private async checkEmail(email?: string, id?: string) {

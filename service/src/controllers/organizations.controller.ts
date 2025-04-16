@@ -14,13 +14,29 @@ import { OrganizationsService } from '../services';
 export class OrganizationsController {
   constructor(private readonly orgs: OrganizationsService) {}
 
-  @Get(':organizationId')
+  @Get(':organizationId/general')
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationResponse)
-  public async getOrganization(
+  public async getOrganizationGeneral(
     @Param('organizationId') organizationId: string,
   ): Promise<OrganizationResponse> {
-    return await this.orgs.getOrganization(organizationId);
+    return await this.orgs.getOrganization(organizationId, [
+      'tags',
+      'adherent.userRoles.role',
+    ]);
+  }
+
+  @Get(':organizationId/products')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async getOrganizationProducts(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationResponse> {
+    return await this.orgs.getOrganization(organizationId, [
+      'sites',
+      'organizationActivities.activity',
+      'products',
+    ]);
   }
 
   @Post()
@@ -31,13 +47,23 @@ export class OrganizationsController {
     return this.orgs.createOrganization(payload);
   }
 
-  @Put(':organizationId')
+  @Put(':organizationId/general')
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationResponse)
-  public async updateOrganization(
+  public async updateOrganizationGeneral(
     @Param('organizationId') organizationId: string,
     @Body() payload: UpdateOrganizationRequest,
   ): Promise<OrganizationResponse> {
-    return this.orgs.updateOrganization(organizationId, payload);
+    return this.orgs.updateOrganizationGeneral(organizationId, payload);
+  }
+
+  @Put(':organizationId/products')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async updateOrganizationProducts(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationRequest,
+  ): Promise<OrganizationResponse> {
+    return this.orgs.updateOrganizationProducts(organizationId, payload);
   }
 }

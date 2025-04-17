@@ -15,13 +15,8 @@
     "entities": ["src/entities/**/*.ts"],
     "migrations": ["src/db/migrations/**/*.ts"],
     "migrationsRun": true,
-    "retryAttempts": 10,
-    "retryDelay": 3000,
-    "poolSize": 20,
-    "extra": {
-      "connectionTimeoutMillis": 10000,
-      "idleTimeoutMillis": 5000
-    }
+    "retryAttempts": 3,
+    "retryDelay": 3000
   },
   "jwt": {
     "publicKeyPath": "./conf/certs/dev.public_key.pem",

@@ -1,3 +1,5 @@
+export * from './age-range.enum';
+export * from './employees-kpi-type.enum';
 export * from './errors';
 export * from './organization-activity-type.enum';
 export * from './organization-site-type.enum';

@@ -48,6 +48,8 @@ export class OrganizationsController {
     return await this.orgs.getOrganization(organizationId, [
       'employeesKpis',
       'contracts',
+      'revenueKpis',
+      'ageKpis',
     ]);
   }
 

@@ -29,6 +29,7 @@ import {
 } from '../transformers';
 import { OrganizationContractRequest } from './organization-contract.request';
 import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.request';
+import { OrganizationRevenueKpiRequest } from './organization-revenue-kpi.request';
 import { OrganizationSiteRequest } from './organization-site.request';
 import { ProductRequest } from './product.request';
 import { TagRequest } from './tag.request';
@@ -356,4 +357,22 @@ export class UpdateOrganizationRequest extends BaseModel {
   @ValidateNested({ each: true })
   @IsOptional()
   contracts?: OrganizationContractRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationRevenueKpiRequest)
+  @Transform(ModelTransformer(() => OrganizationRevenueKpiRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  revenues?: OrganizationRevenueKpiRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationRevenueKpiRequest)
+  @Transform(ModelTransformer(() => OrganizationRevenueKpiRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  ageKpis?: OrganizationRevenueKpiRequest[];
 }

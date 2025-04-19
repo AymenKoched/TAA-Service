@@ -11,8 +11,10 @@ import {
 import { ModelTransformer } from '../transformers';
 import { ActivityResponse } from './activity.response';
 import { OrganizationActivityResponse } from './organization-activity.response';
+import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
 import { OrganizationContractResponse } from './organization-contract.response';
 import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
+import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
 import { ProductResponse } from './product.response';
 import { TagResponse } from './tag.response';
@@ -219,4 +221,14 @@ export class OrganizationResponse extends BaseResponseModel {
   @Type(() => OrganizationContractResponse)
   @Transform(ModelTransformer(() => OrganizationContractResponse))
   contracts?: OrganizationContractResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationRevenueKpiResponse)
+  @Transform(ModelTransformer(() => OrganizationRevenueKpiResponse))
+  revenueKpis?: OrganizationRevenueKpiResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationAgeKpiResponse)
+  @Transform(ModelTransformer(() => OrganizationAgeKpiResponse))
+  ageKpis?: OrganizationAgeKpiResponse[];
 }

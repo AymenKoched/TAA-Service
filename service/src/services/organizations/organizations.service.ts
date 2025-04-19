@@ -12,6 +12,7 @@ import {
   OrganizationEmployeeKpiRequest,
   OrganizationRequest,
   OrganizationResponse,
+  OrganizationRevenueKpiRequest,
   OrganizationSiteRequest,
   OrganizationSiteType,
   OrganizationTagType,
@@ -26,6 +27,7 @@ import { UsersService } from '../users';
 import { OrganizationActivitiesService } from './organization-activities.service';
 import { OrganizationContractsService } from './organization-contracts.service';
 import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
+import { OrganizationRevenuesKpisService } from './organization-revenues-kpis.service';
 import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
 import { ProductsService } from './products.service';
@@ -47,6 +49,8 @@ export class OrganizationsService extends CrudService<Organization> {
     'directEmployees',
     'indirectEmployees',
     'contracts',
+    'revenues',
+    'ageKpis',
   ];
 
   constructor(
@@ -60,6 +64,7 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly userRoles: UserRolesService,
     private readonly employeesKpi: OrganizationEmployeesKpisService,
     private readonly contracts: OrganizationContractsService,
+    private readonly revenues: OrganizationRevenuesKpisService,
   ) {
     super(orgs);
   }
@@ -320,9 +325,11 @@ export class OrganizationsService extends CrudService<Organization> {
   ) {
     await this.checkPhone(payload.phone, organizationId);
 
+    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['employeesKpis', 'contracts'],
+        expands: ['employeesKpis', 'contracts', 'revenueKpis', 'ageKpis'],
       },
     });
 
@@ -397,9 +404,50 @@ export class OrganizationsService extends CrudService<Organization> {
       await updateContracts(payload.contracts);
     }
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+    const updateRevenues = async (
+      newRevenues: OrganizationRevenueKpiRequest[],
+    ) => {
+      const existingRevenues = organization.revenueKpis;
 
-    return this.getOrganization(organizationId, ['employeesKpis', 'contracts']);
+      await Promise.all(
+        map(newRevenues, async (newRevenue) => {
+          const existingRevenue = find(existingRevenues, {
+            type: newRevenue.type,
+          });
+          if (existingRevenue) {
+            return this.revenues.update(existingRevenue.id, {
+              ...newRevenue,
+            });
+          } else {
+            await this.revenues.create({
+              ...newRevenue,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedRevenuesIds = map(
+        filter(
+          existingRevenues,
+          (existingRevenue) =>
+            !find(newRevenues, { type: existingRevenue.type }),
+        ),
+        'id',
+      );
+      await this.revenues.deleteByIds(deletedRevenuesIds);
+    };
+
+    if (payload?.revenues) {
+      await updateRevenues(payload.revenues);
+    }
+
+    return this.getOrganization(organizationId, [
+      'employeesKpis',
+      'contracts',
+      'revenueKpis',
+      'ageKpis',
+    ]);
   }
 
   private async checkEmail(email?: string, id?: string) {

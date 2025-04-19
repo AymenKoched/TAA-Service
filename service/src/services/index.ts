@@ -7,6 +7,7 @@ import {
   OrganizationAgesKpisService,
   OrganizationContractsService,
   OrganizationEmployeesKpisService,
+  OrganizationFormationsService,
   OrganizationRevenuesKpisService,
   OrganizationSitesService,
   OrganizationsService,
@@ -53,4 +54,5 @@ export const services = [
   OrganizationContractsService,
   OrganizationRevenuesKpisService,
   OrganizationAgesKpisService,
+  OrganizationFormationsService,
 ];

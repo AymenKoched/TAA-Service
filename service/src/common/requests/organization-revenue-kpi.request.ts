@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString, MaxLength, Validate } from 'class-validator';
 
 import { BaseModel } from '../base';
-import { ApiProperty, EmployeesTotalEquals100 } from '../decorators';
+import { ApiProperty, EmployeesTotalInferior100 } from '../decorators';
 import { NumberTransformer, StringTransformer } from '../transformers';
 
 export class OrganizationRevenueKpiRequest extends BaseModel {
@@ -23,7 +23,7 @@ export class OrganizationRevenueKpiRequest extends BaseModel {
   @Transform(NumberTransformer)
   women?: number;
 
-  @Validate(EmployeesTotalEquals100)
+  @Validate(EmployeesTotalInferior100)
   get _validateTotal() {
     return true;
   }

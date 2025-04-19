@@ -1,27 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
-import { AgeRange, BaseEntity } from '../common';
+import { BaseEntity } from '../common';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_age_kpis' })
-@Index('unique_organizationId_range', ['organizationId', 'ageRange'], {
-  unique: true,
-  where: `deleted_at is null`,
-})
 export class OrganizationAgeKpi extends BaseEntity {
   keyPrefix = 'org_age_kpi_';
 
   @ApiProperty()
   @Expose()
-  @Column({ name: 'age_range', type: 'enum', enum: AgeRange })
-  ageRange!: AgeRange;
+  @Column({ name: 'count_18_24', type: 'int', default: 0 })
+  count18_24!: number;
 
   @ApiProperty()
   @Expose()
-  @Column()
-  count!: number;
+  @Column({ name: 'count_25_30', type: 'int', default: 0 })
+  count25_30!: number;
+
+  @ApiProperty()
+  @Expose()
+  @Column({ name: 'count_31_36', type: 'int', default: 0 })
+  count31_36!: number;
+
+  @ApiProperty()
+  @Expose()
+  @Column({ name: 'count_37_plus', type: 'int', default: 0 })
+  count37Plus!: number;
 
   @ApiProperty()
   @Expose()
@@ -33,7 +39,7 @@ export class OrganizationAgeKpi extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Type(() => Organization)
-  @ManyToOne(() => Organization, (organization) => organization.ageKpis)
+  @OneToOne(() => Organization, (organization) => organization.ageKpis)
   @JoinColumn({ name: 'organization_id' })
   organization!: Organization;
 }

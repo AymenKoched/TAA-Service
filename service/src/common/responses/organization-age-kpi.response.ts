@@ -1,11 +1,16 @@
 import { BaseResponseModel } from '../base';
 import { ApiProperty } from '../decorators';
-import { AgeRange } from '../enums';
 
 export class OrganizationAgeKpiResponse extends BaseResponseModel {
   @ApiProperty()
-  ageRange!: AgeRange;
+  count18_24!: number;
 
   @ApiProperty()
-  count!: number;
+  count25_30!: number;
+
+  @ApiProperty()
+  count31_36!: number;
+
+  @ApiProperty()
+  count37Plus!: number;
 }

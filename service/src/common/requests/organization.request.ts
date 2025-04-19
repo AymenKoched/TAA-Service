@@ -27,8 +27,10 @@ import {
   StringArrayTransformer,
   StringTransformer,
 } from '../transformers';
+import { OrganizationAgeKpiRequest } from './organization-age-kpi.request';
 import { OrganizationContractRequest } from './organization-contract.request';
 import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.request';
+import { OrganizationFormationRequest } from './organization-formation.request';
 import { OrganizationRevenueKpiRequest } from './organization-revenue-kpi.request';
 import { OrganizationSiteRequest } from './organization-site.request';
 import { ProductRequest } from './product.request';
@@ -368,11 +370,18 @@ export class UpdateOrganizationRequest extends BaseModel {
   revenues?: OrganizationRevenueKpiRequest[];
 
   @ApiPropertyOptional()
-  @Type(() => OrganizationRevenueKpiRequest)
-  @Transform(ModelTransformer(() => OrganizationRevenueKpiRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
+  @Type(() => OrganizationAgeKpiRequest)
+  @Transform(ModelTransformer(() => OrganizationAgeKpiRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
   @IsOptional()
-  ageKpis?: OrganizationRevenueKpiRequest[];
+  ageKpis?: OrganizationAgeKpiRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationFormationRequest)
+  @Transform(ModelTransformer(() => OrganizationFormationRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  formationKpi?: OrganizationFormationRequest;
 }

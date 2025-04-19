@@ -245,8 +245,8 @@ export class Organization extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Type(() => OrganizationAgeKpi)
-  @OneToMany(() => OrganizationAgeKpi, (kpi) => kpi.organization)
-  ageKpis?: OrganizationAgeKpi[];
+  @OneToOne(() => OrganizationAgeKpi, (kpi) => kpi.organization)
+  ageKpis?: OrganizationAgeKpi;
 
   @ApiProperty()
   @Expose()

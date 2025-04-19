@@ -1,19 +1,13 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateHumanResourcesEntities1745068340952
+export class CreateHumanResourcesEntities1745078710758
   implements MigrationInterface
 {
-  name = 'CreateHumanResourcesEntities1745068340952';
+  name = 'CreateHumanResourcesEntities1745078710758';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TYPE "public"."organization_age_kpis_age_range_enum" AS ENUM('18-24', '25-30', '31-36', '+37')`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "organization_age_kpis" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "age_range" "public"."organization_age_kpis_age_range_enum" NOT NULL, "count" integer NOT NULL, "organization_id" character varying NOT NULL, CONSTRAINT "PK_91b044df38ca924d60d231a2ded" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "unique_organizationId_range" ON "organization_age_kpis" ("organization_id", "age_range") WHERE deleted_at is null`,
+      `CREATE TABLE "organization_age_kpis" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "count_18_24" integer NOT NULL DEFAULT '0', "count_25_30" integer NOT NULL DEFAULT '0', "count_31_36" integer NOT NULL DEFAULT '0', "count_37_plus" integer NOT NULL DEFAULT '0', "organization_id" character varying NOT NULL, CONSTRAINT "REL_58c324750f94d26660fb9c7f18" UNIQUE ("organization_id"), CONSTRAINT "PK_91b044df38ca924d60d231a2ded" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "organization_contracts" ("id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "type" character varying(150) NOT NULL, "men" integer NOT NULL, "women" integer NOT NULL, "organization_id" character varying NOT NULL, CONSTRAINT "PK_813807d5cffe628153e7cb1fc98" PRIMARY KEY ("id"))`,
@@ -88,12 +82,6 @@ export class CreateHumanResourcesEntities1745068340952
       `DROP INDEX "public"."unique_contract_organizationId_type"`,
     );
     await queryRunner.query(`DROP TABLE "organization_contracts"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."unique_organizationId_range"`,
-    );
     await queryRunner.query(`DROP TABLE "organization_age_kpis"`);
-    await queryRunner.query(
-      `DROP TYPE "public"."organization_age_kpis_age_range_enum"`,
-    );
   }
 }

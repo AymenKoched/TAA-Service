@@ -8,8 +8,10 @@ import {
   CrudService,
   EmployeesKpiType,
   OrganizationActivityType,
+  OrganizationAgeKpiRequest,
   OrganizationContractRequest,
   OrganizationEmployeeKpiRequest,
+  OrganizationFormationRequest,
   OrganizationRequest,
   OrganizationResponse,
   OrganizationRevenueKpiRequest,
@@ -25,8 +27,10 @@ import { OrganizationsRepository } from '../../repositories';
 import { RolesService, UserRolesService } from '../roles';
 import { UsersService } from '../users';
 import { OrganizationActivitiesService } from './organization-activities.service';
+import { OrganizationAgesKpisService } from './organization-ages-kpis.service';
 import { OrganizationContractsService } from './organization-contracts.service';
 import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
+import { OrganizationFormationsService } from './organization-formations.service';
 import { OrganizationRevenuesKpisService } from './organization-revenues-kpis.service';
 import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
@@ -51,6 +55,7 @@ export class OrganizationsService extends CrudService<Organization> {
     'contracts',
     'revenues',
     'ageKpis',
+    'formationKpi',
   ];
 
   constructor(
@@ -65,6 +70,8 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly employeesKpi: OrganizationEmployeesKpisService,
     private readonly contracts: OrganizationContractsService,
     private readonly revenues: OrganizationRevenuesKpisService,
+    private readonly agesKpis: OrganizationAgesKpisService,
+    private readonly formations: OrganizationFormationsService,
   ) {
     super(orgs);
   }
@@ -325,13 +332,19 @@ export class OrganizationsService extends CrudService<Organization> {
   ) {
     await this.checkPhone(payload.phone, organizationId);
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
-
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['employeesKpis', 'contracts', 'revenueKpis', 'ageKpis'],
+        expands: [
+          'employeesKpis',
+          'contracts',
+          'revenueKpis',
+          'ageKpis',
+          'formationKpi',
+        ],
       },
     });
+
+    await this.updateById(organizationId, omit(payload, this.payloadOmit));
 
     const updateEmployees = async (
       newEmployeeKpi: OrganizationEmployeeKpiRequest,
@@ -442,11 +455,50 @@ export class OrganizationsService extends CrudService<Organization> {
       await updateRevenues(payload.revenues);
     }
 
+    const updateAgesKpi = async (newAgeKpi: OrganizationAgeKpiRequest) => {
+      const existingAgesKpi = organization.ageKpis;
+      if (existingAgesKpi) {
+        await this.agesKpis.updateById(existingAgesKpi.id, {
+          ...newAgeKpi,
+        });
+      } else {
+        await this.agesKpis.create({
+          ...newAgeKpi,
+          organizationId,
+        });
+      }
+    };
+
+    if (payload?.ageKpis) {
+      await updateAgesKpi(payload.ageKpis);
+    }
+
+    const updateFormationKpi = async (
+      newFormationKpi: OrganizationFormationRequest,
+    ) => {
+      const existingFormationKpi = organization.formationKpi;
+      if (existingFormationKpi) {
+        await this.formations.updateById(existingFormationKpi.id, {
+          ...newFormationKpi,
+        });
+      } else {
+        await this.formations.create({
+          ...newFormationKpi,
+          organizationId,
+        });
+      }
+    };
+
+    if (payload?.formationKpi) {
+      await updateFormationKpi(payload.formationKpi);
+    }
+
     return this.getOrganization(organizationId, [
       'employeesKpis',
       'contracts',
       'revenueKpis',
       'ageKpis',
+      'formationKpi',
     ]);
   }
 

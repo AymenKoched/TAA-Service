@@ -3,6 +3,7 @@ export * from './organization-activities.service';
 export * from './organization-ages-kpis.service';
 export * from './organization-contracts.service';
 export * from './organization-employees-kpis.service';
+export * from './organization-formations.service';
 export * from './organization-revenues-kpis.service';
 export * from './organization-sites.service';
 export * from './organization-tags.service';

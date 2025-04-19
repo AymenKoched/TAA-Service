@@ -4,6 +4,7 @@ export * from './organization-activity.response';
 export * from './organization-age-kpi.response';
 export * from './organization-contract.response';
 export * from './organization-employee-kpi.response';
+export * from './organization-formation.response';
 export * from './organization-revenue-kpi.response';
 export * from './organization-site.response';
 export * from './product.response';

@@ -5,6 +5,7 @@ export * from './organization.request';
 export * from './organization-age-kpi.request';
 export * from './organization-contract.request';
 export * from './organization-employee-kpi.request';
+export * from './organization-formation.request';
 export * from './organization-revenue-kpi.request';
 export * from './organization-site.request';
 export * from './product.request';

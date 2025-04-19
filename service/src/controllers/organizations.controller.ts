@@ -50,6 +50,7 @@ export class OrganizationsController {
       'contracts',
       'revenueKpis',
       'ageKpis',
+      'formationKpi',
     ]);
   }
 

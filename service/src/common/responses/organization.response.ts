@@ -14,6 +14,7 @@ import { OrganizationActivityResponse } from './organization-activity.response';
 import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
 import { OrganizationContractResponse } from './organization-contract.response';
 import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
+import { OrganizationFormationResponse } from './organization-formation.response';
 import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
 import { ProductResponse } from './product.response';
@@ -230,5 +231,10 @@ export class OrganizationResponse extends BaseResponseModel {
   @ApiPropertyOptional()
   @Type(() => OrganizationAgeKpiResponse)
   @Transform(ModelTransformer(() => OrganizationAgeKpiResponse))
-  ageKpis?: OrganizationAgeKpiResponse[];
+  ageKpis?: OrganizationAgeKpiResponse;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationFormationResponse)
+  @Transform(ModelTransformer(() => OrganizationFormationResponse))
+  formationKpi?: OrganizationFormationResponse;
 }

@@ -1,19 +1,33 @@
 import { Transform } from 'class-transformer';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, Validate } from 'class-validator';
 
 import { BaseModel } from '../base';
-import { ApiProperty } from '../decorators';
-import { AgeRange } from '../enums';
+import { AgesTotal100Validator, ApiProperty } from '../decorators';
 import { NumberTransformer } from '../transformers';
 
 export class OrganizationAgeKpiRequest extends BaseModel {
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
-  @IsEnum(AgeRange, { message: 'errors:field.invalid' })
-  ageRange!: AgeRange;
+  @Transform(NumberTransformer)
+  count18_24!: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
   @Transform(NumberTransformer)
-  count!: number;
+  count25_30!: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: 'errors:field.required' })
+  @Transform(NumberTransformer)
+  count31_36!: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: 'errors:field.required' })
+  @Transform(NumberTransformer)
+  count37Plus!: number;
+
+  @Validate(AgesTotal100Validator)
+  get _validateTotal() {
+    return true;
+  }
 }

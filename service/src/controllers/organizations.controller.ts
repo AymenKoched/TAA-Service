@@ -66,4 +66,14 @@ export class OrganizationsController {
   ): Promise<OrganizationResponse> {
     return this.orgs.updateOrganizationProducts(organizationId, payload);
   }
+
+  @Put(':organizationId/human-resources')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async updateOrganizationHumanResources(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationRequest,
+  ): Promise<OrganizationResponse> {
+    return this.orgs.updateOrganizationHumanResources(organizationId, payload);
+  }
 }

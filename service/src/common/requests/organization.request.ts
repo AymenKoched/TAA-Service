@@ -79,24 +79,6 @@ export class OrganizationRequest extends BaseModel {
   phone?: string;
 
   @ApiPropertyOptional()
-  @Type(() => TagRequest)
-  @Transform(ModelTransformer(() => TagRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
-  @IsOptional()
-  rAndDSites?: TagRequest[];
-
-  @ApiPropertyOptional()
-  @Type(() => TagRequest)
-  @Transform(ModelTransformer(() => TagRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
-  @IsOptional()
-  otherLocations?: TagRequest[];
-
-  @ApiPropertyOptional()
   @IsString({ message: 'errors:field.invalid' })
   @MaxLength(100, { message: 'errors:field.max_length.100' })
   @IsOptional()
@@ -167,54 +149,6 @@ export class OrganizationRequest extends BaseModel {
   @IsUrl(undefined, { message: 'errors:url.invalid' })
   @Transform(StringTransformer)
   twitter?: string;
-
-  @ApiPropertyOptional()
-  @Type(() => ProductRequest)
-  @Transform(ModelTransformer(() => ProductRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
-  @IsOptional()
-  products?: ProductRequest[];
-
-  @ApiPropertyOptional()
-  @Type(() => StringArray)
-  @Transform(StringArrayTransformer)
-  @IsOptional()
-  primaryActivities?: string[];
-
-  @ApiPropertyOptional()
-  @Type(() => StringArray)
-  @Transform(StringArrayTransformer)
-  @IsOptional()
-  secondaryActivities?: string[];
-
-  @ApiPropertyOptional()
-  @Type(() => OrganizationSiteRequest)
-  @Transform(ModelTransformer(() => OrganizationSiteRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
-  @IsOptional()
-  localSites?: OrganizationSiteRequest[];
-
-  @ApiPropertyOptional()
-  @Type(() => OrganizationSiteRequest)
-  @Transform(ModelTransformer(() => OrganizationSiteRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
-  @IsOptional()
-  foreignImplantationSites?: OrganizationSiteRequest[];
-
-  @ApiPropertyOptional()
-  @Type(() => OrganizationSiteRequest)
-  @Transform(ModelTransformer(() => OrganizationSiteRequest))
-  @IsArray({ message: 'errors:field.invalid' })
-  @IsObject({ each: true })
-  @ValidateNested({ each: true })
-  @IsOptional()
-  foreignExportationSites?: OrganizationSiteRequest[];
 }
 
 export class UpdateOrganizationRequest extends BaseModel {

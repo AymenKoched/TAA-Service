@@ -4,7 +4,6 @@ import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
   ADHERENT_ROLE_NAME,
-  AdherentAccessList,
   AuthErrors,
   CrudService,
   OrganizationActivityType,
@@ -70,105 +69,7 @@ export class OrganizationsService extends CrudService<Organization> {
     await this.checkEmail(payload.email);
     await this.checkPhone(payload.phone);
 
-    const org = await this.create(
-      omit(payload, [
-        'rAndDSites',
-        'otherLocations',
-        'products',
-        'primaryActivities',
-        'secondaryActivities',
-        'localSites',
-        'foreignImplantationSites',
-        'foreignExportationSites',
-      ]),
-    );
-
-    const createTags = async (
-      tags: TagRequest[],
-      type: OrganizationTagType,
-    ) => {
-      await this.tags.create(
-        map(tags, (tag) => ({
-          name: tag.name,
-          type,
-          organizationId: org.id,
-        })),
-      );
-    };
-
-    if (payload?.rAndDSites?.length) {
-      await createTags(payload.rAndDSites, OrganizationTagType.RAndD);
-    }
-
-    if (payload?.otherLocations?.length) {
-      await createTags(
-        payload.otherLocations,
-        OrganizationTagType.OtherLocations,
-      );
-    }
-
-    if (payload?.products?.length) {
-      await this.products.create(
-        map(payload.products, (product) => ({
-          ...product,
-          organizationId: org.id,
-        })),
-      );
-    }
-
-    const createActivities = async (
-      activitiesIds: string[],
-      type: OrganizationActivityType,
-    ) => {
-      await this.organizationActivities.create(
-        map(activitiesIds, (activityId) => ({
-          activityId,
-          organizationId: org.id,
-          type,
-        })),
-      );
-    };
-
-    if (payload?.primaryActivities?.length) {
-      await createActivities(
-        payload.primaryActivities,
-        OrganizationActivityType.Primary,
-      );
-    }
-
-    if (payload?.secondaryActivities?.length) {
-      await createActivities(
-        payload.secondaryActivities,
-        OrganizationActivityType.Secondary,
-      );
-    }
-
-    const createSites = async (
-      sites: OrganizationSiteRequest[],
-      type: OrganizationSiteType,
-    ) => {
-      await this.organizationSites.create(
-        map(sites, (site) => ({ ...site, organizationId: org.id, type })),
-      );
-    };
-
-    if (payload?.localSites?.length) {
-      await createSites(payload.localSites, OrganizationSiteType.LocalSite);
-    }
-
-    if (payload?.foreignImplantationSites?.length) {
-      await createSites(
-        payload.foreignImplantationSites,
-        OrganizationSiteType.ForeignImplantationSite,
-      );
-    }
-
-    if (payload?.foreignExportationSites?.length) {
-      await createSites(
-        payload.foreignExportationSites,
-        OrganizationSiteType.ForeignExportationSite,
-      );
-    }
+    const org = await this.create(payload);
 
     const adherent = await this.users.createUser({
       name: org.email.split('@')[0],
@@ -177,17 +78,10 @@ export class OrganizationsService extends CrudService<Organization> {
       organizationId: org.id,
     });
 
-    let adherentRole = await this.roles.findOne(
+    const adherentRole = await this.roles.findOne(
       { name: ADHERENT_ROLE_NAME },
       { silent: true },
     );
-
-    if (!adherentRole) {
-      adherentRole = await this.roles.create({
-        name: ADHERENT_ROLE_NAME,
-        accesses: AdherentAccessList,
-      });
-    }
 
     await this.userRoles.create({
       userId: adherent.id,
@@ -407,6 +301,14 @@ export class OrganizationsService extends CrudService<Organization> {
       'organizationActivities.activity',
       'products',
     ]);
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationHumanResources(
+    organizationId: string,
+    payload: UpdateOrganizationRequest,
+  ) {
+    await this.checkPhone(payload.phone, organizationId);
   }
 
   private async checkEmail(email?: string, id?: string) {

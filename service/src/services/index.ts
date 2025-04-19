@@ -4,6 +4,7 @@ import { MailerService } from './mailer.service';
 import {
   ActivitiesService,
   OrganizationActivitiesService,
+  OrganizationEmployeeKpiService,
   OrganizationSitesService,
   OrganizationsService,
   OrganizationTagsService,
@@ -45,4 +46,5 @@ export const services = [
   ActivitiesService,
   OrganizationActivitiesService,
   OrganizationSitesService,
+  OrganizationEmployeeKpiService,
 ];

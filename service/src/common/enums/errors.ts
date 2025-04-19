@@ -10,6 +10,7 @@ export enum AuthErrors {
   ProductNotFound = 'product_not_found',
   ActivityNotFound = 'activity_not_found',
   OrganizationActivityNotFound = 'organization_activity_not_found',
+  OrganizationKpiNotFound = 'organization_kpi_not_found',
   OrganizationSiteNotFound = 'organization_site_not_found',
   TokenNotFound = 'token_not_found',
   WrongCredentials = 'wrong_user_credentials',

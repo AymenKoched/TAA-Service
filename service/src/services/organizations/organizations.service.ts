@@ -63,23 +63,6 @@ export class OrganizationsService extends CrudService<Organization> {
     'formationKpi',
   ];
 
-  private readonly payloadOmit = [
-    'rAndDSites',
-    'otherLocations',
-    'products',
-    'primaryActivities',
-    'secondaryActivities',
-    'localSites',
-    'foreignImplantationSites',
-    'foreignExportationSites',
-    'directEmployees',
-    'indirectEmployees',
-    'contracts',
-    'revenues',
-    'ageKpis',
-    'formationKpi',
-  ];
-
   constructor(
     private readonly orgs: OrganizationsRepository,
     private readonly products: ProductsService,
@@ -133,7 +116,24 @@ export class OrganizationsService extends CrudService<Organization> {
     await this.checkEmail(payload.email);
     await this.checkPhone(payload.phone);
 
-    const org = await this.create(payload);
+    const org = await this.create(omit(payload, 'rAndDSites'));
+
+    const createTags = async (
+      tags: TagRequest[],
+      type: OrganizationTagType,
+    ) => {
+      await this.tags.create(
+        map(tags, (tag) => ({
+          name: tag.name,
+          type,
+          organizationId: org.id,
+        })),
+      );
+    };
+
+    if (payload?.rAndDSites?.length) {
+      await createTags(payload.rAndDSites, OrganizationTagType.RAndD);
+    }
 
     const adherent = await this.users.createUser({
       name: org.email.split('@')[0],
@@ -170,7 +170,10 @@ export class OrganizationsService extends CrudService<Organization> {
       },
     });
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+    await this.updateById(
+      organizationId,
+      omit(payload, ['rAndDSites', 'otherLocations']),
+    );
 
     const updateTags = async (
       newTags: TagRequest[],
@@ -218,7 +221,17 @@ export class OrganizationsService extends CrudService<Organization> {
       },
     });
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+    await this.updateById(
+      organizationId,
+      omit(payload, [
+        'products',
+        'primaryActivities',
+        'secondaryActivities',
+        'localSites',
+        'foreignImplantationSites',
+        'foreignExportationSites',
+      ]),
+    );
 
     if (payload?.products) {
       const existingProducts = organization.products;
@@ -369,7 +382,17 @@ export class OrganizationsService extends CrudService<Organization> {
       },
     });
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+    await this.updateById(
+      organizationId,
+      omit(payload, [
+        'directEmployees',
+        'indirectEmployees',
+        'contracts',
+        'revenues',
+        'ageKpis',
+        'formationKpi',
+      ]),
+    );
 
     const updateEmployees = async (
       newEmployeeKpi: OrganizationEmployeeKpiRequest,
@@ -483,9 +506,7 @@ export class OrganizationsService extends CrudService<Organization> {
     const updateAgesKpi = async (newAgeKpi: OrganizationAgeKpiRequest) => {
       const existingAgesKpi = organization.ageKpis;
       if (existingAgesKpi) {
-        await this.agesKpis.updateById(existingAgesKpi.id, {
-          ...newAgeKpi,
-        });
+        await this.agesKpis.updateById(existingAgesKpi.id, newAgeKpi);
       } else {
         await this.agesKpis.create({
           ...newAgeKpi,
@@ -494,18 +515,17 @@ export class OrganizationsService extends CrudService<Organization> {
       }
     };
 
-    if (payload?.ageKpis) {
-      await updateAgesKpi(payload.ageKpis);
-    }
+    await updateAgesKpi(payload.ageKpis);
 
     const updateFormationKpi = async (
       newFormationKpi: OrganizationFormationRequest,
     ) => {
       const existingFormationKpi = organization.formationKpi;
       if (existingFormationKpi) {
-        await this.formations.updateById(existingFormationKpi.id, {
-          ...newFormationKpi,
-        });
+        await this.formations.updateById(
+          existingFormationKpi.id,
+          newFormationKpi,
+        );
       } else {
         await this.formations.create({
           ...newFormationKpi,
@@ -514,9 +534,7 @@ export class OrganizationsService extends CrudService<Organization> {
       }
     };
 
-    if (payload?.formationKpi) {
-      await updateFormationKpi(payload.formationKpi);
-    }
+    await updateFormationKpi(payload.formationKpi);
 
     return this.getOrganizationHumanResourcesById(organizationId);
   }

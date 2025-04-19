@@ -8,7 +8,9 @@ import {
   OrganizationRequest,
   OrganizationResponse,
   RoleAccess,
-  UpdateOrganizationRequest,
+  UpdateOrganizationGeneralRequest,
+  UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationProductsRequest,
 } from '../common';
 import { HasRoleAccess } from '../guards';
 import { OrganizationsService } from '../services';
@@ -57,7 +59,7 @@ export class OrganizationsController {
   @ConvertResponse(OrganizationGeneralResponse)
   public async updateOrganizationGeneral(
     @Param('organizationId') organizationId: string,
-    @Body() payload: UpdateOrganizationRequest,
+    @Body() payload: UpdateOrganizationGeneralRequest,
   ): Promise<OrganizationGeneralResponse> {
     return this.orgs.updateOrganizationGeneral(organizationId, payload);
   }
@@ -67,7 +69,7 @@ export class OrganizationsController {
   @ConvertResponse(OrganizationProductsResponse)
   public async updateOrganizationProducts(
     @Param('organizationId') organizationId: string,
-    @Body() payload: UpdateOrganizationRequest,
+    @Body() payload: UpdateOrganizationProductsRequest,
   ): Promise<OrganizationProductsResponse> {
     return this.orgs.updateOrganizationProducts(organizationId, payload);
   }
@@ -77,7 +79,7 @@ export class OrganizationsController {
   @ConvertResponse(OrganizationHumanResourcesResponse)
   public async updateOrganizationHumanResources(
     @Param('organizationId') organizationId: string,
-    @Body() payload: UpdateOrganizationRequest,
+    @Body() payload: UpdateOrganizationHumanResourcesRequest,
   ): Promise<OrganizationHumanResourcesResponse> {
     return this.orgs.updateOrganizationHumanResources(organizationId, payload);
   }

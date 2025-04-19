@@ -4,6 +4,6 @@ import { BaseRepository } from '../../common';
 import { OrganizationEmployeeKpi } from '../../entities';
 
 @Injectable()
-export class OrganizationEmployeeKpiRepository extends BaseRepository<OrganizationEmployeeKpi> {
+export class OrganizationEmployeesKpisRepository extends BaseRepository<OrganizationEmployeeKpi> {
   entityType = OrganizationEmployeeKpi;
 }

@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity, EmployeesKpiType, UserType } from '../common';
+import { BaseEntity, EmployeesKpiType } from '../common';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_employees_kpis' })
-@Index('unique_organizationId_type', ['organizationId', 'type'], {
+@Index('unique_emp_kpi_organizationId_type', ['organizationId', 'type'], {
   unique: true,
   where: `deleted_at is null`,
 })
@@ -15,7 +15,7 @@ export class OrganizationEmployeeKpi extends BaseEntity {
 
   @ApiProperty()
   @Expose()
-  @Column({ type: 'enum', enum: UserType })
+  @Column({ type: 'enum', enum: EmployeesKpiType })
   type!: EmployeesKpiType;
 
   @ApiProperty()

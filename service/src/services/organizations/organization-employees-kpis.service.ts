@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 
 import { AuthErrors, CrudService } from '../../common';
 import { OrganizationEmployeeKpi } from '../../entities';
-import { OrganizationEmployeeKpiRepository } from '../../repositories';
+import { OrganizationEmployeesKpisRepository } from '../../repositories';
 
 @Injectable()
-export class OrganizationEmployeeKpiService extends CrudService<OrganizationEmployeeKpi> {
+export class OrganizationEmployeesKpisService extends CrudService<OrganizationEmployeeKpi> {
   protected notFoundErrorKey = AuthErrors.OrganizationKpiNotFound;
   protected notFoundErrorMessage = 'The searched organization kpi is not found';
 
   constructor(
-    private readonly organizationEmployeeKpis: OrganizationEmployeeKpiRepository,
+    private readonly organizationEmployeesKpis: OrganizationEmployeesKpisRepository,
   ) {
-    super(organizationEmployeeKpis);
+    super(organizationEmployeesKpis);
   }
 }

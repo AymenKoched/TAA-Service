@@ -6,7 +6,10 @@ import {
   ADHERENT_ROLE_NAME,
   AuthErrors,
   CrudService,
+  EmployeesKpiType,
   OrganizationActivityType,
+  OrganizationContractRequest,
+  OrganizationEmployeeKpiRequest,
   OrganizationRequest,
   OrganizationResponse,
   OrganizationSiteRequest,
@@ -21,6 +24,8 @@ import { OrganizationsRepository } from '../../repositories';
 import { RolesService, UserRolesService } from '../roles';
 import { UsersService } from '../users';
 import { OrganizationActivitiesService } from './organization-activities.service';
+import { OrganizationContractsService } from './organization-contracts.service';
+import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
 import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
 import { ProductsService } from './products.service';
@@ -39,6 +44,9 @@ export class OrganizationsService extends CrudService<Organization> {
     'localSites',
     'foreignImplantationSites',
     'foreignExportationSites',
+    'directEmployees',
+    'indirectEmployees',
+    'contracts',
   ];
 
   constructor(
@@ -50,6 +58,8 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly users: UsersService,
     private readonly roles: RolesService,
     private readonly userRoles: UserRolesService,
+    private readonly employeesKpi: OrganizationEmployeesKpisService,
+    private readonly contracts: OrganizationContractsService,
   ) {
     super(orgs);
   }
@@ -209,7 +219,7 @@ export class OrganizationsService extends CrudService<Organization> {
         this.getDifferences(newActivitiesIds, currentActivitiesIds);
 
       await Promise.all(
-        map(activitiesToRemove, (activityId) =>
+        map(activitiesToRemove, (activityId: string) =>
           this.organizationActivities.deleteByCriteria({
             activityId,
             organizationId,
@@ -309,6 +319,87 @@ export class OrganizationsService extends CrudService<Organization> {
     payload: UpdateOrganizationRequest,
   ) {
     await this.checkPhone(payload.phone, organizationId);
+
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: ['employeesKpis', 'contracts'],
+      },
+    });
+
+    const updateEmployees = async (
+      newEmployeeKpi: OrganizationEmployeeKpiRequest,
+      employeesKpiType: EmployeesKpiType,
+    ) => {
+      const existingEmployeeKpi = find(organization.employeesKpis, {
+        type: employeesKpiType,
+      });
+      if (!!existingEmployeeKpi) {
+        await this.employeesKpi.update(existingEmployeeKpi.id, {
+          men: newEmployeeKpi.men,
+          women: newEmployeeKpi.women,
+        });
+      } else {
+        await this.employeesKpi.create({
+          men: newEmployeeKpi.men,
+          women: newEmployeeKpi.women,
+          organizationId,
+          type: employeesKpiType,
+        });
+      }
+    };
+
+    if (payload?.directEmployees) {
+      await updateEmployees(payload.directEmployees, EmployeesKpiType.Direct);
+    }
+
+    if (payload?.indirectEmployees) {
+      await updateEmployees(
+        payload.indirectEmployees,
+        EmployeesKpiType.Indirect,
+      );
+    }
+
+    const updateContracts = async (
+      newContracts: OrganizationContractRequest[],
+    ) => {
+      const existingContracts = organization.contracts;
+
+      await Promise.all(
+        map(newContracts, async (newContract) => {
+          const existingContract = find(existingContracts, {
+            type: newContract.type,
+          });
+          if (existingContract) {
+            return this.contracts.update(existingContract.id, {
+              ...newContract,
+            });
+          } else {
+            await this.contracts.create({
+              ...newContract,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedContractsIds = map(
+        filter(
+          existingContracts,
+          (existingContract) =>
+            !find(newContracts, { type: existingContract.type }),
+        ),
+        'id',
+      );
+      await this.contracts.deleteByIds(deletedContractsIds);
+    };
+
+    if (payload?.contracts) {
+      await updateContracts(payload.contracts);
+    }
+
+    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+
+    return this.getOrganization(organizationId, ['employeesKpis', 'contracts']);
   }
 
   private async checkEmail(email?: string, id?: string) {

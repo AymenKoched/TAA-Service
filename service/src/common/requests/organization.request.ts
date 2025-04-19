@@ -27,6 +27,8 @@ import {
   StringArrayTransformer,
   StringTransformer,
 } from '../transformers';
+import { OrganizationContractRequest } from './organization-contract.request';
+import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.request';
 import { OrganizationSiteRequest } from './organization-site.request';
 import { ProductRequest } from './product.request';
 import { TagRequest } from './tag.request';
@@ -329,4 +331,29 @@ export class UpdateOrganizationRequest extends BaseModel {
   @ValidateNested({ each: true })
   @IsOptional()
   foreignExportationSites?: OrganizationSiteRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationEmployeeKpiRequest)
+  @Transform(ModelTransformer(() => OrganizationEmployeeKpiRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  directEmployees?: OrganizationEmployeeKpiRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationEmployeeKpiRequest)
+  @Transform(ModelTransformer(() => OrganizationEmployeeKpiRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  indirectEmployees?: OrganizationEmployeeKpiRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationContractRequest)
+  @Transform(ModelTransformer(() => OrganizationContractRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  contracts?: OrganizationContractRequest[];
 }

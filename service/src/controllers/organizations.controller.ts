@@ -39,6 +39,18 @@ export class OrganizationsController {
     ]);
   }
 
+  @Get(':organizationId/human-resources')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async getOrganizationHumanResources(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationResponse> {
+    return await this.orgs.getOrganization(organizationId, [
+      'employeesKpis',
+      'contracts',
+    ]);
+  }
+
   @Post()
   @ConvertResponse(OrganizationResponse)
   public async createOrganization(

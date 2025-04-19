@@ -6,7 +6,7 @@ import { BaseEntity } from '../common';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_contracts' })
-@Index('unique_organizationId_type', ['organizationId', 'type'], {
+@Index('unique_contract_organizationId_type', ['organizationId', 'type'], {
   unique: true,
   where: `deleted_at is null`,
 })

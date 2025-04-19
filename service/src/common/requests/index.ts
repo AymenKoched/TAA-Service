@@ -2,6 +2,8 @@ export * from './activate-user.request';
 export * from './change-password.request';
 export * from './forgot-password.request';
 export * from './organization.request';
+export * from './organization-contract.request';
+export * from './organization-employee-kpi.request';
 export * from './organization-site.request';
 export * from './product.request';
 export * from './send-email.request';

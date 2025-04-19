@@ -8,13 +8,12 @@ import {
 import {
   AuthErrors,
   ConvertResponse,
-  OrganizationResponse,
   UserDetailsResponse,
   UserResponse,
   UserType,
 } from '../common';
 import { CurrentUser } from '../decorators';
-import { Adherent, Admin, Client } from '../entities';
+import { Adherent, Admin, Client, Organization } from '../entities';
 import { JwtAuthGuard } from '../guards';
 import {
   AdherentsService,
@@ -43,7 +42,7 @@ export class UserDetailsController {
     let client: Client;
     let adherent: Adherent;
     let admin: Admin;
-    let organization: OrganizationResponse;
+    let organization: Organization;
 
     switch (user.userType) {
       case UserType.Client:

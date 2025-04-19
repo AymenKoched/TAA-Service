@@ -37,12 +37,6 @@ export class OrganizationResponse extends BaseResponseModel {
   adherent?: AdherentResponse;
 
   @ApiPropertyOptional()
-  fullName?: string;
-
-  @ApiPropertyOptional()
-  headOffice?: string;
-
-  @ApiPropertyOptional()
   taxNumber?: string;
 
   @ApiPropertyOptional()
@@ -51,6 +45,41 @@ export class OrganizationResponse extends BaseResponseModel {
   @ApiPropertyOptional()
   phone?: string;
 
+  @ApiPropertyOptional()
+  address?: string;
+
+  @ApiPropertyOptional()
+  postalCode?: string;
+
+  @ApiPropertyOptional()
+  city?: string;
+
+  @ApiPropertyOptional()
+  country?: string;
+
+  @ApiPropertyOptional()
+  foundingYear?: number;
+
+  @ApiPropertyOptional()
+  description?: string;
+
+  @ApiPropertyOptional()
+  legalStatus?: string;
+
+  @ApiPropertyOptional()
+  groupAffiliation?: string;
+
+  @ApiPropertyOptional()
+  linkedin?: string;
+
+  @ApiPropertyOptional()
+  facebook?: string;
+
+  @ApiPropertyOptional()
+  twitter?: string;
+}
+
+export class OrganizationGeneralResponse extends OrganizationResponse {
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => TagResponse))
   @Type(() => TagResponse)
@@ -85,40 +114,9 @@ export class OrganizationResponse extends BaseResponseModel {
     ]),
   )
   otherLocations?: TagResponse[];
+}
 
-  @ApiPropertyOptional()
-  address?: string;
-
-  @ApiPropertyOptional()
-  postalCode?: string;
-
-  @ApiPropertyOptional()
-  city?: string;
-
-  @ApiPropertyOptional()
-  country?: string;
-
-  @ApiPropertyOptional()
-  foundingYear?: number;
-
-  @ApiPropertyOptional()
-  description?: string;
-
-  @ApiPropertyOptional()
-  legalStatus?: string;
-
-  @ApiPropertyOptional()
-  groupAffiliation?: string;
-
-  @ApiPropertyOptional()
-  linkedin?: string;
-
-  @ApiPropertyOptional()
-  facebook?: string;
-
-  @ApiPropertyOptional()
-  twitter?: string;
-
+export class OrganizationProductsResponse extends OrganizationResponse {
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => ProductResponse))
   @Type(() => ProductResponse)
@@ -212,7 +210,9 @@ export class OrganizationResponse extends BaseResponseModel {
     ]),
   )
   foreignExportationSites?: OrganizationSiteResponse[];
+}
 
+export class OrganizationHumanResourcesResponse extends OrganizationResponse {
   @ApiPropertyOptional()
   @Type(() => OrganizationEmployeeKpiResponse)
   @Transform(ModelTransformer(() => OrganizationEmployeeKpiResponse))

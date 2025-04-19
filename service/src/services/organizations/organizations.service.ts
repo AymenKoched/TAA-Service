@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { difference, filter, find, isUndefined, map, omit } from 'lodash';
+import { difference, filter, find, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -12,6 +12,9 @@ import {
   OrganizationContractRequest,
   OrganizationEmployeeKpiRequest,
   OrganizationFormationRequest,
+  OrganizationGeneralResponse,
+  OrganizationHumanResourcesResponse,
+  OrganizationProductsResponse,
   OrganizationRequest,
   OrganizationResponse,
   OrganizationRevenueKpiRequest,
@@ -19,7 +22,9 @@ import {
   OrganizationSiteType,
   OrganizationTagType,
   TagRequest,
-  UpdateOrganizationRequest,
+  UpdateOrganizationGeneralRequest,
+  UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationProductsRequest,
   UserType,
 } from '../../common';
 import { Organization } from '../../entities';
@@ -40,6 +45,23 @@ import { ProductsService } from './products.service';
 export class OrganizationsService extends CrudService<Organization> {
   protected notFoundErrorKey = AuthErrors.OrganizationNotFound;
   protected notFoundErrorMessage = 'The searched organization is not found';
+
+  private readonly expandsGeneral: string[] = [
+    'tags',
+    'adherent.userRoles.role',
+  ];
+  private readonly expandsProducts: string[] = [
+    'sites',
+    'organizationActivities.activity',
+    'products',
+  ];
+  private readonly expandsHumanResources: string[] = [
+    'employeesKpis',
+    'contracts',
+    'revenueKpis',
+    'ageKpis',
+    'formationKpi',
+  ];
 
   private readonly payloadOmit = [
     'rAndDSites',
@@ -77,13 +99,33 @@ export class OrganizationsService extends CrudService<Organization> {
   }
 
   async getOrganization(organizationId: string, expands?: string[]) {
-    const organization = await this.getById(organizationId, {
-      search: {
-        expands: isUndefined(expands) ? [] : expands,
-      },
+    return this.getById(organizationId, {
+      search: { expands: expands || [] },
     });
+  }
 
-    return new OrganizationResponse(organization);
+  async getOrganizationGeneralById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsGeneral,
+    );
+    return new OrganizationGeneralResponse(organization);
+  }
+
+  async getOrganizationProductsById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsProducts,
+    );
+    return new OrganizationProductsResponse(organization);
+  }
+
+  async getOrganizationHumanResourcesById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsHumanResources,
+    );
+    return new OrganizationHumanResourcesResponse(organization);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -118,13 +160,13 @@ export class OrganizationsService extends CrudService<Organization> {
   @Transactional({ propagation: Propagation.REQUIRED })
   async updateOrganizationGeneral(
     organizationId: string,
-    payload: UpdateOrganizationRequest,
+    payload: UpdateOrganizationGeneralRequest,
   ) {
     await this.checkPhone(payload.phone, organizationId);
 
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['tags'],
+        expands: this.expandsGeneral,
       },
     });
 
@@ -162,22 +204,17 @@ export class OrganizationsService extends CrudService<Organization> {
       );
     }
 
-    return this.getOrganization(organizationId, [
-      'tags',
-      'adherent.userRoles.role',
-    ]);
+    return this.getOrganizationGeneralById(organizationId);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async updateOrganizationProducts(
     organizationId: string,
-    payload: UpdateOrganizationRequest,
+    payload: UpdateOrganizationProductsRequest,
   ) {
-    await this.checkPhone(payload.phone, organizationId);
-
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['products', 'organizationActivities', 'sites'],
+        expands: this.expandsProducts,
       },
     });
 
@@ -318,29 +355,17 @@ export class OrganizationsService extends CrudService<Organization> {
       );
     }
 
-    return this.getOrganization(organizationId, [
-      'sites',
-      'organizationActivities.activity',
-      'products',
-    ]);
+    return this.getOrganizationProductsById(organizationId);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async updateOrganizationHumanResources(
     organizationId: string,
-    payload: UpdateOrganizationRequest,
+    payload: UpdateOrganizationHumanResourcesRequest,
   ) {
-    await this.checkPhone(payload.phone, organizationId);
-
     const organization = await this.getById(organizationId, {
       search: {
-        expands: [
-          'employeesKpis',
-          'contracts',
-          'revenueKpis',
-          'ageKpis',
-          'formationKpi',
-        ],
+        expands: this.expandsHumanResources,
       },
     });
 
@@ -493,13 +518,7 @@ export class OrganizationsService extends CrudService<Organization> {
       await updateFormationKpi(payload.formationKpi);
     }
 
-    return this.getOrganization(organizationId, [
-      'employeesKpis',
-      'contracts',
-      'revenueKpis',
-      'ageKpis',
-      'formationKpi',
-    ]);
+    return this.getOrganizationHumanResourcesById(organizationId);
   }
 
   private async checkEmail(email?: string, id?: string) {

@@ -138,6 +138,15 @@ export class OrganizationRequest extends BaseModel {
   groupAffiliation?: string;
 
   @ApiPropertyOptional()
+  @Type(() => TagRequest)
+  @Transform(ModelTransformer(() => TagRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  rAndDSites?: TagRequest[];
+
+  @ApiPropertyOptional()
   @IsOptional()
   @IsUrl(undefined, { message: 'errors:url.invalid' })
   @Transform(StringTransformer)
@@ -166,10 +175,52 @@ export class UpdateOrganizationRequest extends BaseModel {
 
   @ApiPropertyOptional()
   @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(100, { message: 'errors:field.max_length.100' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  taxNumber?: string;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(100, { message: 'errors:field.max_length.100' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  address?: string;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  description?: string;
+}
+
+export class UpdateOrganizationGeneralRequest extends UpdateOrganizationRequest {
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
   @MaxLength(150, { message: 'errors:field.max_length.150' })
   @IsOptional()
   @Transform(StringTransformer)
   fullName?: string;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(100, { message: 'errors:field.max_length.100' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  legalStatus?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsYear(undefined, { message: 'errors:field.invalid' })
+  @Transform(NumberTransformer)
+  foundingYear?: number;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(150, { message: 'errors:field.max_length.150' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  groupAffiliation?: string;
 
   @ApiPropertyOptional()
   @IsString({ message: 'errors:field.invalid' })
@@ -183,7 +234,39 @@ export class UpdateOrganizationRequest extends BaseModel {
   @MaxLength(100, { message: 'errors:field.max_length.100' })
   @IsOptional()
   @Transform(StringTransformer)
-  taxNumber?: string;
+  postalCode?: string;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(100, { message: 'errors:field.max_length.100' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  city?: string;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(100, { message: 'errors:field.max_length.100' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  country?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUrl(undefined, { message: 'errors:url.invalid' })
+  @Transform(StringTransformer)
+  linkedin?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUrl(undefined, { message: 'errors:url.invalid' })
+  @Transform(StringTransformer)
+  facebook?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUrl(undefined, { message: 'errors:url.invalid' })
+  @Transform(StringTransformer)
+  twitter?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -214,79 +297,9 @@ export class UpdateOrganizationRequest extends BaseModel {
   @ValidateNested({ each: true })
   @IsOptional()
   otherLocations?: TagRequest[];
+}
 
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(100, { message: 'errors:field.max_length.100' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  address?: string;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(100, { message: 'errors:field.max_length.100' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  postalCode?: string;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(100, { message: 'errors:field.max_length.100' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  city?: string;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(100, { message: 'errors:field.max_length.100' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  country?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsYear(undefined, { message: 'errors:field.invalid' })
-  @Transform(NumberTransformer)
-  foundingYear?: number;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  description?: string;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(100, { message: 'errors:field.max_length.100' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  legalStatus?: string;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(150, { message: 'errors:field.max_length.150' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  groupAffiliation?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUrl(undefined, { message: 'errors:url.invalid' })
-  @Transform(StringTransformer)
-  linkedin?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUrl(undefined, { message: 'errors:url.invalid' })
-  @Transform(StringTransformer)
-  facebook?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUrl(undefined, { message: 'errors:url.invalid' })
-  @Transform(StringTransformer)
-  twitter?: string;
-
+export class UpdateOrganizationProductsRequest extends UpdateOrganizationRequest {
   @ApiPropertyOptional()
   @Type(() => ProductRequest)
   @Transform(ModelTransformer(() => ProductRequest))
@@ -334,7 +347,9 @@ export class UpdateOrganizationRequest extends BaseModel {
   @ValidateNested({ each: true })
   @IsOptional()
   foreignExportationSites?: OrganizationSiteRequest[];
+}
 
+export class UpdateOrganizationHumanResourcesRequest extends UpdateOrganizationRequest {
   @ApiPropertyOptional()
   @Type(() => OrganizationEmployeeKpiRequest)
   @Transform(ModelTransformer(() => OrganizationEmployeeKpiRequest))

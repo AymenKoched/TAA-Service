@@ -1,6 +1,11 @@
 import {
   ActivitiesRepository,
   OrganizationActivitiesRepository,
+  OrganizationAgesKpisRepository,
+  OrganizationContractsRepository,
+  OrganizationEmployeesKpisRepository,
+  OrganizationFormationsRepository,
+  OrganizationRevenuesKpisRepository,
   OrganizationSitesRepository,
   OrganizationsRepository,
   OrganizationTagsRepository,
@@ -33,4 +38,9 @@ export const repositories = [
   ActivitiesRepository,
   OrganizationActivitiesRepository,
   OrganizationSitesRepository,
+  OrganizationEmployeesKpisRepository,
+  OrganizationContractsRepository,
+  OrganizationRevenuesKpisRepository,
+  OrganizationAgesKpisRepository,
+  OrganizationFormationsRepository,
 ];

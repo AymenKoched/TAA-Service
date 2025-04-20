@@ -11,6 +11,11 @@ import {
 import { ModelTransformer } from '../transformers';
 import { ActivityResponse } from './activity.response';
 import { OrganizationActivityResponse } from './organization-activity.response';
+import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
+import { OrganizationContractResponse } from './organization-contract.response';
+import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
+import { OrganizationFormationResponse } from './organization-formation.response';
+import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
 import { ProductResponse } from './product.response';
 import { TagResponse } from './tag.response';
@@ -32,12 +37,6 @@ export class OrganizationResponse extends BaseResponseModel {
   adherent?: AdherentResponse;
 
   @ApiPropertyOptional()
-  fullName?: string;
-
-  @ApiPropertyOptional()
-  headOffice?: string;
-
-  @ApiPropertyOptional()
   taxNumber?: string;
 
   @ApiPropertyOptional()
@@ -46,6 +45,41 @@ export class OrganizationResponse extends BaseResponseModel {
   @ApiPropertyOptional()
   phone?: string;
 
+  @ApiPropertyOptional()
+  address?: string;
+
+  @ApiPropertyOptional()
+  postalCode?: string;
+
+  @ApiPropertyOptional()
+  city?: string;
+
+  @ApiPropertyOptional()
+  country?: string;
+
+  @ApiPropertyOptional()
+  foundingYear?: number;
+
+  @ApiPropertyOptional()
+  description?: string;
+
+  @ApiPropertyOptional()
+  legalStatus?: string;
+
+  @ApiPropertyOptional()
+  groupAffiliation?: string;
+
+  @ApiPropertyOptional()
+  linkedin?: string;
+
+  @ApiPropertyOptional()
+  facebook?: string;
+
+  @ApiPropertyOptional()
+  twitter?: string;
+}
+
+export class OrganizationGeneralResponse extends OrganizationResponse {
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => TagResponse))
   @Type(() => TagResponse)
@@ -80,40 +114,9 @@ export class OrganizationResponse extends BaseResponseModel {
     ]),
   )
   otherLocations?: TagResponse[];
+}
 
-  @ApiPropertyOptional()
-  address?: string;
-
-  @ApiPropertyOptional()
-  postalCode?: string;
-
-  @ApiPropertyOptional()
-  city?: string;
-
-  @ApiPropertyOptional()
-  country?: string;
-
-  @ApiPropertyOptional()
-  foundingYear?: number;
-
-  @ApiPropertyOptional()
-  description?: string;
-
-  @ApiPropertyOptional()
-  legalStatus?: string;
-
-  @ApiPropertyOptional()
-  groupAffiliation?: string;
-
-  @ApiPropertyOptional()
-  linkedin?: string;
-
-  @ApiPropertyOptional()
-  facebook?: string;
-
-  @ApiPropertyOptional()
-  twitter?: string;
-
+export class OrganizationProductsResponse extends OrganizationResponse {
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => ProductResponse))
   @Type(() => ProductResponse)
@@ -207,4 +210,31 @@ export class OrganizationResponse extends BaseResponseModel {
     ]),
   )
   foreignExportationSites?: OrganizationSiteResponse[];
+}
+
+export class OrganizationHumanResourcesResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationEmployeeKpiResponse)
+  @Transform(ModelTransformer(() => OrganizationEmployeeKpiResponse))
+  employeesKpis?: OrganizationEmployeeKpiResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationContractResponse)
+  @Transform(ModelTransformer(() => OrganizationContractResponse))
+  contracts?: OrganizationContractResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationRevenueKpiResponse)
+  @Transform(ModelTransformer(() => OrganizationRevenueKpiResponse))
+  revenueKpis?: OrganizationRevenueKpiResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationAgeKpiResponse)
+  @Transform(ModelTransformer(() => OrganizationAgeKpiResponse))
+  ageKpis?: OrganizationAgeKpiResponse;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationFormationResponse)
+  @Transform(ModelTransformer(() => OrganizationFormationResponse))
+  formationKpi?: OrganizationFormationResponse;
 }

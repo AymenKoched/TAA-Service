@@ -11,6 +11,11 @@ import {
 
 import { BaseEntity } from '../common';
 import { OrganizationActivity } from './organization-activity.entity';
+import { OrganizationAgeKpi } from './organization-age-kpi.entity';
+import { OrganizationContract } from './organization-contract.entity';
+import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
+import { OrganizationFormationKpi } from './organization-formation-kpi.entity';
+import { OrganizationRevenueKpi } from './organization-revenue-kpi.entity';
 import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
 import { Product } from './product.entity';
@@ -218,4 +223,37 @@ export class Organization extends BaseEntity {
     (organizationActivity) => organizationActivity.organization,
   )
   organizationActivities?: OrganizationActivity[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationEmployeeKpi)
+  @OneToMany(() => OrganizationEmployeeKpi, (kpi) => kpi.organization)
+  employeesKpis?: OrganizationEmployeeKpi[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationContract)
+  @OneToMany(() => OrganizationContract, (contract) => contract.organization)
+  contracts?: OrganizationContract[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationRevenueKpi)
+  @OneToMany(() => OrganizationRevenueKpi, (revenue) => revenue.organization)
+  revenueKpis?: OrganizationRevenueKpi[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationAgeKpi)
+  @OneToOne(() => OrganizationAgeKpi, (kpi) => kpi.organization)
+  ageKpis?: OrganizationAgeKpi;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationFormationKpi)
+  @OneToOne(
+    () => OrganizationFormationKpi,
+    (formation) => formation.organization,
+  )
+  formationKpi?: OrganizationFormationKpi;
 }

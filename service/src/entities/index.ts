@@ -1,6 +1,10 @@
 import { Activity } from './activity.entity';
 import { Organization } from './organization.entity';
 import { OrganizationActivity } from './organization-activity.entity';
+import { OrganizationAgeKpi } from './organization-age-kpi.entity';
+import { OrganizationContract } from './organization-contract.entity';
+import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
+import { OrganizationRevenueKpi } from './organization-revenue-kpi.entity';
 import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
 import { Product } from './product.entity';
@@ -12,6 +16,10 @@ import { UserToken } from './user-token.entity';
 export * from './activity.entity';
 export * from './organization.entity';
 export * from './organization-activity.entity';
+export * from './organization-age-kpi.entity';
+export * from './organization-contract.entity';
+export * from './organization-employee-kpi.entity';
+export * from './organization-revenue-kpi.entity';
 export * from './organization-site.entity';
 export * from './organization-tag.entity';
 export * from './product.entity';
@@ -34,4 +42,8 @@ export const entities = [
   OrganizationSite,
   Activity,
   OrganizationActivity,
+  OrganizationEmployeeKpi,
+  OrganizationContract,
+  OrganizationRevenueKpi,
+  OrganizationAgeKpi,
 ];

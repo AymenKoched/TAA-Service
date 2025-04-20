@@ -2,10 +2,15 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 
 import {
   ConvertResponse,
+  OrganizationGeneralResponse,
+  OrganizationHumanResourcesResponse,
+  OrganizationProductsResponse,
   OrganizationRequest,
   OrganizationResponse,
   RoleAccess,
-  UpdateOrganizationRequest,
+  UpdateOrganizationGeneralRequest,
+  UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationProductsRequest,
 } from '../common';
 import { HasRoleAccess } from '../guards';
 import { OrganizationsService } from '../services';
@@ -16,27 +21,29 @@ export class OrganizationsController {
 
   @Get(':organizationId/general')
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
-  @ConvertResponse(OrganizationResponse)
+  @ConvertResponse(OrganizationGeneralResponse)
   public async getOrganizationGeneral(
     @Param('organizationId') organizationId: string,
-  ): Promise<OrganizationResponse> {
-    return await this.orgs.getOrganization(organizationId, [
-      'tags',
-      'adherent.userRoles.role',
-    ]);
+  ): Promise<OrganizationGeneralResponse> {
+    return this.orgs.getOrganizationGeneralById(organizationId);
   }
 
   @Get(':organizationId/products')
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
-  @ConvertResponse(OrganizationResponse)
+  @ConvertResponse(OrganizationProductsResponse)
   public async getOrganizationProducts(
     @Param('organizationId') organizationId: string,
-  ): Promise<OrganizationResponse> {
-    return await this.orgs.getOrganization(organizationId, [
-      'sites',
-      'organizationActivities.activity',
-      'products',
-    ]);
+  ): Promise<OrganizationProductsResponse> {
+    return this.orgs.getOrganizationProductsById(organizationId);
+  }
+
+  @Get(':organizationId/human-resources')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationHumanResourcesResponse)
+  public async getOrganizationHumanResources(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationHumanResourcesResponse> {
+    return this.orgs.getOrganizationHumanResourcesById(organizationId);
   }
 
   @Post()
@@ -49,21 +56,31 @@ export class OrganizationsController {
 
   @Put(':organizationId/general')
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
-  @ConvertResponse(OrganizationResponse)
+  @ConvertResponse(OrganizationGeneralResponse)
   public async updateOrganizationGeneral(
     @Param('organizationId') organizationId: string,
-    @Body() payload: UpdateOrganizationRequest,
-  ): Promise<OrganizationResponse> {
+    @Body() payload: UpdateOrganizationGeneralRequest,
+  ): Promise<OrganizationGeneralResponse> {
     return this.orgs.updateOrganizationGeneral(organizationId, payload);
   }
 
   @Put(':organizationId/products')
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
-  @ConvertResponse(OrganizationResponse)
+  @ConvertResponse(OrganizationProductsResponse)
   public async updateOrganizationProducts(
     @Param('organizationId') organizationId: string,
-    @Body() payload: UpdateOrganizationRequest,
-  ): Promise<OrganizationResponse> {
+    @Body() payload: UpdateOrganizationProductsRequest,
+  ): Promise<OrganizationProductsResponse> {
     return this.orgs.updateOrganizationProducts(organizationId, payload);
+  }
+
+  @Put(':organizationId/human-resources')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationHumanResourcesResponse)
+  public async updateOrganizationHumanResources(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationHumanResourcesRequest,
+  ): Promise<OrganizationHumanResourcesResponse> {
+    return this.orgs.updateOrganizationHumanResources(organizationId, payload);
   }
 }

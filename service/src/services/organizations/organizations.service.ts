@@ -1,20 +1,30 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { difference, filter, find, isUndefined, map, omit } from 'lodash';
+import { difference, filter, find, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
   ADHERENT_ROLE_NAME,
-  AdherentAccessList,
   AuthErrors,
   CrudService,
+  EmployeesKpiType,
   OrganizationActivityType,
+  OrganizationAgeKpiRequest,
+  OrganizationContractRequest,
+  OrganizationEmployeeKpiRequest,
+  OrganizationFormationRequest,
+  OrganizationGeneralResponse,
+  OrganizationHumanResourcesResponse,
+  OrganizationProductsResponse,
   OrganizationRequest,
   OrganizationResponse,
+  OrganizationRevenueKpiRequest,
   OrganizationSiteRequest,
   OrganizationSiteType,
   OrganizationTagType,
   TagRequest,
-  UpdateOrganizationRequest,
+  UpdateOrganizationGeneralRequest,
+  UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationProductsRequest,
   UserType,
 } from '../../common';
 import { Organization } from '../../entities';
@@ -22,6 +32,11 @@ import { OrganizationsRepository } from '../../repositories';
 import { RolesService, UserRolesService } from '../roles';
 import { UsersService } from '../users';
 import { OrganizationActivitiesService } from './organization-activities.service';
+import { OrganizationAgesKpisService } from './organization-ages-kpis.service';
+import { OrganizationContractsService } from './organization-contracts.service';
+import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
+import { OrganizationFormationsService } from './organization-formations.service';
+import { OrganizationRevenuesKpisService } from './organization-revenues-kpis.service';
 import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
 import { ProductsService } from './products.service';
@@ -31,15 +46,21 @@ export class OrganizationsService extends CrudService<Organization> {
   protected notFoundErrorKey = AuthErrors.OrganizationNotFound;
   protected notFoundErrorMessage = 'The searched organization is not found';
 
-  private readonly payloadOmit = [
-    'rAndDSites',
-    'otherLocations',
+  private readonly expandsGeneral: string[] = [
+    'tags',
+    'adherent.userRoles.role',
+  ];
+  private readonly expandsProducts: string[] = [
+    'sites',
+    'organizationActivities.activity',
     'products',
-    'primaryActivities',
-    'secondaryActivities',
-    'localSites',
-    'foreignImplantationSites',
-    'foreignExportationSites',
+  ];
+  private readonly expandsHumanResources: string[] = [
+    'employeesKpis',
+    'contracts',
+    'revenueKpis',
+    'ageKpis',
+    'formationKpi',
   ];
 
   constructor(
@@ -51,18 +72,43 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly users: UsersService,
     private readonly roles: RolesService,
     private readonly userRoles: UserRolesService,
+    private readonly employeesKpi: OrganizationEmployeesKpisService,
+    private readonly contracts: OrganizationContractsService,
+    private readonly revenues: OrganizationRevenuesKpisService,
+    private readonly agesKpis: OrganizationAgesKpisService,
+    private readonly formations: OrganizationFormationsService,
   ) {
     super(orgs);
   }
 
   async getOrganization(organizationId: string, expands?: string[]) {
-    const organization = await this.getById(organizationId, {
-      search: {
-        expands: isUndefined(expands) ? [] : expands,
-      },
+    return this.getById(organizationId, {
+      search: { expands: expands || [] },
     });
+  }
 
-    return new OrganizationResponse(organization);
+  async getOrganizationGeneralById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsGeneral,
+    );
+    return new OrganizationGeneralResponse(organization);
+  }
+
+  async getOrganizationProductsById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsProducts,
+    );
+    return new OrganizationProductsResponse(organization);
+  }
+
+  async getOrganizationHumanResourcesById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsHumanResources,
+    );
+    return new OrganizationHumanResourcesResponse(organization);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -70,18 +116,7 @@ export class OrganizationsService extends CrudService<Organization> {
     await this.checkEmail(payload.email);
     await this.checkPhone(payload.phone);
 
-    const org = await this.create(
-      omit(payload, [
-        'rAndDSites',
-        'otherLocations',
-        'products',
-        'primaryActivities',
-        'secondaryActivities',
-        'localSites',
-        'foreignImplantationSites',
-        'foreignExportationSites',
-      ]),
-    );
+    const org = await this.create(omit(payload, 'rAndDSites'));
 
     const createTags = async (
       tags: TagRequest[],
@@ -100,76 +135,6 @@ export class OrganizationsService extends CrudService<Organization> {
       await createTags(payload.rAndDSites, OrganizationTagType.RAndD);
     }
 
-    if (payload?.otherLocations?.length) {
-      await createTags(
-        payload.otherLocations,
-        OrganizationTagType.OtherLocations,
-      );
-    }
-
-    if (payload?.products?.length) {
-      await this.products.create(
-        map(payload.products, (product) => ({
-          ...product,
-          organizationId: org.id,
-        })),
-      );
-    }
-
-    const createActivities = async (
-      activitiesIds: string[],
-      type: OrganizationActivityType,
-    ) => {
-      await this.organizationActivities.create(
-        map(activitiesIds, (activityId) => ({
-          activityId,
-          organizationId: org.id,
-          type,
-        })),
-      );
-    };
-
-    if (payload?.primaryActivities?.length) {
-      await createActivities(
-        payload.primaryActivities,
-        OrganizationActivityType.Primary,
-      );
-    }
-
-    if (payload?.secondaryActivities?.length) {
-      await createActivities(
-        payload.secondaryActivities,
-        OrganizationActivityType.Secondary,
-      );
-    }
-
-    const createSites = async (
-      sites: OrganizationSiteRequest[],
-      type: OrganizationSiteType,
-    ) => {
-      await this.organizationSites.create(
-        map(sites, (site) => ({ ...site, organizationId: org.id, type })),
-      );
-    };
-
-    if (payload?.localSites?.length) {
-      await createSites(payload.localSites, OrganizationSiteType.LocalSite);
-    }
-
-    if (payload?.foreignImplantationSites?.length) {
-      await createSites(
-        payload.foreignImplantationSites,
-        OrganizationSiteType.ForeignImplantationSite,
-      );
-    }
-
-    if (payload?.foreignExportationSites?.length) {
-      await createSites(
-        payload.foreignExportationSites,
-        OrganizationSiteType.ForeignExportationSite,
-      );
-    }
-
     const adherent = await this.users.createUser({
       name: org.email.split('@')[0],
       email: org.email,
@@ -177,17 +142,10 @@ export class OrganizationsService extends CrudService<Organization> {
       organizationId: org.id,
     });
 
-    let adherentRole = await this.roles.findOne(
+    const adherentRole = await this.roles.findOne(
       { name: ADHERENT_ROLE_NAME },
       { silent: true },
     );
-
-    if (!adherentRole) {
-      adherentRole = await this.roles.create({
-        name: ADHERENT_ROLE_NAME,
-        accesses: AdherentAccessList,
-      });
-    }
 
     await this.userRoles.create({
       userId: adherent.id,
@@ -202,17 +160,20 @@ export class OrganizationsService extends CrudService<Organization> {
   @Transactional({ propagation: Propagation.REQUIRED })
   async updateOrganizationGeneral(
     organizationId: string,
-    payload: UpdateOrganizationRequest,
+    payload: UpdateOrganizationGeneralRequest,
   ) {
     await this.checkPhone(payload.phone, organizationId);
 
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['tags'],
+        expands: this.expandsGeneral,
       },
     });
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+    await this.updateById(
+      organizationId,
+      omit(payload, ['rAndDSites', 'otherLocations']),
+    );
 
     const updateTags = async (
       newTags: TagRequest[],
@@ -246,26 +207,31 @@ export class OrganizationsService extends CrudService<Organization> {
       );
     }
 
-    return this.getOrganization(organizationId, [
-      'tags',
-      'adherent.userRoles.role',
-    ]);
+    return this.getOrganizationGeneralById(organizationId);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
   async updateOrganizationProducts(
     organizationId: string,
-    payload: UpdateOrganizationRequest,
+    payload: UpdateOrganizationProductsRequest,
   ) {
-    await this.checkPhone(payload.phone, organizationId);
-
     const organization = await this.getById(organizationId, {
       search: {
-        expands: ['products', 'organizationActivities', 'sites'],
+        expands: this.expandsProducts,
       },
     });
 
-    await this.updateById(organizationId, omit(payload, this.payloadOmit));
+    await this.updateById(
+      organizationId,
+      omit(payload, [
+        'products',
+        'primaryActivities',
+        'secondaryActivities',
+        'localSites',
+        'foreignImplantationSites',
+        'foreignExportationSites',
+      ]),
+    );
 
     if (payload?.products) {
       const existingProducts = organization.products;
@@ -315,7 +281,7 @@ export class OrganizationsService extends CrudService<Organization> {
         this.getDifferences(newActivitiesIds, currentActivitiesIds);
 
       await Promise.all(
-        map(activitiesToRemove, (activityId) =>
+        map(activitiesToRemove, (activityId: string) =>
           this.organizationActivities.deleteByCriteria({
             activityId,
             organizationId,
@@ -402,11 +368,175 @@ export class OrganizationsService extends CrudService<Organization> {
       );
     }
 
-    return this.getOrganization(organizationId, [
-      'sites',
-      'organizationActivities.activity',
-      'products',
-    ]);
+    return this.getOrganizationProductsById(organizationId);
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationHumanResources(
+    organizationId: string,
+    payload: UpdateOrganizationHumanResourcesRequest,
+  ) {
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: this.expandsHumanResources,
+      },
+    });
+
+    await this.updateById(
+      organizationId,
+      omit(payload, [
+        'directEmployees',
+        'indirectEmployees',
+        'contracts',
+        'revenues',
+        'ageKpis',
+        'formationKpi',
+      ]),
+    );
+
+    const updateEmployees = async (
+      newEmployeeKpi: OrganizationEmployeeKpiRequest,
+      employeesKpiType: EmployeesKpiType,
+    ) => {
+      const existingEmployeeKpi = find(organization.employeesKpis, {
+        type: employeesKpiType,
+      });
+      if (!!existingEmployeeKpi) {
+        await this.employeesKpi.update(existingEmployeeKpi.id, {
+          men: newEmployeeKpi.men,
+          women: newEmployeeKpi.women,
+        });
+      } else {
+        await this.employeesKpi.create({
+          men: newEmployeeKpi.men,
+          women: newEmployeeKpi.women,
+          organizationId,
+          type: employeesKpiType,
+        });
+      }
+    };
+
+    if (payload?.directEmployees) {
+      await updateEmployees(payload.directEmployees, EmployeesKpiType.Direct);
+    }
+
+    if (payload?.indirectEmployees) {
+      await updateEmployees(
+        payload.indirectEmployees,
+        EmployeesKpiType.Indirect,
+      );
+    }
+
+    const updateContracts = async (
+      newContracts: OrganizationContractRequest[],
+    ) => {
+      const existingContracts = organization.contracts;
+
+      await Promise.all(
+        map(newContracts, async (newContract) => {
+          const existingContract = find(existingContracts, {
+            type: newContract.type,
+          });
+          if (existingContract) {
+            return this.contracts.update(existingContract.id, {
+              ...newContract,
+            });
+          } else {
+            await this.contracts.create({
+              ...newContract,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedContractsIds = map(
+        filter(
+          existingContracts,
+          (existingContract) =>
+            !find(newContracts, { type: existingContract.type }),
+        ),
+        'id',
+      );
+      await this.contracts.deleteByIds(deletedContractsIds);
+    };
+
+    if (payload?.contracts) {
+      await updateContracts(payload.contracts);
+    }
+
+    const updateRevenues = async (
+      newRevenues: OrganizationRevenueKpiRequest[],
+    ) => {
+      const existingRevenues = organization.revenueKpis;
+
+      await Promise.all(
+        map(newRevenues, async (newRevenue) => {
+          const existingRevenue = find(existingRevenues, {
+            type: newRevenue.type,
+          });
+          if (existingRevenue) {
+            return this.revenues.update(existingRevenue.id, {
+              ...newRevenue,
+            });
+          } else {
+            await this.revenues.create({
+              ...newRevenue,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedRevenuesIds = map(
+        filter(
+          existingRevenues,
+          (existingRevenue) =>
+            !find(newRevenues, { type: existingRevenue.type }),
+        ),
+        'id',
+      );
+      await this.revenues.deleteByIds(deletedRevenuesIds);
+    };
+
+    if (payload?.revenues) {
+      await updateRevenues(payload.revenues);
+    }
+
+    const updateAgesKpi = async (newAgeKpi: OrganizationAgeKpiRequest) => {
+      const existingAgesKpi = organization.ageKpis;
+      if (existingAgesKpi) {
+        await this.agesKpis.updateById(existingAgesKpi.id, newAgeKpi);
+      } else {
+        await this.agesKpis.create({
+          ...newAgeKpi,
+          organizationId,
+        });
+      }
+    };
+
+    await updateAgesKpi(payload.ageKpis);
+
+    const updateFormationKpi = async (
+      newFormationKpi: OrganizationFormationRequest,
+    ) => {
+      const existingFormationKpi = organization.formationKpi;
+      if (existingFormationKpi) {
+        await this.formations.updateById(
+          existingFormationKpi.id,
+          newFormationKpi,
+        );
+      } else {
+        await this.formations.create({
+          ...newFormationKpi,
+          organizationId,
+        });
+      }
+    };
+
+    await updateFormationKpi(payload.formationKpi);
+
+    return this.getOrganizationHumanResourcesById(organizationId);
   }
 
   private async checkEmail(email?: string, id?: string) {

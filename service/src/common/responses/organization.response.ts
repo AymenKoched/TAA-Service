@@ -77,6 +77,9 @@ export class OrganizationResponse extends BaseResponseModel {
 
   @ApiPropertyOptional()
   twitter?: string;
+
+  @ApiPropertyOptional()
+  headOffice?: string;
 }
 
 export class OrganizationGeneralResponse extends OrganizationResponse {

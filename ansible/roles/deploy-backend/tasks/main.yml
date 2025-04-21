@@ -35,12 +35,6 @@
     chdir: '{{ project_dir }}'
   ignore_errors: true
 
-- name: Configure pg_hba.conf through Docker exec
-  command: |
-    docker exec postgres_container_taa bash -c "
-    echo 'host all all all scram-sha-256' >> /var/lib/postgresql/data/pg_hba.conf &&
-    pg_ctl reload
-    "
 
 - name: Run taa
   command: docker compose -p taa-backend up -d --pull always --force-recreate --remove-orphans

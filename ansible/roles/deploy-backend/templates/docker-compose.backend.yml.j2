@@ -8,6 +8,8 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: my-password
       POSTGRES_DB: service_taa
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
 
     volumes:
       - taa_postgres_data:/var/lib/postgresql/data

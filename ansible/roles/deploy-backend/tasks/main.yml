@@ -35,7 +35,13 @@
     chdir: '{{ project_dir }}'
   ignore_errors: true
 
-
+- name: Configure PostgreSQL authentication
+  lineinfile:
+    path: '{{ project_dir }}/data/pg_hba.conf'
+    line: 'host all all all scram-sha-256'
+    insertafter: EOF
+  become: true
+  notify: Reload PostgreSQL config
 
 - name: Run taa
   command: docker compose -p taa-backend up -d --pull always --force-recreate --remove-orphans

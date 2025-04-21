@@ -1,7 +1,7 @@
 
 services:
   postgres:
-    image: postgres:15.2-alpine
+    image: postgres:latest
     container_name: postgres_container_taa
     restart: always
     environment:
@@ -13,12 +13,6 @@ services:
       - taa_postgres_data:/var/lib/postgresql/data
     networks:
       - default
-
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d service_taa"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
@@ -63,9 +57,6 @@ services:
       - "traefik.http.middlewares.{{ project_name }}-{{project_version}}-web.headers.customRequestHeaders.X-Forwarded-Host={{ host_name }}"
     networks:
       - default
-    depends_on:
-      postgres:
-        condition: service_healthy
 networks:
   default:
     external:

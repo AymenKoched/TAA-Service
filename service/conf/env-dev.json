@@ -14,9 +14,7 @@
     "logging": true,
     "entities": ["src/entities/**/*.ts"],
     "migrations": ["src/db/migrations/**/*.ts"],
-    "migrationsRun": true,
-    "retryAttempts": 3,
-    "retryDelay": 3000
+    "migrationsRun": true
   },
   "jwt": {
     "publicKeyPath": "./conf/certs/dev.public_key.pem",

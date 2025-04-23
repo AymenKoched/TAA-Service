@@ -1,39 +1,5 @@
 
 services:
-  postgres:
-    image: postgres:15.2-alpine
-    container_name: postgres_container_taa
-    restart: always
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: my-password
-      POSTGRES_DB: service_taa
-
-    volumes:
-      - taa_postgres_data:/var/lib/postgresql/data
-    networks:
-      - default
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin_taa
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@taa.com"
-      PGADMIN_DEFAULT_PASSWORD: "admin@123"
-    depends_on:
-      - postgres
-    networks:
-      - default
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=nginx-proxy"
-      - "traefik.http.routers.pgadmin-taa-web.entrypoints=https"
-      - "traefik.http.routers.pgadmin-taa-web.rule=Host(`{{pgadmin_host_name}}`)"
-      - "traefik.http.routers.pgadmin-taa-web.tls=true"
-      - "traefik.http.routers.pgadmin-taa-web.tls.certresolver=letsencrypt"
-      - "traefik.http.services.pgadmin-taa-web.loadbalancer.server.port=80"
-
 
   taa_backend:
     image: "{{ lookup('env','IMAGE_NAME') }}"
@@ -61,6 +27,4 @@ networks:
   default:
     external:
       name: "{{ docker_network }}"
-volumes:
-  taa_postgres_data:
-    name: taa_postgres_data
+

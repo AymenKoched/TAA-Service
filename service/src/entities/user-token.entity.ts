@@ -27,7 +27,7 @@ export class UserToken extends BaseEntity {
   @Expose()
   @Column({
     name: 'expiration_date',
-    type: 'timestamp without time zone',
+    type: 'timestamp',
     nullable: true,
   })
   expirationDate?: Date;

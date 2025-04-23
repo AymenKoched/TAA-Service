@@ -2,7 +2,7 @@ import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { pick } from 'lodash';
 import { DataSource, MigrationExecutor } from 'typeorm';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { v4 as uuid } from 'uuid';
 
@@ -10,7 +10,7 @@ import { AppConfig } from '../../configuration';
 
 const logger = new Logger('Database');
 
-export type DatabaseConfiguration = PostgresConnectionOptions;
+export type DatabaseConfiguration = MysqlConnectionOptions;
 
 export async function bootstrapDatabase(database: DatabaseConfiguration) {
   const WAIT_BEFORE_RESTART = 30; // seconds
@@ -46,7 +46,7 @@ async function timer(time: number): Promise<void> {
 }
 
 export async function createDatabase(
-  ormOptions: PostgresConnectionOptions,
+  ormOptions: MysqlConnectionOptions,
 ): Promise<void> {
   const dbConfig = {
     ...pick(
@@ -58,13 +58,13 @@ export async function createDatabase(
       'password',
       'logging',
     ),
-    database: 'postgres',
+    database: 'mysql',
   };
   const conn = await getDataSource(dbConfig, true);
 
   try {
     const dbExists = await conn.query(
-      `SELECT 1 FROM pg_database WHERE datname = '${ormOptions.database}'`,
+      `SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${ormOptions.database}'`,
     );
     if (!dbExists.length) {
       logger.log(`Creating '${ormOptions.database}' database...`);
@@ -83,7 +83,7 @@ export async function createDatabase(
 }
 
 export async function runMigration(
-  ormOptions: PostgresConnectionOptions,
+  ormOptions: MysqlConnectionOptions,
 ): Promise<void> {
   const conn = await getDataSource(ormOptions, true);
   const queryRunner = conn.createQueryRunner();

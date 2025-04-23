@@ -5,12 +5,12 @@
   },
   "database": {
     "type": "mysql",
-    "host": "wf22780-002.eu.clouddb.ovh.net",
-    "port": 35534,
-    "database": "taa_dev",
-    "username": "taa_dev",
-    "password": "fH0oWvbT5gEFrenRe7vK",
-    "synchronize": true,
+    "host": "mysql",
+    "port": 3306,
+    "database": "service_taa",
+    "username": "root",
+    "password": "my-password",
+    "synchronize": false,
     "logging": true,
     "entities": ["src/entities/**/*.ts"],
     "migrations": ["src/db/migrations/**/*.ts"],
@@ -33,7 +33,7 @@
     "mailSenderName": "TAA application"
   },
   "front": {
-    "baseUrl": "https://taa.vayetek.com",
+    "baseUrl": "http://localhost:5173",
     "resetPasswordUri": "auth/create-new-password",
     "activateAccountUri": "auth/activate-account"
   },

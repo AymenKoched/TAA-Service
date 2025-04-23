@@ -1,30 +1,28 @@
 version: '2.3'
 
 services:
-  postgres:
-    container_name: taa-pg_container
-    image: postgres:15.2-alpine
+  mysql:
+    container_name: taa-mysql_container
+    image: mysql:8.0.32-oracle
     environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: my-password
+      MYSQL_ROOT_PASSWORD: my-password
     ports:
-      - '5432:5432'
+      - '3306:3306'
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/mysql
 
-  pgadmin:
-    container_name: taa-pgadmin4_container
-    image: dpage/pgadmin4
+  cloudbeaver:
+    container_name: taa-cloudbeaver_container
+    image: dbeaver/cloudbeaver:23.2.0
     depends_on:
-      postgres:
+      mysql:
         condition: service_started
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - '9099:80'
+      - '8978:8978'
+    volumes:
+      - cb-data:/opt/cloudbeaver/workspace
 
 volumes:
   db-data:
+  cb-data:

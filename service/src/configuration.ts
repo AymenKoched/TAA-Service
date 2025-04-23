@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { isEmpty } from 'lodash';
 import { hostname } from 'os';
 import { resolve } from 'path';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 
 export interface AppConfig {
   environment?: Environment;
@@ -26,7 +26,7 @@ export interface ServerConfig {
   port: number;
 }
 
-type DatabaseConfiguration = PostgresConnectionOptions;
+type DatabaseConfiguration = MysqlConnectionOptions;
 
 export interface AppInfos {
   hostname: string;

@@ -4,12 +4,12 @@
     "port": 7001
   },
   "database": {
-    "type": "postgres",
-    "host": "postgres",
-    "port": 5432,
-    "database": "service_taa",
-    "username": "root",
-    "password": "my-password",
+    "type": "mysql",
+    "host": "wf22780-002.eu.clouddb.ovh.net",
+    "port": 35534,
+    "database": "taa_dev",
+    "username": "taa_dev",
+    "password": "fH0oWvbT5gEFrenRe7vK",
     "synchronize": false,
     "logging": true,
     "entities": ["src/entities/**/*.ts"],

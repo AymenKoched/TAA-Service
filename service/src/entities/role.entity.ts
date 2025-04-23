@@ -20,10 +20,7 @@ export class Role extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Column({
-    type: 'enum',
-    enum: RoleAccess,
-    array: true,
-    default: [],
+    type: 'simple-array',
   })
   accesses!: RoleAccess[];
 

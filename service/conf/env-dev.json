@@ -10,7 +10,7 @@
     "database": "taa_dev",
     "username": "taa_dev",
     "password": "fH0oWvbT5gEFrenRe7vK",
-    "synchronize": false,
+    "synchronize": true,
     "logging": true,
     "entities": ["src/entities/**/*.ts"],
     "migrations": ["src/db/migrations/**/*.ts"],

@@ -1,0 +1,4 @@
+# Docker
+
+host_name: dev.api.taa.vayetek.com
+env_file: "{{ lookup('env','ENV_DEV') }}"

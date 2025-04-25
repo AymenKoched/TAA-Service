@@ -21,4 +21,5 @@ export enum AuthErrors {
   InvalidToken = 'invalid_token',
   AccessDenied = 'access_denied',
   LinkExpired = 'link_expired',
+  InvalidPercentageSum = 'invalid_percentage_sum',
 }

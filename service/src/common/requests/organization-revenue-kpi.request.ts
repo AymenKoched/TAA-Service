@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString, MaxLength, Validate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  Min,
+  Validate,
+} from 'class-validator';
 
 import { BaseModel } from '../base';
 import { ApiProperty, EmployeesTotalInferior100 } from '../decorators';
@@ -16,11 +22,13 @@ export class OrganizationRevenueKpiRequest extends BaseModel {
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
   @Transform(NumberTransformer)
+  @Min(0, { message: 'errors:field.invalid' })
   men!: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
   @Transform(NumberTransformer)
+  @Min(0, { message: 'errors:field.invalid' })
   women?: number;
 
   @Validate(EmployeesTotalInferior100)

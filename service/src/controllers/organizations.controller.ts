@@ -7,10 +7,12 @@ import {
   OrganizationProductsResponse,
   OrganizationRequest,
   OrganizationResponse,
+  OrganizationRevenuesResponse,
   RoleAccess,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
   UpdateOrganizationProductsRequest,
+  UpdateOrganizationRevenuesRequest,
 } from '../common';
 import { HasRoleAccess } from '../guards';
 import { OrganizationsService } from '../services';
@@ -44,6 +46,15 @@ export class OrganizationsController {
     @Param('organizationId') organizationId: string,
   ): Promise<OrganizationHumanResourcesResponse> {
     return this.orgs.getOrganizationHumanResourcesById(organizationId);
+  }
+
+  @Get(':organizationId/revenues')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationRevenuesResponse)
+  public async getOrganizationRevenues(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationRevenuesResponse> {
+    return this.orgs.getOrganizationRevenuesById(organizationId);
   }
 
   @Post()
@@ -82,5 +93,15 @@ export class OrganizationsController {
     @Body() payload: UpdateOrganizationHumanResourcesRequest,
   ): Promise<OrganizationHumanResourcesResponse> {
     return this.orgs.updateOrganizationHumanResources(organizationId, payload);
+  }
+
+  @Put(':organizationId/revenues')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationRevenuesResponse)
+  public async updateOrganizationRevenues(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationRevenuesRequest,
+  ): Promise<OrganizationRevenuesResponse> {
+    return this.orgs.updateOrganizationRevenues(organizationId, payload);
   }
 }

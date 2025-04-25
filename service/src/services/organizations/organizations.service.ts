@@ -1,14 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { difference, filter, find, map, omit } from 'lodash';
+import { difference, filter, find, map, omit, sumBy } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
   ADHERENT_ROLE_NAME,
   AuthErrors,
+  CountryParticipationRequest,
   CrudService,
   EmployeesKpiType,
   OrganizationActivityType,
   OrganizationAgeKpiRequest,
+  OrganizationClientRequest,
   OrganizationContractRequest,
   OrganizationEmployeeKpiRequest,
   OrganizationFormationRequest,
@@ -18,27 +20,35 @@ import {
   OrganizationRequest,
   OrganizationResponse,
   OrganizationRevenueKpiRequest,
+  OrganizationRevenuesResponse,
   OrganizationSiteRequest,
   OrganizationSiteType,
   OrganizationTagType,
+  OrganizationTurnoverDistributionRequest,
+  OrganizationTurnoverRequest,
   TagRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
   UpdateOrganizationProductsRequest,
+  UpdateOrganizationRevenuesRequest,
   UserType,
 } from '../../common';
 import { Organization } from '../../entities';
 import { OrganizationsRepository } from '../../repositories';
 import { RolesService, UserRolesService } from '../roles';
 import { UsersService } from '../users';
+import { CountriesParticipationService } from './countries-participation.service';
 import { OrganizationActivitiesService } from './organization-activities.service';
 import { OrganizationAgesKpisService } from './organization-ages-kpis.service';
+import { OrganizationClientsService } from './organization-clients.service';
 import { OrganizationContractsService } from './organization-contracts.service';
 import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
 import { OrganizationFormationsService } from './organization-formations.service';
 import { OrganizationRevenuesKpisService } from './organization-revenues-kpis.service';
 import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
+import { OrganizationTurnoverDistributionsService } from './organization-turnover-distributions.service';
+import { OrganizationTurnoversService } from './organization-turnovers.service';
 import { ProductsService } from './products.service';
 
 @Injectable()
@@ -62,6 +72,12 @@ export class OrganizationsService extends CrudService<Organization> {
     'ageKpis',
     'formationKpi',
   ];
+  private readonly expandsRevenues: string[] = [
+    'turnoverDistribution',
+    'clientsTypes',
+    'turnover',
+    'countriesParticipation',
+  ];
 
   constructor(
     private readonly orgs: OrganizationsRepository,
@@ -77,6 +93,10 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly revenues: OrganizationRevenuesKpisService,
     private readonly agesKpis: OrganizationAgesKpisService,
     private readonly formations: OrganizationFormationsService,
+    private readonly turnoverDistribution: OrganizationTurnoverDistributionsService,
+    private readonly clients: OrganizationClientsService,
+    private readonly turnovers: OrganizationTurnoversService,
+    private readonly countries: CountriesParticipationService,
   ) {
     super(orgs);
   }
@@ -109,6 +129,14 @@ export class OrganizationsService extends CrudService<Organization> {
       this.expandsHumanResources,
     );
     return new OrganizationHumanResourcesResponse(organization);
+  }
+
+  async getOrganizationRevenuesById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsRevenues,
+    );
+    return new OrganizationRevenuesResponse(organization);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -539,6 +567,161 @@ export class OrganizationsService extends CrudService<Organization> {
     return this.getOrganizationHumanResourcesById(organizationId);
   }
 
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationRevenues(
+    organizationId: string,
+    payload: UpdateOrganizationRevenuesRequest,
+  ) {
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: this.expandsRevenues,
+      },
+    });
+
+    await this.updateById(
+      organizationId,
+      omit(payload, [
+        'turnoverDistribution',
+        'clientsTypes',
+        'turnover',
+        'countriesParticipation',
+      ]),
+    );
+
+    const updateTurnoverDistribution = async (
+      newDistributions: OrganizationTurnoverDistributionRequest[],
+    ) => {
+      this.checkSum(newDistributions);
+
+      const existingDistributions = organization.turnoverDistribution;
+
+      await Promise.all(
+        map(newDistributions, async (newDistribution) => {
+          const existingDistribution = find(existingDistributions, {
+            type: newDistribution.type,
+          });
+          if (existingDistribution) {
+            return this.turnoverDistribution.update(existingDistribution.id, {
+              ...newDistribution,
+            });
+          } else {
+            await this.turnoverDistribution.create({
+              ...newDistribution,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedDistributionsIds = map(
+        filter(
+          existingDistributions,
+          (existingDistribution) =>
+            !find(newDistributions, { type: existingDistribution.type }),
+        ),
+        'id',
+      );
+      await this.turnoverDistribution.deleteByIds(deletedDistributionsIds);
+    };
+
+    if (payload.turnoverDistribution) {
+      await updateTurnoverDistribution(payload.turnoverDistribution);
+    }
+
+    const updateClients = async (newClients: OrganizationClientRequest[]) => {
+      this.checkSum(newClients);
+
+      const existingClients = organization.clientsTypes;
+
+      await Promise.all(
+        map(newClients, async (newClient) => {
+          const existingClient = find(existingClients, {
+            type: newClient.type,
+          });
+          if (existingClient) {
+            return this.clients.update(existingClient.id, {
+              ...newClient,
+            });
+          } else {
+            await this.clients.create({
+              ...newClient,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedClientsIds = map(
+        filter(
+          existingClients,
+          (existingClient) => !find(newClients, { type: existingClient.type }),
+        ),
+        'id',
+      );
+      await this.clients.deleteByIds(deletedClientsIds);
+    };
+
+    if (payload.clientsTypes) {
+      await updateClients(payload.clientsTypes);
+    }
+
+    const updateTurnover = async (newTurnover: OrganizationTurnoverRequest) => {
+      const existingTurnover = organization.turnover;
+      if (existingTurnover) {
+        await this.turnovers.updateById(existingTurnover.id, newTurnover);
+      } else {
+        await this.turnovers.create({
+          ...newTurnover,
+          organizationId,
+        });
+      }
+    };
+
+    await updateTurnover(payload.turnover);
+
+    const updateCountries = async (
+      newCounties: CountryParticipationRequest[],
+    ) => {
+      this.checkSum(newCounties);
+
+      const existingCounties = organization.countriesParticipation;
+
+      await Promise.all(
+        map(newCounties, async (newCountry) => {
+          const existingCountry = find(existingCounties, {
+            country: newCountry.country,
+          });
+          if (existingCountry) {
+            return this.countries.update(existingCountry.id, {
+              ...newCountry,
+            });
+          } else {
+            await this.countries.create({
+              ...newCountry,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedCountriesIds = map(
+        filter(
+          existingCounties,
+          (existingCountry) =>
+            !find(newCounties, { country: existingCountry.country }),
+        ),
+        'id',
+      );
+      await this.countries.deleteByIds(deletedCountriesIds);
+    };
+
+    if (payload.countriesParticipation) {
+      await updateCountries(payload.countriesParticipation);
+    }
+
+    return this.getOrganizationRevenuesById(organizationId);
+  }
+
   private async checkEmail(email?: string, id?: string) {
     if (email) {
       const response = await this.orgs.findOne({ email });
@@ -569,5 +752,15 @@ export class OrganizationsService extends CrudService<Organization> {
     const added: string[] = difference(payload, values);
 
     return { added, removed };
+  }
+
+  private checkSum(payload: { count: number }[]) {
+    const total = sumBy(payload, (item) => Number(item.count));
+    if (Math.abs(total - 100) >= 0.0001) {
+      throw new BadRequestException(
+        AuthErrors.InvalidPercentageSum,
+        'The total count must equal 100',
+      );
+    }
   }
 }

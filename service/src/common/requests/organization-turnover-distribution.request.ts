@@ -1,17 +1,11 @@
 import { Transform } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  Min,
-  Validate,
-} from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, Min } from 'class-validator';
 
 import { BaseModel } from '../base';
-import { ApiProperty, EmployeesTotalEquals100 } from '../decorators';
+import { ApiProperty } from '../decorators';
 import { NumberTransformer, StringTransformer } from '../transformers';
 
-export class OrganizationContractRequest extends BaseModel {
+export class OrganizationTurnoverDistributionRequest extends BaseModel {
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
   @IsString({ message: 'errors:field.invalid' })
@@ -23,16 +17,5 @@ export class OrganizationContractRequest extends BaseModel {
   @IsNotEmpty({ message: 'errors:field.required' })
   @Transform(NumberTransformer)
   @Min(0, { message: 'errors:field.invalid' })
-  men!: number;
-
-  @ApiProperty()
-  @IsNotEmpty({ message: 'errors:field.required' })
-  @Transform(NumberTransformer)
-  @Min(0, { message: 'errors:field.invalid' })
-  women?: number;
-
-  @Validate(EmployeesTotalEquals100)
-  get _validateTotal() {
-    return true;
-  }
+  count!: number;
 }

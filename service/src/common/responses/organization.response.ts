@@ -10,13 +10,17 @@ import {
 } from '../enums';
 import { ModelTransformer } from '../transformers';
 import { ActivityResponse } from './activity.response';
+import { CountryParticipationResponse } from './country-participation.response';
 import { OrganizationActivityResponse } from './organization-activity.response';
 import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
+import { OrganizationClientResponse } from './organization-client.response';
 import { OrganizationContractResponse } from './organization-contract.response';
 import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
 import { OrganizationFormationResponse } from './organization-formation.response';
 import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
+import { OrganizationTurnoverResponse } from './organization-turnover.response';
+import { OrganizationTurnoverDistributionResponse } from './organization-turnover-distribution.response';
 import { ProductResponse } from './product.response';
 import { TagResponse } from './tag.response';
 import { AdherentResponse } from './user.response';
@@ -70,6 +74,12 @@ export class OrganizationResponse extends BaseResponseModel {
   groupAffiliation?: string;
 
   @ApiPropertyOptional()
+  headOffice?: string;
+
+  @ApiPropertyOptional()
+  fullName?: string;
+
+  @ApiPropertyOptional()
   linkedin?: string;
 
   @ApiPropertyOptional()
@@ -77,9 +87,6 @@ export class OrganizationResponse extends BaseResponseModel {
 
   @ApiPropertyOptional()
   twitter?: string;
-
-  @ApiPropertyOptional()
-  headOffice?: string;
 }
 
 export class OrganizationGeneralResponse extends OrganizationResponse {
@@ -240,4 +247,26 @@ export class OrganizationHumanResourcesResponse extends OrganizationResponse {
   @Type(() => OrganizationFormationResponse)
   @Transform(ModelTransformer(() => OrganizationFormationResponse))
   formationKpi?: OrganizationFormationResponse;
+}
+
+export class OrganizationRevenuesResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationTurnoverDistributionResponse)
+  @Transform(ModelTransformer(() => OrganizationTurnoverDistributionResponse))
+  turnoverDistribution?: OrganizationTurnoverDistributionResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationClientResponse)
+  @Transform(ModelTransformer(() => OrganizationClientResponse))
+  clientsTypes?: OrganizationClientResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationTurnoverResponse)
+  @Transform(ModelTransformer(() => OrganizationTurnoverResponse))
+  turnover?: OrganizationTurnoverResponse;
+
+  @ApiPropertyOptional()
+  @Type(() => CountryParticipationResponse)
+  @Transform(ModelTransformer(() => CountryParticipationResponse))
+  countriesParticipation?: CountryParticipationResponse[];
 }

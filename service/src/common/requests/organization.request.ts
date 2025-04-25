@@ -27,12 +27,16 @@ import {
   StringArrayTransformer,
   StringTransformer,
 } from '../transformers';
+import { CountryParticipationRequest } from './country-participation.request';
 import { OrganizationAgeKpiRequest } from './organization-age-kpi.request';
+import { OrganizationClientRequest } from './organization-client.request';
 import { OrganizationContractRequest } from './organization-contract.request';
 import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.request';
 import { OrganizationFormationRequest } from './organization-formation.request';
 import { OrganizationRevenueKpiRequest } from './organization-revenue-kpi.request';
 import { OrganizationSiteRequest } from './organization-site.request';
+import { OrganizationTurnoverRequest } from './organization-turnover.request';
+import { OrganizationTurnoverDistributionRequest } from './organization-turnover-distribution.request';
 import { ProductRequest } from './product.request';
 import { TagRequest } from './tag.request';
 
@@ -166,13 +170,6 @@ export class OrganizationRequest extends BaseModel {
 }
 
 export class UpdateOrganizationRequest extends BaseModel {
-  @ApiPropertyOptional()
-  @IsOptional(false)
-  @IsNotEmpty({ message: 'errors:field.required' })
-  @MaxLength(100, { message: 'errors:field.max_length.100' })
-  @Transform(StringTransformer)
-  name?: string;
-
   @ApiPropertyOptional()
   @IsString({ message: 'errors:field.invalid' })
   @MaxLength(100, { message: 'errors:field.max_length.100' })
@@ -399,4 +396,41 @@ export class UpdateOrganizationHumanResourcesRequest extends UpdateOrganizationR
   @ValidateNested({ message: 'errors:field.required' })
   @IsOptional()
   formationKpi?: OrganizationFormationRequest;
+}
+
+export class UpdateOrganizationRevenuesRequest extends UpdateOrganizationRequest {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationTurnoverDistributionRequest)
+  @Transform(ModelTransformer(() => OrganizationTurnoverDistributionRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  turnoverDistribution?: OrganizationTurnoverDistributionRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationClientRequest)
+  @Transform(ModelTransformer(() => OrganizationClientRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  clientsTypes?: OrganizationClientRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationTurnoverRequest)
+  @Transform(ModelTransformer(() => OrganizationTurnoverRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  turnover?: OrganizationTurnoverRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => CountryParticipationRequest)
+  @Transform(ModelTransformer(() => CountryParticipationRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  countriesParticipation?: CountryParticipationRequest[];
 }

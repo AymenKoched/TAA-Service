@@ -10,14 +10,18 @@ import {
 } from 'typeorm';
 
 import { BaseEntity } from '../common';
+import { CountryParticipation } from './country-participation.entity';
 import { OrganizationActivity } from './organization-activity.entity';
 import { OrganizationAgeKpi } from './organization-age-kpi.entity';
+import { OrganizationClient } from './organization-client.entity';
 import { OrganizationContract } from './organization-contract.entity';
 import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
 import { OrganizationFormationKpi } from './organization-formation-kpi.entity';
 import { OrganizationRevenueKpi } from './organization-revenue-kpi.entity';
 import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
+import { OrganizationTurnover } from './organization-turnover.entity';
+import { OrganizationTurnoverDistribution } from './organization-turnover-distribution.entity';
 import { Product } from './product.entity';
 import { Adherent } from './user.entity';
 
@@ -256,4 +260,31 @@ export class Organization extends BaseEntity {
     (formation) => formation.organization,
   )
   formationKpi?: OrganizationFormationKpi;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationTurnoverDistribution)
+  @OneToMany(
+    () => OrganizationTurnoverDistribution,
+    (turnover) => turnover.organization,
+  )
+  turnoverDistribution?: OrganizationTurnoverDistribution[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationClient)
+  @OneToMany(() => OrganizationClient, (client) => client.organization)
+  clientsTypes?: OrganizationClient[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationTurnover)
+  @OneToOne(() => OrganizationTurnover, (turnover) => turnover.organization)
+  turnover?: OrganizationTurnover;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => CountryParticipation)
+  @OneToMany(() => CountryParticipation, (country) => country.organization)
+  countriesParticipation?: CountryParticipation[];
 }

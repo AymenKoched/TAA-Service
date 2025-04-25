@@ -3,8 +3,10 @@ import { AuthService } from './auth';
 import { MailerService } from './mailer.service';
 import {
   ActivitiesService,
+  CountriesParticipationService,
   OrganizationActivitiesService,
   OrganizationAgesKpisService,
+  OrganizationClientsService,
   OrganizationContractsService,
   OrganizationEmployeesKpisService,
   OrganizationFormationsService,
@@ -12,6 +14,8 @@ import {
   OrganizationSitesService,
   OrganizationsService,
   OrganizationTagsService,
+  OrganizationTurnoverDistributionsService,
+  OrganizationTurnoversService,
   ProductsService,
 } from './organizations';
 import { RolesService, UserRolesService } from './roles';
@@ -55,4 +59,8 @@ export const services = [
   OrganizationRevenuesKpisService,
   OrganizationAgesKpisService,
   OrganizationFormationsService,
+  OrganizationTurnoverDistributionsService,
+  OrganizationClientsService,
+  OrganizationTurnoversService,
+  CountriesParticipationService,
 ];

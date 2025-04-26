@@ -34,7 +34,15 @@
   args:
     chdir: '{{ project_dir }}'
   ignore_errors: true
-
+  
+- name: Generate .env from ENV_DEV
+  template:
+    src: '.env.j2'
+    dest: '{{ project_dir }}/.env'
+    owner: '{{ ansible_ssh_user }}'
+    group: '{{ ansible_ssh_user }}'
+    mode: '0644'
+  become: true
 
 - name: Run taa
   command: docker compose -p taa-backend up -d --pull always --force-recreate --remove-orphans

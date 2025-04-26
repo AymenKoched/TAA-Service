@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/get-body-parser-options.util';
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
+import * as dotenv from 'dotenv';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from './app.module';
@@ -19,6 +20,7 @@ import {
   ServiceError,
 } from './common';
 import { conf } from './configuration';
+dotenv.config();
 
 const args = process.argv.slice(2);
 

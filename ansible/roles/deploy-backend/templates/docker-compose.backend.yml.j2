@@ -5,6 +5,8 @@ services:
     image: "{{ lookup('env','IMAGE_NAME') }}"
     container_name: "{{ project_name }}"
     restart: always
+    env_file:
+    - ".env"
     environment:
       VIRTUAL_HOST: "{{ host_name }}"
       LETSENCRYPT_HOST: "{{ host_name }}"

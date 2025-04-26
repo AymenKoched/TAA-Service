@@ -1,7 +1,7 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { JwtModuleOptions } from '@nestjs/jwt';
 import { readFileSync } from 'fs';
-import { isEmpty } from 'lodash';
+import { isArray, isEmpty, isObject } from 'lodash';
 import { hostname } from 'os';
 import { resolve } from 'path';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
@@ -83,7 +83,9 @@ function loadFromDirectory<T extends AppConfig = AppConfig>(
 
   if (isEmpty(devConf)) {
     try {
-      prodConf = JSON.parse(readFileSync(envConfigPath).toString());
+      console.log('env: ', process.env);
+      const prodConfStr = readFileSync(envConfigPath).toString();
+      prodConf = setEnvVars(JSON.parse(prodConfStr));
     } catch (e) {
       console.error(e);
       prodConf = {};
@@ -96,4 +98,44 @@ function loadFromDirectory<T extends AppConfig = AppConfig>(
       appname: projectPackage.name,
     },
   });
+}
+
+function setEnvVars(original: any): any {
+  if (typeof original === 'string') {
+    const regex = new RegExp(/^\{\{(.+?)\}\}$/g);
+    const match = regex.exec(original);
+
+    if (isEmpty(match) || !match[1]) {
+      return original;
+    }
+    if (match[1].includes(':')) {
+      const parts = match[1].split(':');
+      switch (parts[1]?.toLowerCase()) {
+        case 'array':
+          return getEnvArray(parts[0]);
+        case 'number':
+          return Number(process.env[parts[0]]);
+      }
+    }
+    return process.env[match[1]] || match[1];
+  }
+
+  if (isArray(original)) {
+    return original.map((item) => setEnvVars(item));
+  }
+
+  if (isObject(original)) {
+    return Object.keys(original).reduce(
+      (acc, key) => ({ ...acc, [key]: setEnvVars(original[key]) }),
+      {},
+    );
+  }
+
+  return original;
+}
+
+function getEnvArray(varName: string): string[] {
+  return Object.keys(process.env)
+    .filter((key) => key.startsWith(varName))
+    .map((key) => process.env[key]);
 }

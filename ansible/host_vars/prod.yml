@@ -1,4 +1,0 @@
-# Docker
-
-host_name: api.taa.vayetek.com
-env_file: "{{ lookup('env','ENV_PROD') }}"

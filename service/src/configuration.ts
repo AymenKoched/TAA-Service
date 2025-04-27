@@ -1,14 +1,13 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { JwtModuleOptions } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
-
-// Load environment variables from .env file
-dotenv.config();
 import { readFileSync } from 'fs';
 import { isArray, isEmpty, isObject } from 'lodash';
 import { hostname } from 'os';
 import { resolve } from 'path';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
+
+dotenv.config();
 
 export interface AppConfig {
   environment?: Environment;
@@ -69,24 +68,31 @@ conf.jwt.privateKey = readFileSync(resolve(conf.jwt.privateKeyPath)).toString(
 function loadFromDirectory<T extends AppConfig = AppConfig>(
   rootProjectPath: string,
 ): T {
-  let prodConf;
-
   const confDirectory = resolve(rootProjectPath, './conf');
   const packagePath = resolve(rootProjectPath, './package.json');
   const envConfigPath = resolve(confDirectory, './env.json');
 
   const projectPackage = JSON.parse(readFileSync(packagePath).toString());
 
+  let myConf;
+
   try {
-    console.log('env: ', process.env);
-    const prodConfStr = readFileSync(envConfigPath).toString();
-    prodConf = setEnvVars(JSON.parse(prodConfStr));
+    const confStr = readFileSync(envConfigPath).toString();
+    myConf = setEnvVars(JSON.parse(confStr));
   } catch (e) {
     console.error(e);
-    prodConf = {};
+    myConf = {};
   }
 
-  return Object.assign(prodConf, {
+  if (myConf.environment === Environment.Production) {
+    myConf.database.entities = ['dist/entities/**/*.js'];
+    myConf.database.migrations = ['dist/db/migrations/**/*.js'];
+  } else {
+    myConf.database.entities = ['src/entities/**/*.ts'];
+    myConf.database.migrations = ['src/db/migrations/**/*.ts'];
+  }
+
+  return Object.assign(myConf, {
     app: {
       hostname: hostname(),
       appname: projectPackage.name,

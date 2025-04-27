@@ -20,6 +20,7 @@ import {
   ServiceError,
 } from './common';
 import { conf } from './configuration';
+
 dotenv.config();
 
 const args = process.argv.slice(2);

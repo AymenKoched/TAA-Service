@@ -23,19 +23,6 @@ services:
     volumes:
       - cb-data:/opt/cloudbeaver/workspace
 
-  myapp:
-    container_name: myapp_container
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '7001:7001'
-    depends_on:
-      mysql:
-        condition: service_started
-    env_file:
-      - ./.env
-
 volumes:
   db-data:
   cb-data:

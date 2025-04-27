@@ -84,22 +84,20 @@ function loadFromDirectory<T extends AppConfig = AppConfig>(
     myConf = {};
   }
 
-  const finalConf = Object.assign(myConf, {
+  if (myConf.environment === Environment.Production) {
+    myConf.database.entities = ['dist/entities/**/*.js'];
+    myConf.database.migrations = ['dist/db/migrations/**/*.js'];
+  } else {
+    myConf.database.entities = ['src/entities/**/*.ts'];
+    myConf.database.migrations = ['src/db/migrations/**/*.ts'];
+  }
+
+  return Object.assign(myConf, {
     app: {
       hostname: hostname(),
       appname: projectPackage.name,
     },
   });
-
-  if (finalConf.environment === Environment.Production) {
-    finalConf.database.entities = ['dist/entities/**/*.js'];
-    finalConf.database.migrations = ['dist/db/migrations/**/*.js'];
-  } else {
-    finalConf.database.entities = ['src/entities/**/*.ts'];
-    finalConf.database.migrations = ['src/db/migrations/**/*.ts'];
-  }
-
-  return finalConf;
 }
 
 function setEnvVars(original: any): any {

@@ -22,7 +22,7 @@ services:
       - '8978:8978'
     volumes:
       - cb-data:/opt/cloudbeaver/workspace
-      -
+
 volumes:
   db-data:
   cb-data:

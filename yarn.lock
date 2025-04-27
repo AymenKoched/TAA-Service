@@ -9492,9 +9492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"service@workspace:service":
+"service-taa@workspace:service":
   version: 0.0.0-use.local
-  resolution: "service@workspace:service"
+  resolution: "service-taa@workspace:service"
   dependencies:
     "@nestjs/axios": ^3.0.0
     "@nestjs/cli": ^8.0.0

@@ -44,7 +44,6 @@ COPY --from=builder "/app/assets*" ./assets
 USER root
 
 RUN rm -f ./node_modules.tar.gz
-RUN rm -f ./conf/env-dev.json
 
 USER node
 EXPOSE 7001

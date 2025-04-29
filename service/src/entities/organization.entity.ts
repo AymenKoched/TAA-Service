@@ -13,10 +13,14 @@ import { BaseEntity } from '../common';
 import { CountryParticipation } from './country-participation.entity';
 import { OrganizationActivity } from './organization-activity.entity';
 import { OrganizationAgeKpi } from './organization-age-kpi.entity';
+import { OrganizationAttribute } from './organization-attribute.entity';
 import { OrganizationClient } from './organization-client.entity';
 import { OrganizationContract } from './organization-contract.entity';
 import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
 import { OrganizationFormationKpi } from './organization-formation-kpi.entity';
+import { OrganizationInitiative } from './organization-initiative.entity';
+import { OrganizationRAndDProject } from './organization-rd-project.entity';
+import { OrganizationResearchDevelopment } from './organization-research-development.entity';
 import { OrganizationRevenueKpi } from './organization-revenue-kpi.entity';
 import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
@@ -287,4 +291,31 @@ export class Organization extends BaseEntity {
   @Type(() => CountryParticipation)
   @OneToMany(() => CountryParticipation, (country) => country.organization)
   countriesParticipation?: CountryParticipation[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationAttribute)
+  @OneToMany(() => OrganizationAttribute, (attribute) => attribute.organization)
+  attributes?: OrganizationAttribute[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationResearchDevelopment)
+  @OneToOne(() => OrganizationResearchDevelopment, (rd) => rd.organization)
+  researchDevelopment?: OrganizationResearchDevelopment;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationRAndDProject)
+  @OneToMany(() => OrganizationRAndDProject, (project) => project.organization)
+  rAndDProjects?: OrganizationRAndDProject[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationInitiative)
+  @OneToMany(
+    () => OrganizationInitiative,
+    (initiative) => initiative.organization,
+  )
+  initiatives?: OrganizationInitiative[];
 }

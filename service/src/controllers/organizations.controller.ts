@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 
 import {
   ConvertResponse,
+  OrganizationExtrasResponse,
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
   OrganizationProductsResponse,
@@ -9,6 +10,7 @@ import {
   OrganizationResponse,
   OrganizationRevenuesResponse,
   RoleAccess,
+  UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
   UpdateOrganizationProductsRequest,
@@ -57,6 +59,15 @@ export class OrganizationsController {
     return this.orgs.getOrganizationRevenuesById(organizationId);
   }
 
+  @Get(':organizationId/extras')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationExtrasResponse)
+  public async getOrganizationExtras(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationExtrasResponse> {
+    return this.orgs.getOrganizationExtrasById(organizationId);
+  }
+
   @Post()
   @ConvertResponse(OrganizationResponse)
   public async createOrganization(
@@ -103,5 +114,15 @@ export class OrganizationsController {
     @Body() payload: UpdateOrganizationRevenuesRequest,
   ): Promise<OrganizationRevenuesResponse> {
     return this.orgs.updateOrganizationRevenues(organizationId, payload);
+  }
+
+  @Put(':organizationId/extras')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationExtrasResponse)
+  public async updateOrganizationExtras(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationExtrasRequest,
+  ): Promise<OrganizationExtrasResponse> {
+    return this.orgs.updateOrganizationExtras(organizationId, payload);
   }
 }

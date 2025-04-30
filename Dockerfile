@@ -26,7 +26,6 @@ FROM installer as builder
 
 RUN yarn install
 RUN yarn build
-RUN yarn db:migration:run
 
 
 FROM base
@@ -49,4 +48,4 @@ RUN rm -f ./node_modules.tar.gz
 
 USER node
 EXPOSE 7001
-CMD node ./dist/main.js
+CMD ["sh","-C","node ./dist/main.js migrate && node ./dist/main.js" ]

@@ -101,6 +101,6 @@ export class MailerService {
     finalPassword: string,
   ): string {
     return `<h1>Welcome to TAA platform</h1>
-            <p>Hello ${userName}, This is your password: <span>${finalPassword}</span>. You should change it as soon as possible.</p>`;
+            <p>Hello ${userName}, This is your password: <strong>${finalPassword}</strong> .<br>You should change it as soon as possible.</p>`;
   }
 }

@@ -9,6 +9,7 @@ import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/ge
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from './app.module';
 import {
@@ -32,6 +33,7 @@ async function bootstrap() {
     await runDatabaseMigration(conf);
     process.exit();
   }
+  initializeTransactionalContext();
 
   const app = await NestFactory.create(AppModule, { rawBody: false });
   app.enableShutdownHooks();

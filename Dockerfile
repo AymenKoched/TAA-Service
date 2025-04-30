@@ -26,6 +26,8 @@ FROM installer as builder
 
 RUN yarn install
 RUN yarn build
+RUN yarn db:migration:run
+
 
 FROM base
 

@@ -4,7 +4,10 @@ import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, MigrationExecutor } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-import { addTransactionalDataSource } from 'typeorm-transactional';
+import {
+  addTransactionalDataSource,
+  getDataSourceByName,
+} from 'typeorm-transactional';
 import { v4 as uuid } from 'uuid';
 
 import { AppConfig } from '../../configuration';
@@ -111,7 +114,10 @@ export function getDatabaseModule(conf?: TypeOrmModuleOptions) {
         );
       }
 
-      return addTransactionalDataSource(new DataSource(opts));
+      return (
+        getDataSourceByName('default') ||
+        addTransactionalDataSource(new DataSource(opts))
+      );
     },
   });
 }

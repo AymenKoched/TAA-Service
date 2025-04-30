@@ -1,23 +1,16 @@
 import { Transform } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  Min,
-  Validate,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, Min, Validate } from 'class-validator';
 
 import { BaseModel } from '../base';
 import { ApiProperty, EmployeesTotalEquals100 } from '../decorators';
-import { NumberTransformer, StringTransformer } from '../transformers';
+import { OrganizationContractType } from '../enums';
+import { NumberTransformer } from '../transformers';
 
 export class OrganizationContractRequest extends BaseModel {
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
-  @IsString({ message: 'errors:field.invalid' })
-  @MaxLength(200, { message: 'errors:field.max_length.200' })
-  @Transform(StringTransformer)
-  type!: string;
+  @IsEnum(OrganizationContractType, { message: 'errors:field.invalid' })
+  type!: OrganizationContractType;
 
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })

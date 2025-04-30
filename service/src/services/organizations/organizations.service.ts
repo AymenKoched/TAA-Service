@@ -1,23 +1,38 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { difference, filter, find, map, omit, sumBy } from 'lodash';
+import {
+  difference,
+  filter,
+  find,
+  includes,
+  isEmpty,
+  map,
+  omit,
+  sumBy,
+} from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
   ADHERENT_ROLE_NAME,
+  AttributeRequest,
   AuthErrors,
   CountryParticipationRequest,
   CrudService,
   EmployeesKpiType,
   OrganizationActivityType,
   OrganizationAgeKpiRequest,
+  OrganizationAttributeType,
   OrganizationClientRequest,
   OrganizationContractRequest,
   OrganizationEmployeeKpiRequest,
+  OrganizationExtrasResponse,
   OrganizationFormationRequest,
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
+  OrganizationInitiativeRequest,
   OrganizationProductsResponse,
+  OrganizationRdProjectRequest,
   OrganizationRequest,
+  OrganizationResearchDevelopmentRequest,
   OrganizationResponse,
   OrganizationRevenueKpiRequest,
   OrganizationRevenuesResponse,
@@ -26,7 +41,9 @@ import {
   OrganizationTagType,
   OrganizationTurnoverDistributionRequest,
   OrganizationTurnoverRequest,
+  ProductType,
   TagRequest,
+  UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
   UpdateOrganizationProductsRequest,
@@ -40,10 +57,14 @@ import { UsersService } from '../users';
 import { CountriesParticipationService } from './countries-participation.service';
 import { OrganizationActivitiesService } from './organization-activities.service';
 import { OrganizationAgesKpisService } from './organization-ages-kpis.service';
+import { OrganizationAttributesService } from './organization-attributes.service';
 import { OrganizationClientsService } from './organization-clients.service';
 import { OrganizationContractsService } from './organization-contracts.service';
 import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
 import { OrganizationFormationsService } from './organization-formations.service';
+import { OrganizationInitiativesService } from './organization-initiatives.service';
+import { OrganizationRdProjectsService } from './organization-rd-projects.service';
+import { OrganizationResearchDevelopmentsService } from './organization-research-developments.service';
 import { OrganizationRevenuesKpisService } from './organization-revenues-kpis.service';
 import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
@@ -78,6 +99,14 @@ export class OrganizationsService extends CrudService<Organization> {
     'turnover',
     'countriesParticipation',
   ];
+  private readonly expandsExtras: string[] = [
+    'products',
+    'attributes',
+    'researchDevelopment',
+    'tags',
+    'rAndDProjects',
+    'initiatives',
+  ];
 
   constructor(
     private readonly orgs: OrganizationsRepository,
@@ -97,6 +126,10 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly clients: OrganizationClientsService,
     private readonly turnovers: OrganizationTurnoversService,
     private readonly countries: CountriesParticipationService,
+    private readonly attributes: OrganizationAttributesService,
+    private readonly research: OrganizationResearchDevelopmentsService,
+    private readonly rdProjects: OrganizationRdProjectsService,
+    private readonly initiatives: OrganizationInitiativesService,
   ) {
     super(orgs);
   }
@@ -120,7 +153,10 @@ export class OrganizationsService extends CrudService<Organization> {
       organizationId,
       this.expandsProducts,
     );
-    return new OrganizationProductsResponse(organization);
+    return new OrganizationProductsResponse({
+      ...organization,
+      products: filter(organization.products, { type: ProductType.Old }),
+    });
   }
 
   async getOrganizationHumanResourcesById(organizationId: string) {
@@ -137,6 +173,20 @@ export class OrganizationsService extends CrudService<Organization> {
       this.expandsRevenues,
     );
     return new OrganizationRevenuesResponse(organization);
+  }
+
+  async getOrganizationExtrasById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsExtras,
+    );
+    return new OrganizationExtrasResponse({
+      ...organization,
+      products: filter(organization.products, { type: ProductType.New }),
+      certifications: filter(organization.tags, {
+        type: OrganizationTagType.Certification,
+      }),
+    });
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -203,33 +253,17 @@ export class OrganizationsService extends CrudService<Organization> {
       omit(payload, ['rAndDSites', 'otherLocations']),
     );
 
-    const updateTags = async (
-      newTags: TagRequest[],
-      type: OrganizationTagType,
-    ) => {
-      const currentTagsIds = map(
-        filter(
-          organization.tags,
-          (organizationTag) => organizationTag.type === type,
-        ),
-        'id',
-      );
-      await this.tags.deleteByIds(currentTagsIds);
-      await this.tags.create(
-        map(newTags, (newTag) => ({
-          name: newTag.name,
-          type,
-          organizationId,
-        })),
-      );
-    };
-
     if (payload?.rAndDSites) {
-      await updateTags(payload.rAndDSites, OrganizationTagType.RAndD);
+      await this.updateTags(
+        organization,
+        payload.rAndDSites,
+        OrganizationTagType.RAndD,
+      );
     }
 
     if (payload?.otherLocations) {
-      await updateTags(
+      await this.updateTags(
+        organization,
         payload.otherLocations,
         OrganizationTagType.OtherLocations,
       );
@@ -262,7 +296,9 @@ export class OrganizationsService extends CrudService<Organization> {
     );
 
     if (payload?.products) {
-      const existingProducts = organization.products;
+      const existingProducts = filter(organization.products, {
+        type: ProductType.Old,
+      });
 
       await Promise.all(
         map(payload.products, async (productPayload) => {
@@ -277,6 +313,7 @@ export class OrganizationsService extends CrudService<Organization> {
             await this.products.create({
               ...productPayload,
               organizationId,
+              type: ProductType.Old,
             });
           }
         }),
@@ -286,7 +323,9 @@ export class OrganizationsService extends CrudService<Organization> {
         filter(
           existingProducts,
           (existingProduct) =>
-            !find(payload.products, { name: existingProduct.name }),
+            !find(payload.products, {
+              name: existingProduct.name,
+            }),
         ),
         'id',
       );
@@ -543,7 +582,9 @@ export class OrganizationsService extends CrudService<Organization> {
       }
     };
 
-    await updateAgesKpi(payload.ageKpis);
+    if (payload?.ageKpis) {
+      await updateAgesKpi(payload.ageKpis);
+    }
 
     const updateFormationKpi = async (
       newFormationKpi: OrganizationFormationRequest,
@@ -677,7 +718,9 @@ export class OrganizationsService extends CrudService<Organization> {
       }
     };
 
-    await updateTurnover(payload.turnover);
+    if (payload?.turnover) {
+      await updateTurnover(payload.turnover);
+    }
 
     const updateCountries = async (
       newCounties: CountryParticipationRequest[],
@@ -722,6 +765,235 @@ export class OrganizationsService extends CrudService<Organization> {
     return this.getOrganizationRevenuesById(organizationId);
   }
 
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationExtras(
+    organizationId: string,
+    payload: UpdateOrganizationExtrasRequest,
+  ) {
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: this.expandsExtras,
+      },
+    });
+
+    await this.updateById(
+      organizationId,
+      omit(payload, [
+        'products',
+        'investments',
+        'esgs',
+        'partnerships',
+        'technologies',
+        'researchDevelopment',
+        'certifications',
+        'rAndDProjects',
+        'initiatives',
+      ]),
+    );
+
+    if (payload?.products) {
+      const existingProducts = filter(organization.products, {
+        type: ProductType.New,
+      });
+
+      await Promise.all(
+        map(payload.products, async (productPayload) => {
+          const existingProduct = find(existingProducts, {
+            name: productPayload.name,
+          });
+          if (existingProduct) {
+            return this.products.update(existingProduct.id, {
+              ...productPayload,
+            });
+          } else {
+            await this.products.create({
+              ...productPayload,
+              organizationId,
+              type: ProductType.New,
+            });
+          }
+        }),
+      );
+
+      const deletedProductsIds = map(
+        filter(
+          existingProducts,
+          (existingProduct) =>
+            !find(payload.products, {
+              name: existingProduct.name,
+            }),
+        ),
+        'id',
+      );
+      await this.products.deleteByIds(deletedProductsIds);
+    }
+
+    const updateAttributes = async (
+      newAttributes: AttributeRequest[],
+      type: OrganizationAttributeType,
+    ) => {
+      const existingAttributes = filter(organization.attributes, { type });
+
+      await Promise.all(
+        map(newAttributes, async (newAttribute) => {
+          const existingAttribute = find(existingAttributes, {
+            name: newAttribute.name,
+          });
+          if (existingAttribute) {
+            return this.attributes.update(existingAttribute.id, {
+              ...newAttribute,
+            });
+          } else {
+            await this.attributes.create({
+              ...newAttribute,
+              organizationId,
+              type,
+            });
+          }
+        }),
+      );
+
+      const deletedAttributesIds = map(
+        filter(
+          existingAttributes,
+          (existingAttribute) =>
+            !find(newAttributes, { name: existingAttribute.name }),
+        ),
+        'id',
+      );
+      await this.attributes.deleteByIds(deletedAttributesIds);
+    };
+
+    if (payload?.investments) {
+      await updateAttributes(
+        payload.investments,
+        OrganizationAttributeType.Investment,
+      );
+    }
+
+    if (payload?.esgs) {
+      await updateAttributes(payload.esgs, OrganizationAttributeType.ESG);
+    }
+
+    if (payload?.partnerships) {
+      await updateAttributes(
+        payload.partnerships,
+        OrganizationAttributeType.Partnerships,
+      );
+    }
+
+    if (payload?.technologies) {
+      await updateAttributes(
+        payload.technologies,
+        OrganizationAttributeType.Technologies,
+      );
+    }
+
+    const updateResearch = async (
+      newResearch: OrganizationResearchDevelopmentRequest,
+    ) => {
+      const existingResearch = organization.researchDevelopment;
+
+      if (existingResearch) {
+        await this.research.updateById(existingResearch.id, newResearch);
+      } else {
+        await this.research.create({
+          ...newResearch,
+          organizationId,
+        });
+      }
+    };
+
+    if (payload?.researchDevelopment) {
+      await updateResearch(payload.researchDevelopment);
+    }
+
+    if (payload?.certifications) {
+      await this.updateTags(
+        organization,
+        payload.certifications,
+        OrganizationTagType.Certification,
+      );
+    }
+
+    const updateRDProjects = async (
+      newRDProjects: OrganizationRdProjectRequest[],
+    ) => {
+      const existingProjects = organization.rAndDProjects;
+
+      await Promise.all(
+        map(newRDProjects, async (newRDProject) => {
+          const existingProject = find(existingProjects, {
+            name: newRDProject.name,
+          });
+          if (existingProject) {
+            return this.rdProjects.update(existingProject.id, newRDProject);
+          } else {
+            await this.rdProjects.create({
+              ...newRDProject,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedProjectIds = map(
+        filter(
+          existingProjects,
+          (existingProject) =>
+            !find(newRDProjects, { name: existingProject.name }),
+        ),
+        'id',
+      );
+      await this.rdProjects.deleteByIds(deletedProjectIds);
+    };
+
+    if (payload?.rAndDProjects) {
+      await updateRDProjects(payload.rAndDProjects);
+    }
+
+    const updateInitiatives = async (
+      newInitiatives: OrganizationInitiativeRequest[],
+    ) => {
+      const existingInitiatives = organization.initiatives;
+
+      await Promise.all(
+        map(newInitiatives, async (newInitiative) => {
+          const existingInitiative = find(existingInitiatives, {
+            name: newInitiative.name,
+          });
+          if (existingInitiative) {
+            return this.initiatives.update(
+              existingInitiative.id,
+              newInitiative,
+            );
+          } else {
+            await this.initiatives.create({
+              ...newInitiative,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedInitiativesIds = map(
+        filter(
+          existingInitiatives,
+          (existingInitiative) =>
+            !find(newInitiatives, { name: existingInitiative.name }),
+        ),
+        'id',
+      );
+      await this.initiatives.deleteByIds(deletedInitiativesIds);
+    };
+
+    if (payload?.initiatives) {
+      await updateInitiatives(payload.initiatives);
+    }
+
+    return this.getOrganizationExtrasById(organizationId);
+  }
+
   private async checkEmail(email?: string, id?: string) {
     if (email) {
       const response = await this.orgs.findOne({ email });
@@ -760,6 +1032,46 @@ export class OrganizationsService extends CrudService<Organization> {
       throw new BadRequestException(
         AuthErrors.InvalidPercentageSum,
         'The total count must equal 100',
+      );
+    }
+  }
+
+  private async updateTags(
+    organization: Organization,
+    newTags: TagRequest[],
+    type: OrganizationTagType,
+  ) {
+    const currentTags = filter(
+      organization.tags,
+      (organizationTag) => organizationTag.type === type,
+    );
+
+    const currentNames = map(currentTags, 'name');
+    const newNames = map(newTags, 'name');
+
+    const { removed: tagsToRemove, added: tagsToAdd } = this.getDifferences(
+      newNames,
+      currentNames,
+    );
+
+    const tagsToDelete = filter(currentTags, (tag) =>
+      includes(tagsToRemove, tag.name),
+    );
+    const tagsToCreate = filter(newTags, (tag) =>
+      includes(tagsToAdd, tag.name),
+    );
+
+    if (!isEmpty(tagsToDelete)) {
+      await this.tags.deleteByIds(map(tagsToDelete, 'id'));
+    }
+
+    if (!isEmpty(tagsToCreate)) {
+      await this.tags.create(
+        map(tagsToCreate, (tag) => ({
+          name: tag.name,
+          type,
+          organizationId: organization.id,
+        })),
       );
     }
   }

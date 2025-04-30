@@ -2,10 +2,10 @@ import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { BaseModel } from '../base';
-import { ApiProperty, ApiPropertyOptional, IsOptional } from '../decorators';
+import { ApiProperty } from '../decorators';
 import { StringTransformer } from '../transformers';
 
-export class ProductRequest extends BaseModel {
+export class OrganizationInitiativeRequest extends BaseModel {
   @ApiProperty()
   @IsNotEmpty({ message: 'errors:field.required' })
   @IsString({ message: 'errors:field.invalid' })
@@ -14,14 +14,9 @@ export class ProductRequest extends BaseModel {
   name!: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty({ message: 'errors:field.required' })
   @IsString({ message: 'errors:field.invalid' })
+  @MaxLength(500, { message: 'errors:field.max_length.500' })
   @Transform(StringTransformer)
-  ngp?: string;
-
-  @ApiPropertyOptional()
-  @IsString({ message: 'errors:field.invalid' })
-  @IsOptional()
-  @Transform(StringTransformer)
-  description?: string;
+  impact!: string;
 }

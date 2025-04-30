@@ -27,12 +27,16 @@ import {
   StringArrayTransformer,
   StringTransformer,
 } from '../transformers';
+import { AttributeRequest } from './attribute.request';
 import { CountryParticipationRequest } from './country-participation.request';
 import { OrganizationAgeKpiRequest } from './organization-age-kpi.request';
 import { OrganizationClientRequest } from './organization-client.request';
 import { OrganizationContractRequest } from './organization-contract.request';
 import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.request';
 import { OrganizationFormationRequest } from './organization-formation.request';
+import { OrganizationInitiativeRequest } from './organization-initiative.request';
+import { OrganizationRdProjectRequest } from './organization-rd-project.request';
+import { OrganizationResearchDevelopmentRequest } from './organization-research-development.request';
 import { OrganizationRevenueKpiRequest } from './organization-revenue-kpi.request';
 import { OrganizationSiteRequest } from './organization-site.request';
 import { OrganizationTurnoverRequest } from './organization-turnover.request';
@@ -433,4 +437,86 @@ export class UpdateOrganizationRevenuesRequest extends UpdateOrganizationRequest
   @ValidateNested({ each: true })
   @IsOptional()
   countriesParticipation?: CountryParticipationRequest[];
+}
+
+export class UpdateOrganizationExtrasRequest extends UpdateOrganizationRequest {
+  @ApiPropertyOptional()
+  @Type(() => ProductRequest)
+  @Transform(ModelTransformer(() => ProductRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  products?: ProductRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => AttributeRequest)
+  @Transform(ModelTransformer(() => AttributeRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  investments?: AttributeRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => AttributeRequest)
+  @Transform(ModelTransformer(() => AttributeRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  esgs?: AttributeRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => AttributeRequest)
+  @Transform(ModelTransformer(() => AttributeRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  partnerships?: AttributeRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => AttributeRequest)
+  @Transform(ModelTransformer(() => AttributeRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  technologies?: AttributeRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationResearchDevelopmentRequest)
+  @Transform(ModelTransformer(() => OrganizationResearchDevelopmentRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  researchDevelopment?: OrganizationResearchDevelopmentRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => TagRequest)
+  @Transform(ModelTransformer(() => TagRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  certifications?: TagRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationRdProjectRequest)
+  @Transform(ModelTransformer(() => OrganizationRdProjectRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  rAndDProjects?: OrganizationRdProjectRequest[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationInitiativeRequest)
+  @Transform(ModelTransformer(() => OrganizationInitiativeRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  initiatives?: OrganizationInitiativeRequest[];
 }

@@ -28,10 +28,7 @@ async function bootstrap() {
 
   console.log(conf);
 
-  if (args.find((arg) => arg === 'migrate')) {
-    await runDatabaseMigration(conf);
-    process.exit();
-  }
+  await runDatabaseMigration(conf);
 
   const app = await NestFactory.create(AppModule, { rawBody: false });
   app.enableShutdownHooks();

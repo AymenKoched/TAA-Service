@@ -20,7 +20,7 @@ package:
     - docker build --pull -t "$IMAGE_NAME" -f Dockerfile .
     - docker push $IMAGE_NAME
   only:
-    - main
+    - develop
 
 
 ansible-deploy:
@@ -37,4 +37,4 @@ ansible-deploy:
   after_script:
     - cd ..
   only:
-     - main
+     - develop

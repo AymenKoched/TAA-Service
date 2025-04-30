@@ -1,4 +1,5 @@
 export * from './activity.response';
+export * from './attribute.response';
 export * from './country-participation.response';
 export * from './organization.response';
 export * from './organization-activity.response';
@@ -7,6 +8,9 @@ export * from './organization-client.response';
 export * from './organization-contract.response';
 export * from './organization-employee-kpi.response';
 export * from './organization-formation.response';
+export * from './organization-initiative.response';
+export * from './organization-rd-project.response';
+export * from './organization-research-development.response';
 export * from './organization-revenue-kpi.response';
 export * from './organization-site.response';
 export * from './organization-turnover.response';

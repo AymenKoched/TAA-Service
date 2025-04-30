@@ -5,11 +5,13 @@ import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
 import {
   OrganizationActivityType,
+  OrganizationAttributeType,
   OrganizationSiteType,
   OrganizationTagType,
 } from '../enums';
 import { ModelTransformer } from '../transformers';
 import { ActivityResponse } from './activity.response';
+import { AttributeResponse } from './attribute.response';
 import { CountryParticipationResponse } from './country-participation.response';
 import { OrganizationActivityResponse } from './organization-activity.response';
 import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
@@ -17,6 +19,9 @@ import { OrganizationClientResponse } from './organization-client.response';
 import { OrganizationContractResponse } from './organization-contract.response';
 import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
 import { OrganizationFormationResponse } from './organization-formation.response';
+import { OrganizationInitiativeResponse } from './organization-initiative.response';
+import { OrganizationRdProjectResponse } from './organization-rd-project.response';
+import { OrganizationResearchDevelopmentResponse } from './organization-research-development.response';
 import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
 import { OrganizationTurnoverResponse } from './organization-turnover.response';
@@ -269,4 +274,102 @@ export class OrganizationRevenuesResponse extends OrganizationResponse {
   @Type(() => CountryParticipationResponse)
   @Transform(ModelTransformer(() => CountryParticipationResponse))
   countriesParticipation?: CountryParticipationResponse[];
+}
+
+export class OrganizationExtrasResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => ProductResponse))
+  @Type(() => ProductResponse)
+  products?: ProductResponse[];
+
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => AttributeResponse))
+  @Type(() => AttributeResponse)
+  attributes?: AttributeResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => AttributeResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      AttributeResponse,
+      filter(
+        map(obj.attributes, (attribute) =>
+          attribute.type === OrganizationAttributeType.Investment
+            ? attribute
+            : null,
+        ),
+      ) || [],
+    ]),
+  )
+  investments?: AttributeResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => AttributeResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      AttributeResponse,
+      filter(
+        map(obj.attributes, (attribute) =>
+          attribute.type === OrganizationAttributeType.ESG ? attribute : null,
+        ),
+      ) || [],
+    ]),
+  )
+  esgs?: AttributeResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => AttributeResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      AttributeResponse,
+      filter(
+        map(obj.attributes, (attribute) =>
+          attribute.type === OrganizationAttributeType.Partnerships
+            ? attribute
+            : null,
+        ),
+      ) || [],
+    ]),
+  )
+  partnerships?: AttributeResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => AttributeResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      AttributeResponse,
+      filter(
+        map(obj.attributes, (attribute) =>
+          attribute.type === OrganizationAttributeType.Technologies
+            ? attribute
+            : null,
+        ),
+      ) || [],
+    ]),
+  )
+  technologies?: AttributeResponse[];
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationResearchDevelopmentResponse)
+  @Transform(ModelTransformer(() => OrganizationResearchDevelopmentResponse))
+  researchDevelopment?: OrganizationResearchDevelopmentResponse;
+
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => TagResponse))
+  @Type(() => TagResponse)
+  certifications?: TagResponse[];
+
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => OrganizationRdProjectResponse))
+  @Type(() => OrganizationRdProjectResponse)
+  rAndDProjects?: OrganizationRdProjectResponse[];
+
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => OrganizationInitiativeResponse))
+  @Type(() => OrganizationInitiativeResponse)
+  initiatives?: OrganizationInitiativeResponse[];
 }

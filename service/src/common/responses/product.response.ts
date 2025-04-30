@@ -13,7 +13,7 @@ export class ProductResponse extends BaseResponseModel {
   description?: string;
 
   @ApiProperty()
-  ngp!: string;
+  ngp?: string;
 
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => OrganizationResponse))

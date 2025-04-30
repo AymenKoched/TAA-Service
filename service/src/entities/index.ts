@@ -3,9 +3,13 @@ import { CountryParticipation } from './country-participation.entity';
 import { Organization } from './organization.entity';
 import { OrganizationActivity } from './organization-activity.entity';
 import { OrganizationAgeKpi } from './organization-age-kpi.entity';
+import { OrganizationAttribute } from './organization-attribute.entity';
 import { OrganizationClient } from './organization-client.entity';
 import { OrganizationContract } from './organization-contract.entity';
 import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
+import { OrganizationInitiative } from './organization-initiative.entity';
+import { OrganizationRAndDProject } from './organization-rd-project.entity';
+import { OrganizationResearchDevelopment } from './organization-research-development.entity';
 import { OrganizationRevenueKpi } from './organization-revenue-kpi.entity';
 import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
@@ -22,9 +26,13 @@ export * from './country-participation.entity';
 export * from './organization.entity';
 export * from './organization-activity.entity';
 export * from './organization-age-kpi.entity';
+export * from './organization-attribute.entity';
 export * from './organization-client.entity';
 export * from './organization-contract.entity';
 export * from './organization-employee-kpi.entity';
+export * from './organization-initiative.entity';
+export * from './organization-rd-project.entity';
+export * from './organization-research-development.entity';
 export * from './organization-revenue-kpi.entity';
 export * from './organization-site.entity';
 export * from './organization-tag.entity';
@@ -58,4 +66,8 @@ export const entities = [
   OrganizationClient,
   OrganizationTurnover,
   CountryParticipation,
+  OrganizationAttribute,
+  OrganizationResearchDevelopment,
+  OrganizationRAndDProject,
+  OrganizationInitiative,
 ];

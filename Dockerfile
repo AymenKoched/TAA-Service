@@ -48,4 +48,4 @@ RUN rm -f ./node_modules.tar.gz
 
 USER node
 EXPOSE 7001
-CMD ["sh","-C","node ./dist/main.js migrate && node ./dist/main.js" ]
+CMD node ./dist/main.js

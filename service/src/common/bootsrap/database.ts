@@ -1,9 +1,10 @@
+import 'dotenv/config';
+
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { pick } from 'lodash';
 import { DataSource, MigrationExecutor } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-import { addTransactionalDataSource } from 'typeorm-transactional';
 import { v4 as uuid } from 'uuid';
 
 import { AppConfig } from '../../configuration';
@@ -170,17 +171,26 @@ export async function closeAllDataSources() {
   dataSources.clear();
 }
 
-export function getDatabaseModule(conf?: TypeOrmModuleOptions) {
-  return TypeOrmModule.forRootAsync({
-    useFactory: () => conf,
-    dataSourceFactory: async (opts) => {
-      if (!opts) {
-        throw new Error(
-          `Invalid options passed to init datasource ${JSON.stringify(opts)}`,
-        );
-      }
-
-      return addTransactionalDataSource(new DataSource(opts));
-    },
+export function getDatabaseModule() {
+  console.log('Database module is starting...');
+  console.log(
+    'Database :',
+    process.env.DB_NAME,
+    process.env.DB_HOST,
+    process.env.DB_PORT,
+    process.env.DB_USERNAME,
+    process.env.DB_PASSWORD,
+  );
+  return TypeOrmModule.forRoot({
+    type: 'mysql',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT, 10),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: false,
+    autoLoadEntities: true,
+    logging: true,
   });
 }

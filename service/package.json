@@ -24,6 +24,7 @@
   "dependencies": {
     "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",

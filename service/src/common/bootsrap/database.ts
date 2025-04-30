@@ -2,7 +2,6 @@ import 'dotenv/config';
 
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { pick } from 'lodash';
 import { DataSource, MigrationExecutor } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import { v4 as uuid } from 'uuid';
@@ -12,76 +11,6 @@ import { AppConfig } from '../../configuration';
 const logger = new Logger('Database');
 
 export type DatabaseConfiguration = MysqlConnectionOptions;
-
-export async function bootstrapDatabase(database: DatabaseConfiguration) {
-  const WAIT_BEFORE_RESTART = 30; // seconds
-  const MAX_DATABASE_RETRY = 10;
-  let bootstrapDatabaseSuccess = false;
-
-  logger.log('Bootstrapping database..');
-
-  for (
-    let tries = 0;
-    !bootstrapDatabaseSuccess && tries < MAX_DATABASE_RETRY;
-    tries += 1
-  ) {
-    try {
-      await createDatabase({
-        ...database,
-      } as any);
-      bootstrapDatabaseSuccess = true;
-    } catch (e) {
-      logger.error('Application cannot connect to the database.');
-      logger.error(e);
-      logger.warn(`Retry create database in ${WAIT_BEFORE_RESTART} seconds.`);
-      await timer(WAIT_BEFORE_RESTART * 1000);
-    }
-  }
-  if (!bootstrapDatabaseSuccess) {
-    throw new Error('Application cannot connect to the database.');
-  }
-}
-
-async function timer(time: number): Promise<void> {
-  return new Promise<void>((resolve) => setTimeout(() => resolve(), time));
-}
-
-export async function createDatabase(
-  ormOptions: MysqlConnectionOptions,
-): Promise<void> {
-  const dbConfig = {
-    ...pick(
-      ormOptions,
-      'type',
-      'host',
-      'port',
-      'username',
-      'password',
-      'logging',
-    ),
-    database: 'mysql',
-  };
-  const conn = await getDataSource(dbConfig, true);
-
-  try {
-    const dbExists = await conn.query(
-      `SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${ormOptions.database}'`,
-    );
-    if (!dbExists.length) {
-      logger.log(`Creating '${ormOptions.database}' database...`);
-      await conn.query(`CREATE DATABASE ${ormOptions.database}`);
-      logger.log('Database created!');
-    } else {
-      logger.log('Database already exists.');
-    }
-  } finally {
-    await conn.destroy();
-  }
-
-  if (ormOptions.migrationsRun && !!ormOptions.migrations) {
-    await runMigration(ormOptions);
-  }
-}
 
 export async function runMigration(
   ormOptions: MysqlConnectionOptions,

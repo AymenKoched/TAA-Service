@@ -13,7 +13,6 @@ import { services } from './services';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-
     getDatabaseModule(),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({ ...conf.jwt, global: true }),

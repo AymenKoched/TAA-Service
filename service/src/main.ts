@@ -9,11 +9,9 @@ import { getBodyParserOptions } from '@nestjs/platform-express/adapters/utils/ge
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
-import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from './app.module';
 import {
-  bootstrapDatabase,
   CommonErrors,
   parseValidationErrors,
   runDatabaseMigration,
@@ -33,11 +31,6 @@ async function bootstrap() {
   if (args.find((arg) => arg === 'migrate')) {
     await runDatabaseMigration(conf);
     process.exit();
-  }
-
-  if (conf.database) {
-    initializeTransactionalContext();
-    await bootstrapDatabase(conf.database);
   }
 
   const app = await NestFactory.create(AppModule, { rawBody: false });

@@ -6,7 +6,7 @@ import { DataSource, MigrationExecutor } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import {
   addTransactionalDataSource,
-  getDataSourceByName,
+  deleteDataSourceByName,
 } from 'typeorm-transactional';
 import { v4 as uuid } from 'uuid';
 
@@ -113,11 +113,8 @@ export function getDatabaseModule(conf?: TypeOrmModuleOptions) {
           `Invalid options passed to init datasource ${JSON.stringify(opts)}`,
         );
       }
-
-      return (
-        getDataSourceByName('default') ||
-        addTransactionalDataSource(new DataSource(opts))
-      );
+      deleteDataSourceByName('default');
+      return addTransactionalDataSource(new DataSource(opts));
     },
   });
 }

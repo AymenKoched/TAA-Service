@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity } from '../common';
+import { BaseEntity, OrganizationContractType } from '../common';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_contracts' })
@@ -11,14 +11,15 @@ import { Organization } from './organization.entity';
   where: `deleted_at is null`,
 })
 export class OrganizationContract extends BaseEntity {
-  keyPrefix = 'org_cnt';
+  keyPrefix = 'org_cnt_';
 
   @ApiProperty()
   @Expose()
   @Column({
-    length: 150,
+    type: 'enum',
+    enum: OrganizationContractType,
   })
-  type!: string;
+  type!: OrganizationContractType;
 
   @ApiProperty()
   @Expose()

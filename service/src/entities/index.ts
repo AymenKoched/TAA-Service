@@ -10,6 +10,7 @@ import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
 import { OrganizationEnvironment } from './organization-environment.entity';
 import { OrganizationFormationKpi } from './organization-formation-kpi.entity';
 import { OrganizationInitiative } from './organization-initiative.entity';
+import { OrganizationOpportunity } from './organization-opportunity.entity';
 import { OrganizationQuestion } from './organization-question.entity';
 import { OrganizationRAndDProject } from './organization-rd-project.entity';
 import { OrganizationResearchDevelopment } from './organization-research-development.entity';
@@ -37,6 +38,7 @@ export * from './organization-employee-kpi.entity';
 export * from './organization-environment.entity';
 export * from './organization-formation-kpi.entity';
 export * from './organization-initiative.entity';
+export * from './organization-opportunity.entity';
 export * from './organization-question.entity';
 export * from './organization-rd-project.entity';
 export * from './organization-research-development.entity';
@@ -82,4 +84,5 @@ export const entities = [
   OrganizationEnvironment,
   OrganizationWasteDistribution,
   OrganizationQuestion,
+  OrganizationOpportunity,
 ];

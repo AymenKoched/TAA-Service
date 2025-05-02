@@ -9,6 +9,7 @@ export * from './organization-employees-kpis.service';
 export * from './organization-environments.service';
 export * from './organization-formations.service';
 export * from './organization-initiatives.service';
+export * from './organization-opportunities.service';
 export * from './organization-questions.service';
 export * from './organization-rd-projects.service';
 export * from './organization-research-developments.service';

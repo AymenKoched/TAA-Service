@@ -36,6 +36,7 @@ import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.requ
 import { OrganizationEnvironmentRequest } from './organization-environment.request';
 import { OrganizationFormationRequest } from './organization-formation.request';
 import { OrganizationInitiativeRequest } from './organization-initiative.request';
+import { OrganizationOpportunityRequest } from './organization-opportunity.request';
 import { OrganizationQuestionRequest } from './organization-question.request';
 import { OrganizationRdProjectRequest } from './organization-rd-project.request';
 import { OrganizationResearchDevelopmentRequest } from './organization-research-development.request';
@@ -549,4 +550,15 @@ export class UpdateOrganizationOthersRequest extends UpdateOrganizationRequest {
   @ValidateNested({ each: true })
   @IsOptional()
   questions?: OrganizationQuestionRequest[];
+}
+
+export class UpdateOrganizationOpportunitiesRequest extends UpdateOrganizationRequest {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationOpportunityRequest)
+  @Transform(ModelTransformer(() => OrganizationOpportunityRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  opportunities?: OrganizationOpportunityRequest[];
 }

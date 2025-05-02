@@ -4,6 +4,8 @@ export * from './errors';
 export * from './organization-activity-type.enum';
 export * from './organization-attribute-type.enum';
 export * from './organization-contract-type.enum';
+export * from './organization-opportunity-category.enum';
+export * from './organization-opportunity-priority.enum';
 export * from './organization-site-type.enum';
 export * from './organization-tag-type.enum';
 export * from './product-type.enum';

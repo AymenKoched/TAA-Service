@@ -21,6 +21,7 @@ import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.res
 import { OrganizationEnvironmentResponse } from './organization-environment.response';
 import { OrganizationFormationResponse } from './organization-formation.response';
 import { OrganizationInitiativeResponse } from './organization-initiative.response';
+import { OrganizationOpportunityResponse } from './organization-opportunity.response';
 import { OrganizationQuestionResponse } from './organization-question.response';
 import { OrganizationRdProjectResponse } from './organization-rd-project.response';
 import { OrganizationResearchDevelopmentResponse } from './organization-research-development.response';
@@ -392,4 +393,11 @@ export class OrganizationOthersResponse extends OrganizationResponse {
   @Transform(ModelTransformer(() => OrganizationQuestionResponse))
   @Type(() => OrganizationQuestionResponse)
   questions?: OrganizationQuestionResponse[];
+}
+
+export class OrganizationOpportunitiesResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => OrganizationOpportunityResponse))
+  @Type(() => OrganizationOpportunityResponse)
+  opportunities?: OrganizationOpportunityResponse[];
 }

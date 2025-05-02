@@ -20,6 +20,7 @@ import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
 import { OrganizationEnvironment } from './organization-environment.entity';
 import { OrganizationFormationKpi } from './organization-formation-kpi.entity';
 import { OrganizationInitiative } from './organization-initiative.entity';
+import { OrganizationOpportunity } from './organization-opportunity.entity';
 import { OrganizationQuestion } from './organization-question.entity';
 import { OrganizationRAndDProject } from './organization-rd-project.entity';
 import { OrganizationResearchDevelopment } from './organization-research-development.entity';
@@ -342,4 +343,13 @@ export class Organization extends BaseEntity {
   @Type(() => OrganizationQuestion)
   @OneToMany(() => OrganizationQuestion, (question) => question.organization)
   questions?: OrganizationQuestion[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationOpportunity)
+  @OneToMany(
+    () => OrganizationOpportunity,
+    (opportunity) => opportunity.organization,
+  )
+  opportunities?: OrganizationOpportunity[];
 }

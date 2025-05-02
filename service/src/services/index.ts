@@ -13,6 +13,7 @@ import {
   OrganizationEnvironmentsService,
   OrganizationFormationsService,
   OrganizationInitiativesService,
+  OrganizationOpportunitiesService,
   OrganizationQuestionsService,
   OrganizationRdProjectsService,
   OrganizationResearchDevelopmentsService,
@@ -77,4 +78,5 @@ export const services = [
   OrganizationEnvironmentsService,
   OrganizationWasteDistributionsService,
   OrganizationQuestionsService,
+  OrganizationOpportunitiesService,
 ];

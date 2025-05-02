@@ -30,6 +30,8 @@ import {
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
   OrganizationInitiativeRequest,
+  OrganizationOpportunitiesResponse,
+  OrganizationOpportunityRequest,
   OrganizationOthersResponse,
   OrganizationProductsResponse,
   OrganizationQuestionRequest,
@@ -50,6 +52,7 @@ import {
   UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationOpportunitiesRequest,
   UpdateOrganizationOthersRequest,
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
@@ -69,6 +72,7 @@ import { OrganizationEmployeesKpisService } from './organization-employees-kpis.
 import { OrganizationEnvironmentsService } from './organization-environments.service';
 import { OrganizationFormationsService } from './organization-formations.service';
 import { OrganizationInitiativesService } from './organization-initiatives.service';
+import { OrganizationOpportunitiesService } from './organization-opportunities.service';
 import { OrganizationQuestionsService } from './organization-questions.service';
 import { OrganizationRdProjectsService } from './organization-rd-projects.service';
 import { OrganizationResearchDevelopmentsService } from './organization-research-developments.service';
@@ -120,6 +124,7 @@ export class OrganizationsService extends CrudService<Organization> {
     'wasteDistribution',
     'questions',
   ];
+  private readonly expandsOpportunities: string[] = ['opportunities'];
 
   constructor(
     private readonly orgs: OrganizationsRepository,
@@ -146,6 +151,7 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly environments: OrganizationEnvironmentsService,
     private readonly wasteDistributions: OrganizationWasteDistributionsService,
     private readonly questions: OrganizationQuestionsService,
+    private readonly opportunities: OrganizationOpportunitiesService,
   ) {
     super(orgs);
   }
@@ -211,6 +217,14 @@ export class OrganizationsService extends CrudService<Organization> {
       this.expandsOthers,
     );
     return new OrganizationOthersResponse(organization);
+  }
+
+  async getOrganizationOpportunitiesById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsOpportunities,
+    );
+    return new OrganizationOpportunitiesResponse(organization);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -1115,6 +1129,62 @@ export class OrganizationsService extends CrudService<Organization> {
     }
 
     return this.getOrganizationOthersById(organizationId);
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationOpportunities(
+    organizationId: string,
+    payload: UpdateOrganizationOpportunitiesRequest,
+  ) {
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: this.expandsOpportunities,
+      },
+    });
+
+    await this.updateById(organizationId, omit(payload, ['opportunities']));
+
+    const updateOpportunities = async (
+      newOpportunities: OrganizationOpportunityRequest[],
+    ) => {
+      const existingOpportunities = organization.opportunities;
+
+      await Promise.all(
+        map(newOpportunities, async (newOpportunity) => {
+          const existingOpportunity = find(existingOpportunities, {
+            id: newOpportunity?.id || '',
+          });
+          if (existingOpportunity) {
+            return this.opportunities.update(
+              existingOpportunity.id,
+              newOpportunity,
+            );
+          } else {
+            await this.opportunities.create({
+              ...newOpportunity,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedOpportunitiesIds = map(
+        filter(
+          existingOpportunities,
+          (existingOpportunity) =>
+            !find(newOpportunities, { id: existingOpportunity.id }),
+        ),
+        'id',
+      );
+
+      await this.opportunities.deleteByIds(deletedOpportunitiesIds);
+    };
+
+    if (payload?.opportunities) {
+      await updateOpportunities(payload.opportunities);
+    }
+
+    return this.getOrganizationOpportunitiesById(organizationId);
   }
 
   private async checkEmail(email?: string, id?: string) {

@@ -11,6 +11,7 @@ export * from './organization-employee-kpi.request';
 export * from './organization-environment.request';
 export * from './organization-formation.request';
 export * from './organization-initiative.request';
+export * from './organization-opportunity.request';
 export * from './organization-question.request';
 export * from './organization-rd-project.request';
 export * from './organization-research-development.request';

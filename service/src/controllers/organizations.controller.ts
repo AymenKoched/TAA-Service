@@ -5,6 +5,7 @@ import {
   OrganizationExtrasResponse,
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
+  OrganizationOpportunitiesResponse,
   OrganizationOthersResponse,
   OrganizationProductsResponse,
   OrganizationRequest,
@@ -14,6 +15,7 @@ import {
   UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationOpportunitiesRequest,
   UpdateOrganizationOthersRequest,
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
@@ -77,6 +79,15 @@ export class OrganizationsController {
     @Param('organizationId') organizationId: string,
   ): Promise<OrganizationOthersResponse> {
     return this.orgs.getOrganizationOthersById(organizationId);
+  }
+
+  @Get(':organizationId/opportunities')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationOpportunitiesResponse)
+  public async getOrganizationOpportunities(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationOpportunitiesResponse> {
+    return this.orgs.getOrganizationOpportunitiesById(organizationId);
   }
 
   @Post()
@@ -145,5 +156,15 @@ export class OrganizationsController {
     @Body() payload: UpdateOrganizationOthersRequest,
   ): Promise<OrganizationOthersResponse> {
     return this.orgs.updateOrganizationOthers(organizationId, payload);
+  }
+
+  @Put(':organizationId/opportunities')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationOpportunitiesResponse)
+  public async updateOrganizationOpportunities(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationOpportunitiesRequest,
+  ): Promise<OrganizationOpportunitiesResponse> {
+    return this.orgs.updateOrganizationOpportunities(organizationId, payload);
   }
 }

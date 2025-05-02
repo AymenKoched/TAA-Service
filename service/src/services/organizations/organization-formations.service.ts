@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { AuthErrors, CrudService } from '../../common';
-import { OrganizationFormationKpi } from '../../entities/organization-formation-kpi.entity';
+import { OrganizationFormationKpi } from '../../entities';
 import { OrganizationFormationsRepository } from '../../repositories';
 
 @Injectable()
@@ -10,9 +10,7 @@ export class OrganizationFormationsService extends CrudService<OrganizationForma
   protected notFoundErrorMessage =
     'The searched organization formation is not found';
 
-  constructor(
-    private readonly organizationFormationsRepository: OrganizationFormationsRepository,
-  ) {
-    super(organizationFormationsRepository);
+  constructor(private readonly myRepo: OrganizationFormationsRepository) {
+    super(myRepo);
   }
 }

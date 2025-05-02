@@ -18,14 +18,17 @@ import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
 import { OrganizationClientResponse } from './organization-client.response';
 import { OrganizationContractResponse } from './organization-contract.response';
 import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
+import { OrganizationEnvironmentResponse } from './organization-environment.response';
 import { OrganizationFormationResponse } from './organization-formation.response';
 import { OrganizationInitiativeResponse } from './organization-initiative.response';
+import { OrganizationQuestionResponse } from './organization-question.response';
 import { OrganizationRdProjectResponse } from './organization-rd-project.response';
 import { OrganizationResearchDevelopmentResponse } from './organization-research-development.response';
 import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
 import { OrganizationTurnoverResponse } from './organization-turnover.response';
 import { OrganizationTurnoverDistributionResponse } from './organization-turnover-distribution.response';
+import { OrganizationWasteDistributionResponse } from './organization-waste-distribution.response';
 import { ProductResponse } from './product.response';
 import { TagResponse } from './tag.response';
 import { AdherentResponse } from './user.response';
@@ -372,4 +375,21 @@ export class OrganizationExtrasResponse extends OrganizationResponse {
   @Transform(ModelTransformer(() => OrganizationInitiativeResponse))
   @Type(() => OrganizationInitiativeResponse)
   initiatives?: OrganizationInitiativeResponse[];
+}
+
+export class OrganizationOthersResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationEnvironmentResponse)
+  @Transform(ModelTransformer(() => OrganizationEnvironmentResponse))
+  environment?: OrganizationEnvironmentResponse;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationWasteDistributionResponse)
+  @Transform(ModelTransformer(() => OrganizationWasteDistributionResponse))
+  wasteDistribution?: OrganizationWasteDistributionResponse;
+
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => OrganizationQuestionResponse))
+  @Type(() => OrganizationQuestionResponse)
+  questions?: OrganizationQuestionResponse[];
 }

@@ -24,12 +24,15 @@ import {
   OrganizationClientRequest,
   OrganizationContractRequest,
   OrganizationEmployeeKpiRequest,
+  OrganizationEnvironmentRequest,
   OrganizationExtrasResponse,
   OrganizationFormationRequest,
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
   OrganizationInitiativeRequest,
+  OrganizationOthersResponse,
   OrganizationProductsResponse,
+  OrganizationQuestionRequest,
   OrganizationRdProjectRequest,
   OrganizationRequest,
   OrganizationResearchDevelopmentRequest,
@@ -41,11 +44,13 @@ import {
   OrganizationTagType,
   OrganizationTurnoverDistributionRequest,
   OrganizationTurnoverRequest,
+  OrganizationWasteDistributionRequest,
   ProductType,
   TagRequest,
   UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationOthersRequest,
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
   UserType,
@@ -61,8 +66,10 @@ import { OrganizationAttributesService } from './organization-attributes.service
 import { OrganizationClientsService } from './organization-clients.service';
 import { OrganizationContractsService } from './organization-contracts.service';
 import { OrganizationEmployeesKpisService } from './organization-employees-kpis.service';
+import { OrganizationEnvironmentsService } from './organization-environments.service';
 import { OrganizationFormationsService } from './organization-formations.service';
 import { OrganizationInitiativesService } from './organization-initiatives.service';
+import { OrganizationQuestionsService } from './organization-questions.service';
 import { OrganizationRdProjectsService } from './organization-rd-projects.service';
 import { OrganizationResearchDevelopmentsService } from './organization-research-developments.service';
 import { OrganizationRevenuesKpisService } from './organization-revenues-kpis.service';
@@ -70,6 +77,7 @@ import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
 import { OrganizationTurnoverDistributionsService } from './organization-turnover-distributions.service';
 import { OrganizationTurnoversService } from './organization-turnovers.service';
+import { OrganizationWasteDistributionsService } from './organization-waste-distributions.service';
 import { ProductsService } from './products.service';
 
 @Injectable()
@@ -107,6 +115,11 @@ export class OrganizationsService extends CrudService<Organization> {
     'rAndDProjects',
     'initiatives',
   ];
+  private readonly expandsOthers: string[] = [
+    'environment',
+    'wasteDistribution',
+    'questions',
+  ];
 
   constructor(
     private readonly orgs: OrganizationsRepository,
@@ -130,6 +143,9 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly research: OrganizationResearchDevelopmentsService,
     private readonly rdProjects: OrganizationRdProjectsService,
     private readonly initiatives: OrganizationInitiativesService,
+    private readonly environments: OrganizationEnvironmentsService,
+    private readonly wasteDistributions: OrganizationWasteDistributionsService,
+    private readonly questions: OrganizationQuestionsService,
   ) {
     super(orgs);
   }
@@ -187,6 +203,14 @@ export class OrganizationsService extends CrudService<Organization> {
         type: OrganizationTagType.Certification,
       }),
     });
+  }
+
+  async getOrganizationOthersById(organizationId: string) {
+    const organization = await this.getOrganization(
+      organizationId,
+      this.expandsOthers,
+    );
+    return new OrganizationOthersResponse(organization);
   }
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -992,6 +1016,105 @@ export class OrganizationsService extends CrudService<Organization> {
     }
 
     return this.getOrganizationExtrasById(organizationId);
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async updateOrganizationOthers(
+    organizationId: string,
+    payload: UpdateOrganizationOthersRequest,
+  ) {
+    const organization = await this.getById(organizationId, {
+      search: {
+        expands: this.expandsOthers,
+      },
+    });
+
+    await this.updateById(
+      organizationId,
+      omit(payload, ['environment', 'wasteDistribution', 'questions']),
+    );
+
+    const updateEnvironment = async (
+      newEnvironment: OrganizationEnvironmentRequest,
+    ) => {
+      const existingEnvironment = organization.environment;
+
+      if (existingEnvironment) {
+        await this.environments.updateById(
+          existingEnvironment.id,
+          newEnvironment,
+        );
+      } else {
+        await this.environments.create({
+          ...newEnvironment,
+          organizationId,
+        });
+      }
+    };
+
+    if (payload?.environment) {
+      await updateEnvironment(payload.environment);
+    }
+
+    const updateWasteDistribution = async (
+      newWasteDistribution: OrganizationWasteDistributionRequest,
+    ) => {
+      const existingWasteDistribution = organization.wasteDistribution;
+
+      if (existingWasteDistribution) {
+        await this.wasteDistributions.updateById(
+          existingWasteDistribution.id,
+          newWasteDistribution,
+        );
+      } else {
+        await this.wasteDistributions.create({
+          ...newWasteDistribution,
+          organizationId,
+        });
+      }
+    };
+
+    if (payload?.wasteDistribution) {
+      await updateWasteDistribution(payload.wasteDistribution);
+    }
+
+    const updateQuestions = async (
+      newQuestions: OrganizationQuestionRequest[],
+    ) => {
+      const existingQuestions = organization.questions;
+
+      await Promise.all(
+        map(newQuestions, async (newQuestion) => {
+          const existingQuestion = find(existingQuestions, {
+            question: newQuestion.question,
+          });
+          if (existingQuestion) {
+            return this.questions.update(existingQuestion.id, newQuestion);
+          } else {
+            await this.questions.create({
+              ...newQuestion,
+              organizationId,
+            });
+          }
+        }),
+      );
+
+      const deletedQuestionsIds = map(
+        filter(
+          existingQuestions,
+          (existingQuestion) =>
+            !find(newQuestions, { question: existingQuestion.question }),
+        ),
+        'id',
+      );
+      await this.questions.deleteByIds(deletedQuestionsIds);
+    };
+
+    if (payload?.questions) {
+      await updateQuestions(payload.questions);
+    }
+
+    return this.getOrganizationOthersById(organizationId);
   }
 
   private async checkEmail(email?: string, id?: string) {

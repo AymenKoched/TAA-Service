@@ -10,8 +10,10 @@ import {
   OrganizationClientsService,
   OrganizationContractsService,
   OrganizationEmployeesKpisService,
+  OrganizationEnvironmentsService,
   OrganizationFormationsService,
   OrganizationInitiativesService,
+  OrganizationQuestionsService,
   OrganizationRdProjectsService,
   OrganizationResearchDevelopmentsService,
   OrganizationRevenuesKpisService,
@@ -20,6 +22,7 @@ import {
   OrganizationTagsService,
   OrganizationTurnoverDistributionsService,
   OrganizationTurnoversService,
+  OrganizationWasteDistributionsService,
   ProductsService,
 } from './organizations';
 import { RolesService, UserRolesService } from './roles';
@@ -71,4 +74,7 @@ export const services = [
   OrganizationResearchDevelopmentsService,
   OrganizationRdProjectsService,
   OrganizationInitiativesService,
+  OrganizationEnvironmentsService,
+  OrganizationWasteDistributionsService,
+  OrganizationQuestionsService,
 ];

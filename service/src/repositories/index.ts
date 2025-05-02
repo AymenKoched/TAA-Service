@@ -7,8 +7,10 @@ import {
   OrganizationClientsRepository,
   OrganizationContractsRepository,
   OrganizationEmployeesKpisRepository,
+  OrganizationEnvironmentsRepository,
   OrganizationFormationsRepository,
   OrganizationInitiativesRepository,
+  OrganizationQuestionsRepository,
   OrganizationRdProjectsRepository,
   OrganizationResearchDevelopmentsRepository,
   OrganizationRevenuesKpisRepository,
@@ -17,6 +19,7 @@ import {
   OrganizationTagsRepository,
   OrganizationTurnoverDistributionsRepository,
   OrganizationTurnoversRepository,
+  OrganizationWasteDistributionsRepository,
   ProductsRepository,
 } from './organizations';
 import { RolesRepository, UserRolesRepository } from './roles';
@@ -59,4 +62,7 @@ export const repositories = [
   OrganizationResearchDevelopmentsRepository,
   OrganizationRdProjectsRepository,
   OrganizationInitiativesRepository,
+  OrganizationEnvironmentsRepository,
+  OrganizationWasteDistributionsRepository,
+  OrganizationQuestionsRepository,
 ];

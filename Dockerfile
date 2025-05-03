@@ -27,7 +27,6 @@ FROM installer as builder
 RUN yarn install
 RUN yarn build
 
-
 FROM base
 
 RUN mkdir node_modules && chown -R node:node node_modules

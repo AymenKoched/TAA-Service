@@ -1,15 +1,17 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { filter, map } from 'lodash';
+import { filter, find, map } from 'lodash';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
 import {
+  EmployeesKpiType,
   OrganizationActivityType,
   OrganizationAttributeType,
   OrganizationSiteType,
   OrganizationTagType,
 } from '../enums';
 import { ModelTransformer } from '../transformers';
+import { computeCompletion } from '../utils';
 import { ActivityResponse } from './activity.response';
 import { AttributeResponse } from './attribute.response';
 import { CountryParticipationResponse } from './country-participation.response';
@@ -18,14 +20,18 @@ import { OrganizationAgeKpiResponse } from './organization-age-kpi.response';
 import { OrganizationClientResponse } from './organization-client.response';
 import { OrganizationContractResponse } from './organization-contract.response';
 import { OrganizationEmployeeKpiResponse } from './organization-employee-kpi.response';
+import { OrganizationEnvironmentResponse } from './organization-environment.response';
 import { OrganizationFormationResponse } from './organization-formation.response';
 import { OrganizationInitiativeResponse } from './organization-initiative.response';
+import { OrganizationOpportunityResponse } from './organization-opportunity.response';
+import { OrganizationQuestionResponse } from './organization-question.response';
 import { OrganizationRdProjectResponse } from './organization-rd-project.response';
 import { OrganizationResearchDevelopmentResponse } from './organization-research-development.response';
 import { OrganizationRevenueKpiResponse } from './organization-revenue-kpi.response';
 import { OrganizationSiteResponse } from './organization-site.response';
 import { OrganizationTurnoverResponse } from './organization-turnover.response';
 import { OrganizationTurnoverDistributionResponse } from './organization-turnover-distribution.response';
+import { OrganizationWasteDistributionResponse } from './organization-waste-distribution.response';
 import { ProductResponse } from './product.response';
 import { TagResponse } from './tag.response';
 import { AdherentResponse } from './user.response';
@@ -92,6 +98,9 @@ export class OrganizationResponse extends BaseResponseModel {
 
   @ApiPropertyOptional()
   twitter?: string;
+
+  @ApiPropertyOptional()
+  completionPercentage?: number;
 }
 
 export class OrganizationGeneralResponse extends OrganizationResponse {
@@ -129,6 +138,28 @@ export class OrganizationGeneralResponse extends OrganizationResponse {
     ]),
   )
   otherLocations?: TagResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([
+      this.fullName,
+      this.legalStatus,
+      this.foundingYear,
+      this.groupAffiliation,
+      this.headOffice,
+      this.postalCode,
+      this.rAndDSites,
+      this.otherLocations,
+      this.city,
+      this.country,
+      this.phone,
+      this.linkedin,
+      this.facebook,
+      this.twitter,
+      this.websiteUrl,
+    ]);
+  }
 }
 
 export class OrganizationProductsResponse extends OrganizationResponse {
@@ -225,6 +256,19 @@ export class OrganizationProductsResponse extends OrganizationResponse {
     ]),
   )
   foreignExportationSites?: OrganizationSiteResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([
+      this.localSites,
+      this.foreignImplantationSites,
+      this.foreignExportationSites,
+      this.primaryActivities,
+      this.secondaryActivities,
+      this.products,
+    ]);
+  }
 }
 
 export class OrganizationHumanResourcesResponse extends OrganizationResponse {
@@ -232,6 +276,28 @@ export class OrganizationHumanResourcesResponse extends OrganizationResponse {
   @Type(() => OrganizationEmployeeKpiResponse)
   @Transform(ModelTransformer(() => OrganizationEmployeeKpiResponse))
   employeesKpis?: OrganizationEmployeeKpiResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => ActivityResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      OrganizationEmployeeKpiResponse,
+      find(obj.employeesKpis, { type: EmployeesKpiType.Direct }) || null,
+    ]),
+  )
+  directEmployees?: OrganizationEmployeeKpiResponse;
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => ActivityResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      OrganizationEmployeeKpiResponse,
+      find(obj.employeesKpis, { type: EmployeesKpiType.Indirect }) || null,
+    ]),
+  )
+  indirectEmployees?: OrganizationEmployeeKpiResponse;
 
   @ApiPropertyOptional()
   @Type(() => OrganizationContractResponse)
@@ -252,6 +318,19 @@ export class OrganizationHumanResourcesResponse extends OrganizationResponse {
   @Type(() => OrganizationFormationResponse)
   @Transform(ModelTransformer(() => OrganizationFormationResponse))
   formationKpi?: OrganizationFormationResponse;
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([
+      this.directEmployees,
+      this.indirectEmployees,
+      this.contracts,
+      this.revenueKpis,
+      this.ageKpis,
+      this.formationKpi,
+    ]);
+  }
 }
 
 export class OrganizationRevenuesResponse extends OrganizationResponse {
@@ -274,6 +353,17 @@ export class OrganizationRevenuesResponse extends OrganizationResponse {
   @Type(() => CountryParticipationResponse)
   @Transform(ModelTransformer(() => CountryParticipationResponse))
   countriesParticipation?: CountryParticipationResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([
+      this.turnoverDistribution,
+      this.clientsTypes,
+      this.turnover,
+      this.countriesParticipation,
+    ]);
+  }
 }
 
 export class OrganizationExtrasResponse extends OrganizationResponse {
@@ -372,4 +462,60 @@ export class OrganizationExtrasResponse extends OrganizationResponse {
   @Transform(ModelTransformer(() => OrganizationInitiativeResponse))
   @Type(() => OrganizationInitiativeResponse)
   initiatives?: OrganizationInitiativeResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([
+      this.products,
+      this.investments,
+      this.rAndDProjects,
+      this.researchDevelopment,
+      this.esgs,
+      this.partnerships,
+      this.technologies,
+      this.initiatives,
+      this.certifications,
+    ]);
+  }
+}
+
+export class OrganizationOthersResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationEnvironmentResponse)
+  @Transform(ModelTransformer(() => OrganizationEnvironmentResponse))
+  environment?: OrganizationEnvironmentResponse;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationWasteDistributionResponse)
+  @Transform(ModelTransformer(() => OrganizationWasteDistributionResponse))
+  wasteDistribution?: OrganizationWasteDistributionResponse;
+
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => OrganizationQuestionResponse))
+  @Type(() => OrganizationQuestionResponse)
+  questions?: OrganizationQuestionResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([
+      this.environment,
+      this.wasteDistribution,
+      this.questions,
+    ]);
+  }
+}
+
+export class OrganizationOpportunitiesResponse extends OrganizationResponse {
+  @ApiPropertyOptional()
+  @Transform(ModelTransformer(() => OrganizationOpportunityResponse))
+  @Type(() => OrganizationOpportunityResponse)
+  opportunities?: OrganizationOpportunityResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  get completion(): number {
+    return computeCompletion([this.opportunities]);
+  }
 }

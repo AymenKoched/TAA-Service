@@ -5,6 +5,8 @@ import {
   OrganizationExtrasResponse,
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
+  OrganizationOpportunitiesResponse,
+  OrganizationOthersResponse,
   OrganizationProductsResponse,
   OrganizationRequest,
   OrganizationResponse,
@@ -13,6 +15,8 @@ import {
   UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
   UpdateOrganizationHumanResourcesRequest,
+  UpdateOrganizationOpportunitiesRequest,
+  UpdateOrganizationOthersRequest,
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
 } from '../common';
@@ -66,6 +70,24 @@ export class OrganizationsController {
     @Param('organizationId') organizationId: string,
   ): Promise<OrganizationExtrasResponse> {
     return this.orgs.getOrganizationExtrasById(organizationId);
+  }
+
+  @Get(':organizationId/others')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationOthersResponse)
+  public async getOrganizationOthers(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationOthersResponse> {
+    return this.orgs.getOrganizationOthersById(organizationId);
+  }
+
+  @Get(':organizationId/opportunities')
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationOpportunitiesResponse)
+  public async getOrganizationOpportunities(
+    @Param('organizationId') organizationId: string,
+  ): Promise<OrganizationOpportunitiesResponse> {
+    return this.orgs.getOrganizationOpportunitiesById(organizationId);
   }
 
   @Post()
@@ -124,5 +146,25 @@ export class OrganizationsController {
     @Body() payload: UpdateOrganizationExtrasRequest,
   ): Promise<OrganizationExtrasResponse> {
     return this.orgs.updateOrganizationExtras(organizationId, payload);
+  }
+
+  @Put(':organizationId/others')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationOthersResponse)
+  public async updateOrganizationOthers(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationOthersRequest,
+  ): Promise<OrganizationOthersResponse> {
+    return this.orgs.updateOrganizationOthers(organizationId, payload);
+  }
+
+  @Put(':organizationId/opportunities')
+  @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
+  @ConvertResponse(OrganizationOpportunitiesResponse)
+  public async updateOrganizationOpportunities(
+    @Param('organizationId') organizationId: string,
+    @Body() payload: UpdateOrganizationOpportunitiesRequest,
+  ): Promise<OrganizationOpportunitiesResponse> {
+    return this.orgs.updateOrganizationOpportunities(organizationId, payload);
   }
 }

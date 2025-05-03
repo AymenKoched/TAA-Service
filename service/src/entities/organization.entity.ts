@@ -17,8 +17,11 @@ import { OrganizationAttribute } from './organization-attribute.entity';
 import { OrganizationClient } from './organization-client.entity';
 import { OrganizationContract } from './organization-contract.entity';
 import { OrganizationEmployeeKpi } from './organization-employee-kpi.entity';
+import { OrganizationEnvironment } from './organization-environment.entity';
 import { OrganizationFormationKpi } from './organization-formation-kpi.entity';
 import { OrganizationInitiative } from './organization-initiative.entity';
+import { OrganizationOpportunity } from './organization-opportunity.entity';
+import { OrganizationQuestion } from './organization-question.entity';
 import { OrganizationRAndDProject } from './organization-rd-project.entity';
 import { OrganizationResearchDevelopment } from './organization-research-development.entity';
 import { OrganizationRevenueKpi } from './organization-revenue-kpi.entity';
@@ -26,6 +29,7 @@ import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
 import { OrganizationTurnover } from './organization-turnover.entity';
 import { OrganizationTurnoverDistribution } from './organization-turnover-distribution.entity';
+import { OrganizationWasteDistribution } from './organization-waste-distribution.entity';
 import { Product } from './product.entity';
 import { Adherent } from './user.entity';
 
@@ -318,4 +322,34 @@ export class Organization extends BaseEntity {
     (initiative) => initiative.organization,
   )
   initiatives?: OrganizationInitiative[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationEnvironment)
+  @OneToOne(
+    () => OrganizationEnvironment,
+    (environment) => environment.organization,
+  )
+  environment?: OrganizationEnvironment;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationWasteDistribution)
+  @OneToOne(() => OrganizationWasteDistribution, (waste) => waste.organization)
+  wasteDistribution?: OrganizationWasteDistribution;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationQuestion)
+  @OneToMany(() => OrganizationQuestion, (question) => question.organization)
+  questions?: OrganizationQuestion[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationOpportunity)
+  @OneToMany(
+    () => OrganizationOpportunity,
+    (opportunity) => opportunity.organization,
+  )
+  opportunities?: OrganizationOpportunity[];
 }

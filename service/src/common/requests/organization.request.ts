@@ -33,14 +33,18 @@ import { OrganizationAgeKpiRequest } from './organization-age-kpi.request';
 import { OrganizationClientRequest } from './organization-client.request';
 import { OrganizationContractRequest } from './organization-contract.request';
 import { OrganizationEmployeeKpiRequest } from './organization-employee-kpi.request';
+import { OrganizationEnvironmentRequest } from './organization-environment.request';
 import { OrganizationFormationRequest } from './organization-formation.request';
 import { OrganizationInitiativeRequest } from './organization-initiative.request';
+import { OrganizationOpportunityRequest } from './organization-opportunity.request';
+import { OrganizationQuestionRequest } from './organization-question.request';
 import { OrganizationRdProjectRequest } from './organization-rd-project.request';
 import { OrganizationResearchDevelopmentRequest } from './organization-research-development.request';
 import { OrganizationRevenueKpiRequest } from './organization-revenue-kpi.request';
 import { OrganizationSiteRequest } from './organization-site.request';
 import { OrganizationTurnoverRequest } from './organization-turnover.request';
 import { OrganizationTurnoverDistributionRequest } from './organization-turnover-distribution.request';
+import { OrganizationWasteDistributionRequest } from './organization-waste-distribution.request';
 import { ProductRequest } from './product.request';
 import { TagRequest } from './tag.request';
 
@@ -519,4 +523,42 @@ export class UpdateOrganizationExtrasRequest extends UpdateOrganizationRequest {
   @ValidateNested({ each: true })
   @IsOptional()
   initiatives?: OrganizationInitiativeRequest[];
+}
+
+export class UpdateOrganizationOthersRequest extends UpdateOrganizationRequest {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationEnvironmentRequest)
+  @Transform(ModelTransformer(() => OrganizationEnvironmentRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  environment?: OrganizationEnvironmentRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationWasteDistributionRequest)
+  @Transform(ModelTransformer(() => OrganizationWasteDistributionRequest))
+  @IsObject({ message: 'errors:field.required' })
+  @ValidateNested({ message: 'errors:field.required' })
+  @IsOptional()
+  wasteDistribution?: OrganizationWasteDistributionRequest;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationQuestionRequest)
+  @Transform(ModelTransformer(() => OrganizationQuestionRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  questions?: OrganizationQuestionRequest[];
+}
+
+export class UpdateOrganizationOpportunitiesRequest extends UpdateOrganizationRequest {
+  @ApiPropertyOptional()
+  @Type(() => OrganizationOpportunityRequest)
+  @Transform(ModelTransformer(() => OrganizationOpportunityRequest))
+  @IsArray({ message: 'errors:field.invalid' })
+  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @IsOptional()
+  opportunities?: OrganizationOpportunityRequest[];
 }

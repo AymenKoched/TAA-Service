@@ -33,7 +33,10 @@ async function bootstrap() {
     await runDatabaseMigration(conf);
     process.exit();
   }
-  initializeTransactionalContext();
+
+  if (conf.database) {
+    initializeTransactionalContext();
+  }
 
   const app = await NestFactory.create(AppModule, { rawBody: false });
   app.enableShutdownHooks();

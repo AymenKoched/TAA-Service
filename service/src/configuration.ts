@@ -18,6 +18,7 @@ export interface AppConfig {
   jwt: JwtConfig;
   mailer: MailerConfig;
   front: FrontConfig;
+  s3: S3Config;
 }
 
 export enum Environment {
@@ -27,6 +28,13 @@ export enum Environment {
 
 export interface ServerConfig {
   port: number;
+}
+
+export interface S3Config {
+  bucketName: string;
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
 }
 
 type DatabaseConfiguration = MysqlConnectionOptions;

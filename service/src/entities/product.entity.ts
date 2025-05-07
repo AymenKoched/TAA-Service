@@ -38,6 +38,13 @@ export class Product extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Column({
+    nullable: true,
+  })
+  photoUrl?: string;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
     type: 'enum',
     default: ProductType.Old,
     enum: ProductType,

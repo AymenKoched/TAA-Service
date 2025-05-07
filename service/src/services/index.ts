@@ -27,6 +27,7 @@ import {
   ProductsService,
 } from './organizations';
 import { RolesService, UserRolesService } from './roles';
+import { S3Service } from './s3.service';
 import { SeedService } from './seed.service';
 import {
   AdherentsService,
@@ -79,4 +80,5 @@ export const services = [
   OrganizationWasteDistributionsService,
   OrganizationQuestionsService,
   OrganizationOpportunitiesService,
+  S3Service,
 ];

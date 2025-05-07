@@ -175,6 +175,12 @@ export class OrganizationRequest extends BaseModel {
   @IsUrl(undefined, { message: 'errors:url.invalid' })
   @Transform(StringTransformer)
   twitter?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUrl(undefined, { message: 'errors:url.invalid' })
+  @Transform(StringTransformer)
+  logoUrl?: string;
 }
 
 export class UpdateOrganizationRequest extends BaseModel {

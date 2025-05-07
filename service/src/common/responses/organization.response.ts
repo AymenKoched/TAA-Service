@@ -101,6 +101,9 @@ export class OrganizationResponse extends BaseResponseModel {
 
   @ApiPropertyOptional()
   completionPercentage?: number;
+
+  @ApiPropertyOptional()
+  logoUrl?: string;
 }
 
 export class OrganizationGeneralResponse extends OrganizationResponse {
@@ -158,6 +161,7 @@ export class OrganizationGeneralResponse extends OrganizationResponse {
       this.facebook,
       this.twitter,
       this.websiteUrl,
+      this.logoUrl,
     ]);
   }
 }

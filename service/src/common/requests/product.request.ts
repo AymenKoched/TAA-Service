@@ -24,4 +24,10 @@ export class ProductRequest extends BaseModel {
   @IsOptional()
   @Transform(StringTransformer)
   description?: string;
+
+  @ApiPropertyOptional()
+  @IsString({ message: 'errors:field.invalid' })
+  @IsOptional()
+  @Transform(StringTransformer)
+  photoUrl?: string;
 }

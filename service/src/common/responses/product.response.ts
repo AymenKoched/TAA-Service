@@ -16,6 +16,9 @@ export class ProductResponse extends BaseResponseModel {
   ngp?: string;
 
   @ApiPropertyOptional()
+  photoUrl?: string;
+
+  @ApiPropertyOptional()
   @Transform(ModelTransformer(() => OrganizationResponse))
   @Type(() => OrganizationResponse)
   organization?: OrganizationResponse;

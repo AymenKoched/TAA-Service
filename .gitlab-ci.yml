@@ -27,7 +27,7 @@ package:
 # Sonar Scanner
 # ---------------------
 build-sonar:
-  stage: sonarqube
+  stage: build-sonar
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: ['']

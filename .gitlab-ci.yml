@@ -27,22 +27,20 @@ package:
 # Sonar Scanner
 # ---------------------
 build-sonar:
-  stage: build-sonar
+  stage: sonarqube
   image:
-    name: sonarsource/sonar-scanner-cli:11
-    entrypoint: [""]
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: ['']
   variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-    GIT_DEPTH: "0"
+    SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar' 
+    GIT_DEPTH: '0' 
   cache:
-    policy: pull-push
-    key: "sonar-cache-$CI_COMMIT_REF_SLUG"
+    key: '${CI_JOB_NAME}'
     paths:
-      - "${SONAR_USER_HOME}/cache"
-      - sonar-scanner/
+      - .sonar/cache
   script:
-    - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
-  allow_failure: true
+    - sonar-scanner
+  allow_failure: false
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == "main"'

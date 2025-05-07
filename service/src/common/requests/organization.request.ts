@@ -178,7 +178,6 @@ export class OrganizationRequest extends BaseModel {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUrl(undefined, { message: 'errors:url.invalid' })
   @Transform(StringTransformer)
   logoUrl?: string;
 }

@@ -79,8 +79,6 @@ export class Organization extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Column({
-    length: 100,
-    name: 'short_name',
     nullable: true,
   })
   logoUrl?: string;

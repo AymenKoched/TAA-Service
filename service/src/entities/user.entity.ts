@@ -118,4 +118,13 @@ export class Adherent extends User {
     nullable: true,
   })
   position?: string;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    type: Boolean,
+    nullable: false,
+    default: false,
+  })
+  adherence!: boolean;
 }

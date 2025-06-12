@@ -1,8 +1,10 @@
 import { JwtAuthGuard } from './auth.guard';
 import { RoleAccessGuard } from './role-access.guard';
+import { UserAccessGuard } from './user-access.guard';
 
 export * from './auth.guard';
 export * from './base-access.guard';
 export * from './role-access.guard';
+export * from './user-access.guard';
 
-export const guards = [JwtAuthGuard, RoleAccessGuard];
+export const guards = [JwtAuthGuard, RoleAccessGuard, UserAccessGuard];

@@ -92,6 +92,9 @@ export class AdherentResponse extends UserResponse {
   @ApiPropertyOptional()
   position?: string;
 
+  @ApiProperty()
+  adherence!: boolean;
+
   @Expose()
   @ApiProperty()
   get isSuperAdmin(): boolean {

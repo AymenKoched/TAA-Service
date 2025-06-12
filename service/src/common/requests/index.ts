@@ -1,4 +1,3 @@
-export * from './activate-user.request';
 export * from './attribute.request';
 export * from './change-password.request';
 export * from './country-participation.request';

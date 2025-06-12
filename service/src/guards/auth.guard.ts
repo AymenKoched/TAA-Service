@@ -60,13 +60,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       search: { expands: ['userRoles.role'] },
     });
 
-    if (!user.isActive) {
-      throw new UnauthorizedException(
-        AuthErrors.AccessDenied,
-        'Your account is not active',
-      );
-    }
-
     return new UserResponse(
       plainToInstance(UserResponse, instanceToPlain(user)),
     );

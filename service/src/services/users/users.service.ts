@@ -4,7 +4,6 @@ import { difference, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
-  ActivateUserRequest,
   AuthErrors,
   CrudService,
   getRandomString,
@@ -12,7 +11,6 @@ import {
   UpdateUserRequest,
   UserRequest,
   UserResponse,
-  UserTokenType,
   UserType,
 } from '../../common';
 import { User } from '../../entities';
@@ -22,7 +20,6 @@ import { UserRolesService } from '../roles';
 import { AdherentsService } from './adherents.service';
 import { AdminsService } from './admins.service';
 import { ClientsService } from './clients.service';
-import { UserTokensService } from './user-tokens.service';
 
 @Injectable()
 export class UsersService extends CrudService<User> {
@@ -36,7 +33,6 @@ export class UsersService extends CrudService<User> {
     private readonly adherents: AdherentsService,
     private readonly userRoles: UserRolesService,
     private readonly mailer: MailerService,
-    private readonly tokens: UserTokensService,
   ) {
     super(users);
   }
@@ -53,7 +49,6 @@ export class UsersService extends CrudService<User> {
       ...payload,
       password: hashedPassword,
       inscriptionDate: payload.inscriptionDate ?? new Date(),
-      isActive: payload.type === UserType.Adherent,
     };
 
     let user: User;
@@ -91,22 +86,8 @@ export class UsersService extends CrudService<User> {
       );
     }
 
-    if (payload.type === UserType.Adherent) {
-      await this.mailer.sendAdherentEmail(
-        new UserResponse(user),
-        finalPassword,
-      );
-    } else {
-      const token = await this.tokens.createUserToken({
-        type: UserTokenType.ActivateAccount,
-        userId: user.id,
-      });
-
-      await this.mailer.sendActivationEmail(
-        new UserResponse(user),
-        token.token,
-        finalPassword,
-      );
+    if (payload.type === UserType.Adherent || payload.type === UserType.Admin) {
+      await this.mailer.sendWelcomeEmail(new UserResponse(user), finalPassword);
     }
 
     return new UserResponse(user);
@@ -149,7 +130,7 @@ export class UsersService extends CrudService<User> {
       );
 
       await Promise.all(
-        map(rolesToRemove, (roleId) =>
+        map(rolesToRemove, (roleId: string) =>
           this.userRoles.deleteByCriteria({ userId, roleId }),
         ),
       );
@@ -164,30 +145,6 @@ export class UsersService extends CrudService<User> {
     });
 
     return new UserResponse(updatedUser);
-  }
-
-  @Transactional({ propagation: Propagation.REQUIRED })
-  async activateUser(payload: ActivateUserRequest) {
-    const userToken = await this.tokens.verifyTokenValidity(
-      payload.emailToken,
-      UserTokenType.ActivateAccount,
-    );
-
-    const user = await this.getById(userToken.user.id);
-    await this.updateById(user.id, { isActive: true });
-
-    await this.tokens.delete(userToken.id);
-  }
-
-  async resendToken(userId: string) {
-    const user = await this.getById(userId);
-
-    const token = await this.tokens.createUserToken({
-      type: UserTokenType.ActivateAccount,
-      userId: user.id,
-    });
-
-    await this.mailer.sendActivationEmail(new UserResponse(user), token.token);
   }
 
   private async checkEmail(email?: string, id?: string) {

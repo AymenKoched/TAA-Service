@@ -62,7 +62,8 @@ export class UserRequest extends BaseModel {
 
   @ApiPropertyOptional()
   @Matches(PASSWORD_REGEX, { message: 'errors:field.invalid' })
-  @IsOptional()
+  @ValidateIf((self, value) => value || self.type === UserType.Client)
+  @IsNotEmpty({ message: 'errors:field.required' })
   password?: string;
 
   @ApiPropertyOptional()

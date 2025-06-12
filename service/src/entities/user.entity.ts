@@ -78,16 +78,6 @@ export abstract class User extends BaseEntity {
 
   @ApiProperty()
   @Expose()
-  @Column({
-    name: 'is_active',
-    type: Boolean,
-    nullable: false,
-    default: true,
-  })
-  isActive!: boolean;
-
-  @ApiProperty()
-  @Expose()
   @Type(() => UserToken)
   @OneToMany(() => UserToken, (token) => token.user)
   tokens?: UserToken[];

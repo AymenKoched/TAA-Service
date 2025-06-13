@@ -7,7 +7,14 @@ import {
 import { ModuleRef, Reflector } from '@nestjs/core';
 import { merge } from 'lodash';
 
-import { AppRequest, AuthErrors, UserResponse } from '../common';
+import {
+  AppRequest,
+  AuthErrors,
+  OrganizationResponse,
+  UserResponse,
+  UserType,
+} from '../common';
+import { OrganizationsService } from '../services';
 
 const logger = new Logger('BaseAccessGuard');
 
@@ -18,6 +25,7 @@ export type BaseAccessOptions = {
 export type AccessContext<TOptions extends BaseAccessOptions> = {
   selectorValue: any;
   user: UserResponse;
+  organization?: OrganizationResponse;
   options?: TOptions;
   params: Record<string, string>;
 };
@@ -50,12 +58,20 @@ export abstract class BaseAccessGuard<TOptions extends BaseAccessOptions>
       return true;
     }
 
+    let organization;
+    if (user.userType === UserType.Adherent) {
+      organization = await this.moduleRef
+        .get(OrganizationsService, { strict: false })
+        .findOne({ adherentId: user.id }, { silent: true });
+    }
+
     let resp;
 
     try {
       resp = await this.hasAccess({
         selectorValue,
         user,
+        organization,
         options,
         params: {
           ...req.body,

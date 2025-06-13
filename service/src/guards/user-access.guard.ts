@@ -44,7 +44,6 @@ export class UserAccessGuard extends BaseAccessGuard<UserAccessOptions> {
   async hasAccess({
     selectorValue,
     user,
-    options,
   }: AccessContext<UserAccessOptions>): Promise<boolean> {
     const selectedUser = await this.users.getById(selectorValue);
 
@@ -55,5 +54,7 @@ export class UserAccessGuard extends BaseAccessGuard<UserAccessOptions> {
     if (selectedUser.id === user.id) {
       return true;
     }
+
+    return false;
   }
 }

@@ -17,6 +17,7 @@ export class UsersController {
 
   @Put(':userId/adherence')
   @HasUserAccess()
+  @HasRoleAccess({ accesses: RoleAccess.UpdateUser })
   @ConvertResponse(AdherentResponse)
   public async updateUserAdherence(
     @Param('userId') userId: string,

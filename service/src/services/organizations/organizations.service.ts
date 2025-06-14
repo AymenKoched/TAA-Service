@@ -46,6 +46,7 @@ import {
   OrganizationTagType,
   OrganizationTurnoverDistributionRequest,
   OrganizationTurnoverRequest,
+  OrganizationViewType,
   OrganizationWasteDistributionRequest,
   ProductType,
   TagRequest,
@@ -81,6 +82,7 @@ import { OrganizationSitesService } from './organization-sites.service';
 import { OrganizationTagsService } from './organization-tags.service';
 import { OrganizationTurnoverDistributionsService } from './organization-turnover-distributions.service';
 import { OrganizationTurnoversService } from './organization-turnovers.service';
+import { OrganizationViewsService } from './organization-views.service';
 import { OrganizationWasteDistributionsService } from './organization-waste-distributions.service';
 import { ProductsService } from './products.service';
 
@@ -92,6 +94,7 @@ export class OrganizationsService extends CrudService<Organization> {
   private readonly expandsGeneral: string[] = [
     'tags',
     'adherent.userRoles.role',
+    'views',
   ];
   private readonly expandsProducts: string[] = [
     'sites',
@@ -152,6 +155,7 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly wasteDistributions: OrganizationWasteDistributionsService,
     private readonly questions: OrganizationQuestionsService,
     private readonly opportunities: OrganizationOpportunitiesService,
+    private readonly views: OrganizationViewsService,
   ) {
     super(orgs);
   }
@@ -167,7 +171,21 @@ export class OrganizationsService extends CrudService<Organization> {
       organizationId,
       this.expandsGeneral,
     );
-    return new OrganizationGeneralResponse(organization);
+    return new OrganizationGeneralResponse({
+      ...organization,
+      externalViews: map(
+        filter(organization.views, {
+          type: OrganizationViewType.External,
+        }),
+        (view) => view.viewUrl,
+      ),
+      internalViews: map(
+        filter(organization.views, {
+          type: OrganizationViewType.Internal,
+        }),
+        (view) => view.viewUrl,
+      ),
+    });
   }
 
   async getOrganizationProductsById(organizationId: string) {
@@ -288,7 +306,12 @@ export class OrganizationsService extends CrudService<Organization> {
 
     await this.updateById(
       organizationId,
-      omit(payload, ['rAndDSites', 'otherLocations']),
+      omit(payload, [
+        'rAndDSites',
+        'otherLocations',
+        'externalViews',
+        'internalViews',
+      ]),
     );
 
     if (payload?.rAndDSites) {
@@ -305,6 +328,55 @@ export class OrganizationsService extends CrudService<Organization> {
         payload.otherLocations,
         OrganizationTagType.OtherLocations,
       );
+    }
+
+    const updateViews = async (
+      newViews: string[],
+      type: OrganizationViewType,
+    ) => {
+      const existingViews = filter(
+        organization.views,
+        (view) => view.type === type,
+      );
+      console.log({ existingViews });
+
+      await Promise.all(
+        map(newViews, async (newView) => {
+          const existingView = find(existingViews, {
+            viewUrl: newView,
+          });
+          if (!existingView) {
+            await this.views.create({
+              viewUrl: newView,
+              organizationId,
+              type,
+            });
+          }
+        }),
+      );
+
+      console.log({
+        delete: filter(
+          existingViews,
+          (existingView) => !find(newViews, { viewUrl: existingView.viewUrl }),
+        ),
+      });
+      const deletedViewsIds = map(
+        filter(
+          existingViews,
+          (existingView) => !includes(newViews, existingView.viewUrl),
+        ),
+        'id',
+      );
+      await this.views.deleteByIds(deletedViewsIds);
+    };
+
+    if (payload?.externalViews) {
+      await updateViews(payload.externalViews, OrganizationViewType.External);
+    }
+
+    if (payload?.internalViews) {
+      await updateViews(payload.internalViews, OrganizationViewType.Internal);
     }
 
     return this.getOrganizationGeneralById(organizationId);

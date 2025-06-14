@@ -20,6 +20,7 @@ import {
   OrganizationTagsRepository,
   OrganizationTurnoverDistributionsRepository,
   OrganizationTurnoversRepository,
+  OrganizationViewsRepository,
   OrganizationWasteDistributionsRepository,
   ProductsRepository,
 } from './organizations';
@@ -67,4 +68,5 @@ export const repositories = [
   OrganizationWasteDistributionsRepository,
   OrganizationQuestionsRepository,
   OrganizationOpportunitiesRepository,
+  OrganizationViewsRepository,
 ];

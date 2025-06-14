@@ -18,6 +18,7 @@ export * from './organization-sites.repository';
 export * from './organization-tags.repository';
 export * from './organization-turnover-distributions.repository';
 export * from './organization-turnovers.repository';
+export * from './organization-views.repository';
 export * from './organization-waste-distributions.repository';
 export * from './organizations.repository';
 export * from './products.repository';

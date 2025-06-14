@@ -22,6 +22,7 @@ export enum AuthErrors {
   OrganizationWasteDistributionNotFound = 'organization_waste_distribution_not_found',
   OrganizationQuestionNotFound = 'organization_question_not_found',
   OrganizationOpportunityNotFound = 'organization_opportunity_not_found',
+  OrganizationViewNotFound = 'organization_view_not_found',
   TokenNotFound = 'token_not_found',
   WrongCredentials = 'wrong_user_credentials',
   NoTokenProvided = 'no_token_provided',

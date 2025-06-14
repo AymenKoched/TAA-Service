@@ -40,4 +40,6 @@ export const AdherentAccessList = [
   RoleAccess.ViewOrg,
   RoleAccess.UpdateOrg,
   RoleAccess.ViewActivity,
+
+  RoleAccess.UpdateUser,
 ];

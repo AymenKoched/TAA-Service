@@ -20,7 +20,7 @@ import {
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
 } from '../common';
-import { HasRoleAccess } from '../guards';
+import { HasOrganizationAccess, HasRoleAccess } from '../guards';
 import { OrganizationsService } from '../services';
 
 @Controller({ path: 'organizations' })
@@ -28,6 +28,7 @@ export class OrganizationsController {
   constructor(private readonly orgs: OrganizationsService) {}
 
   @Get(':organizationId/general')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationGeneralResponse)
   public async getOrganizationGeneral(
@@ -37,6 +38,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/products')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationProductsResponse)
   public async getOrganizationProducts(
@@ -46,6 +48,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/human-resources')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationHumanResourcesResponse)
   public async getOrganizationHumanResources(
@@ -55,6 +58,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/revenues')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationRevenuesResponse)
   public async getOrganizationRevenues(
@@ -64,6 +68,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/extras')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationExtrasResponse)
   public async getOrganizationExtras(
@@ -73,6 +78,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/others')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationOthersResponse)
   public async getOrganizationOthers(
@@ -82,6 +88,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/opportunities')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationOpportunitiesResponse)
   public async getOrganizationOpportunities(
@@ -99,6 +106,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/general')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationGeneralResponse)
   public async updateOrganizationGeneral(
@@ -109,6 +117,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/products')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationProductsResponse)
   public async updateOrganizationProducts(
@@ -119,6 +128,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/human-resources')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationHumanResourcesResponse)
   public async updateOrganizationHumanResources(
@@ -129,6 +139,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/revenues')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationRevenuesResponse)
   public async updateOrganizationRevenues(
@@ -139,6 +150,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/extras')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationExtrasResponse)
   public async updateOrganizationExtras(
@@ -149,6 +161,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/others')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationOthersResponse)
   public async updateOrganizationOthers(
@@ -159,6 +172,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/opportunities')
+  @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationOpportunitiesResponse)
   public async updateOrganizationOpportunities(

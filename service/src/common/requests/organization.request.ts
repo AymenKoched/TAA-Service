@@ -307,6 +307,26 @@ export class UpdateOrganizationGeneralRequest extends UpdateOrganizationRequest 
   @ValidateNested({ each: true })
   @IsOptional()
   otherLocations?: TagRequest[];
+
+  @ApiPropertyOptional()
+  @Transform(StringArrayTransformer)
+  @Type(() => StringArray)
+  @IsOptional()
+  @IsArray({
+    message: 'errors:field.invalid',
+  })
+  @IsString({ each: true })
+  externalViews?: string[];
+
+  @ApiPropertyOptional()
+  @Transform(StringArrayTransformer)
+  @Type(() => StringArray)
+  @IsOptional()
+  @IsArray({
+    message: 'errors:field.invalid',
+  })
+  @IsString({ each: true })
+  internalViews?: string[];
 }
 
 export class UpdateOrganizationProductsRequest extends UpdateOrganizationRequest {

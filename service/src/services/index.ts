@@ -23,6 +23,7 @@ import {
   OrganizationTagsService,
   OrganizationTurnoverDistributionsService,
   OrganizationTurnoversService,
+  OrganizationViewsService,
   OrganizationWasteDistributionsService,
   ProductsService,
 } from './organizations';
@@ -81,4 +82,5 @@ export const services = [
   OrganizationQuestionsService,
   OrganizationOpportunitiesService,
   S3Service,
+  OrganizationViewsService,
 ];

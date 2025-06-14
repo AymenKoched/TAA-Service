@@ -143,6 +143,12 @@ export class OrganizationGeneralResponse extends OrganizationResponse {
   otherLocations?: TagResponse[];
 
   @ApiPropertyOptional()
+  externalViews?: string[];
+
+  @ApiPropertyOptional()
+  internalViews?: string[];
+
+  @ApiPropertyOptional()
   @Expose()
   get completion(): number {
     return computeCompletion([
@@ -162,6 +168,8 @@ export class OrganizationGeneralResponse extends OrganizationResponse {
       this.twitter,
       this.websiteUrl,
       this.logoUrl,
+      this.externalViews,
+      this.internalViews,
     ]);
   }
 }

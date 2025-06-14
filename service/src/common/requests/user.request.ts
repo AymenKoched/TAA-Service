@@ -1,5 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDateString,
   IsEmail,
   IsEnum,
@@ -62,7 +63,8 @@ export class UserRequest extends BaseModel {
 
   @ApiPropertyOptional()
   @Matches(PASSWORD_REGEX, { message: 'errors:field.invalid' })
-  @IsOptional()
+  @ValidateIf((self, value) => value || self.type === UserType.Client)
+  @IsNotEmpty({ message: 'errors:field.required' })
   password?: string;
 
   @ApiPropertyOptional()
@@ -115,4 +117,11 @@ export class UpdateUserRequest extends BaseModel {
   @MaxLength(100, { message: 'errors:field.max_length.100' })
   @IsOptional()
   position?: string;
+}
+
+export class UpdateUserAdherenceRequest extends BaseModel {
+  @ApiProperty()
+  @IsNotEmpty({ message: 'errors:field.required' })
+  @IsBoolean({ message: 'errors:field.invalid' })
+  adherence!: boolean;
 }

@@ -10,27 +10,26 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
+
+import { conf } from '../configuration';
 
 @Injectable()
 export class S3Service {
   private s3Client: S3Client;
-  private bucketName: string;
+  private readonly bucketName: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor() {
     this.s3Client = new S3Client({
-      region: this.configService.get<string>('AWS_REGION'),
+      region: conf.s3.region,
       credentials: {
-        accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.get<string>(
-          'AWS_SECRET_ACCESS_KEY',
-        ),
+        accessKeyId: conf.s3.accessKeyId,
+        secretAccessKey: conf.s3.secretAccessKey,
       },
     });
 
-    this.bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME');
+    this.bucketName = conf.s3.bucketName;
   }
 
   private generateUniqueFileName(originalName: string): string {
@@ -58,6 +57,10 @@ export class S3Service {
         `File upload failed: ${error.message}`,
       );
     }
+  }
+
+  async uploadMultipleFiles(files: Express.Multer.File[]): Promise<string[]> {
+    return Promise.all(files.map((file) => this.uploadFile(file)));
   }
 
   async downloadFile(fileName: string): Promise<Readable> {

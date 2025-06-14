@@ -11,9 +11,13 @@ import { every, includes, isArray, some } from 'lodash';
 
 import { RoleAccess, RoleResponse } from '../common';
 import { JwtAuthGuard } from './auth.guard';
-import { AccessContext, BaseAccessGuard } from './base-access.guard';
+import {
+  AccessContext,
+  BaseAccessGuard,
+  BaseAccessOptions,
+} from './base-access.guard';
 
-export type RoleAccessOptions = {
+export type RoleAccessOptions = BaseAccessOptions & {
   accesses?: RoleAccess | RoleAccess[];
 };
 
@@ -28,6 +32,8 @@ export function HasRoleAccess(opts?: RoleAccessOptions) {
 
 @Injectable({ scope: Scope.REQUEST })
 export class RoleAccessGuard extends BaseAccessGuard<RoleAccessOptions> {
+  protected defaultOptions = {};
+
   constructor(moduleRef: ModuleRef, @Inject(Reflector) reflector: Reflector) {
     super(moduleRef, reflector, ROLE_ACCESS_CONFIG_METADATA);
   }

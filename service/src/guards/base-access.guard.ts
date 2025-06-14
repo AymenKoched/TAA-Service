@@ -5,18 +5,36 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
+import { merge } from 'lodash';
 
-import { AppRequest, AuthErrors, UserResponse } from '../common';
+import {
+  AppRequest,
+  AuthErrors,
+  OrganizationResponse,
+  UserResponse,
+  UserType,
+} from '../common';
+import { OrganizationsService } from '../services';
 
 const logger = new Logger('BaseAccessGuard');
 
-export type AccessContext<TOptions> = {
+export type BaseAccessOptions = {
+  selector?: string;
+};
+
+export type AccessContext<TOptions extends BaseAccessOptions> = {
+  selectorValue: any;
   user: UserResponse;
+  organization?: OrganizationResponse;
   options?: TOptions;
   params: Record<string, string>;
 };
 
-export abstract class BaseAccessGuard<TOptions> implements CanActivate {
+export abstract class BaseAccessGuard<TOptions extends BaseAccessOptions>
+  implements CanActivate
+{
+  protected abstract defaultOptions?: TOptions;
+
   protected constructor(
     protected readonly moduleRef: ModuleRef,
     protected readonly reflector: Reflector,
@@ -31,15 +49,29 @@ export abstract class BaseAccessGuard<TOptions> implements CanActivate {
 
     const options = this.getOptions(ctx);
 
+    const selectorValue =
+      req.params[options.selector as string] ||
+      req.query[options.selector as string] ||
+      req.body[options.selector as string];
+
     if (user.isSuperAdmin) {
       return true;
+    }
+
+    let organization;
+    if (user.userType === UserType.Adherent) {
+      organization = await this.moduleRef
+        .get(OrganizationsService, { strict: false })
+        .findOne({ adherentId: user.id }, { silent: true });
     }
 
     let resp;
 
     try {
       resp = await this.hasAccess({
+        selectorValue,
         user,
+        organization,
         options,
         params: {
           ...req.body,
@@ -64,9 +96,12 @@ export abstract class BaseAccessGuard<TOptions> implements CanActivate {
   }
 
   protected getOptions(ctx: ExecutionContext): TOptions {
-    return (
+    const opts =
       this.reflector.get<TOptions>(this.metaKey, ctx.getHandler()) ||
-      this.reflector.get<TOptions>(this.metaKey, ctx.getClass())
-    );
+      this.reflector.get<TOptions>(this.metaKey, ctx.getClass());
+
+    return merge(this.defaultOptions, {
+      ...opts,
+    });
   }
 }

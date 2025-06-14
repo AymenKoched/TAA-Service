@@ -6,13 +6,17 @@ import {
   Post,
   Res,
   UploadedFile,
+  UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
+import { JwtAuthGuard } from '../guards';
 import { S3Service } from '../services/s3.service';
 
 @Controller('s3')
+@UseGuards(JwtAuthGuard)
 export class S3Controller {
   constructor(private readonly s3Service: S3Service) {}
 
@@ -20,6 +24,12 @@ export class S3Controller {
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file: Express.Multer.File) {
     return this.s3Service.uploadFile(file);
+  }
+
+  @Post('upload/many')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadMany(@UploadedFiles() files: Express.Multer.File[]) {
+    return this.s3Service.uploadMultipleFiles(files);
   }
 
   @Get('list')

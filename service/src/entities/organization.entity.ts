@@ -29,6 +29,7 @@ import { OrganizationSite } from './organization-site.entity';
 import { OrganizationTag } from './organization-tag.entity';
 import { OrganizationTurnover } from './organization-turnover.entity';
 import { OrganizationTurnoverDistribution } from './organization-turnover-distribution.entity';
+import { OrganizationView } from './organization-view.entity';
 import { OrganizationWasteDistribution } from './organization-waste-distribution.entity';
 import { Product } from './product.entity';
 import { Adherent } from './user.entity';
@@ -82,6 +83,12 @@ export class Organization extends BaseEntity {
     nullable: true,
   })
   logoUrl?: string;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => OrganizationView)
+  @OneToMany(() => OrganizationView, (view) => view.organization)
+  views?: OrganizationView[];
 
   @ApiProperty()
   @Expose()

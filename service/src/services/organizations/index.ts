@@ -18,6 +18,7 @@ export * from './organization-sites.service';
 export * from './organization-tags.service';
 export * from './organization-turnover-distributions.service';
 export * from './organization-turnovers.service';
+export * from './organization-views.service';
 export * from './organization-waste-distributions.service';
 export * from './organizations.service';
 export * from './products.service';

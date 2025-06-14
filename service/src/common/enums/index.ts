@@ -8,6 +8,7 @@ export * from './organization-opportunity-category.enum';
 export * from './organization-opportunity-priority.enum';
 export * from './organization-site-type.enum';
 export * from './organization-tag-type.enum';
+export * from './organization-view-type.enum';
 export * from './product-type.enum';
 export * from './role-access.enum';
 export * from './user-token-type.enum';

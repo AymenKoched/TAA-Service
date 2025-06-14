@@ -51,9 +51,6 @@ export class UserResponse extends BaseResponseModel {
   @Transform(ModelTransformer(() => UserTokenResponse))
   tokens?: UserTokenResponse[];
 
-  @ApiProperty()
-  isActive!: boolean;
-
   @Expose()
   @ApiProperty()
   get isSuperAdmin(): boolean {
@@ -94,6 +91,9 @@ export class AdherentResponse extends UserResponse {
 
   @ApiPropertyOptional()
   position?: string;
+
+  @ApiProperty()
+  adherence!: boolean;
 
   @Expose()
   @ApiProperty()

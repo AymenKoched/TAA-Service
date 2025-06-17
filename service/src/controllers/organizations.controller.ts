@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { isUndefined } from 'lodash';
 
 import {
   ConvertResponse,
+  OrganizationActivityType,
   OrganizationExtrasResponse,
   OrganizationGeneralResponse,
   OrganizationHumanResourcesResponse,
@@ -11,6 +13,7 @@ import {
   OrganizationRequest,
   OrganizationResponse,
   OrganizationRevenuesResponse,
+  OrganizationsSearchFilter,
   RoleAccess,
   UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
@@ -20,12 +23,35 @@ import {
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
 } from '../common';
-import { HasOrganizationAccess, HasRoleAccess } from '../guards';
+import {
+  HasAdminAccess,
+  HasOrganizationAccess,
+  HasRoleAccess,
+} from '../guards';
 import { OrganizationsService } from '../services';
 
 @Controller({ path: 'organizations' })
 export class OrganizationsController {
   constructor(private readonly orgs: OrganizationsService) {}
+
+  @Get()
+  @HasAdminAccess()
+  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
+  @ConvertResponse(OrganizationResponse)
+  public async searchOrganizations(
+    @Query() filters: OrganizationsSearchFilter,
+  ) {
+    return this.orgs.search(
+      new OrganizationsSearchFilter({
+        ...filters,
+        'organizationActivities.type': isUndefined(
+          filters['organizationActivities.activityId'],
+        )
+          ? undefined
+          : OrganizationActivityType.Primary,
+      }),
+    );
+  }
 
   @Get(':organizationId/general')
   @HasOrganizationAccess()

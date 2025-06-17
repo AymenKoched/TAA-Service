@@ -9,6 +9,7 @@ import {
   omit,
   sumBy,
 } from 'lodash';
+import { FindOptionsWhere } from 'typeorm';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -43,12 +44,14 @@ import {
   OrganizationRevenuesResponse,
   OrganizationSiteRequest,
   OrganizationSiteType,
+  OrganizationsSearchFilter,
   OrganizationTagType,
   OrganizationTurnoverDistributionRequest,
   OrganizationTurnoverRequest,
   OrganizationViewType,
   OrganizationWasteDistributionRequest,
   ProductType,
+  SearchQuery,
   TagRequest,
   UpdateOrganizationExtrasRequest,
   UpdateOrganizationGeneralRequest,
@@ -158,6 +161,21 @@ export class OrganizationsService extends CrudService<Organization> {
     private readonly views: OrganizationViewsService,
   ) {
     super(orgs);
+  }
+
+  async search(filters: OrganizationsSearchFilter) {
+    const conditions = [
+      new OrganizationsSearchFilter({
+        ...omit(filters, 'query'),
+        ...(SearchQuery.getQuery(filters) && {
+          name: SearchQuery.getQuery(filters),
+        }),
+      }),
+    ];
+
+    const criteria: FindOptionsWhere<Organization> = {};
+
+    return this.orgs.search(conditions, criteria);
   }
 
   async getOrganization(organizationId: string, expands?: string[]) {
@@ -582,11 +600,13 @@ export class OrganizationsService extends CrudService<Organization> {
         await this.employeesKpi.update(existingEmployeeKpi.id, {
           men: newEmployeeKpi.men,
           women: newEmployeeKpi.women,
+          total: newEmployeeKpi.men + newEmployeeKpi.women,
         });
       } else {
         await this.employeesKpi.create({
           men: newEmployeeKpi.men,
           women: newEmployeeKpi.women,
+          total: newEmployeeKpi.men + newEmployeeKpi.women,
           organizationId,
           type: employeesKpiType,
         });

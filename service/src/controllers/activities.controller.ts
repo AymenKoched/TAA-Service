@@ -11,7 +11,7 @@ export class ActivitiesController {
   @Get()
   @HasRoleAccess({ accesses: RoleAccess.ViewActivity })
   @ConvertResponse(ActivityResponse)
-  public async getUserDetails() {
+  public async getActivities() {
     return this.activities.search({});
   }
 }

@@ -600,13 +600,11 @@ export class OrganizationsService extends CrudService<Organization> {
         await this.employeesKpi.update(existingEmployeeKpi.id, {
           men: newEmployeeKpi.men,
           women: newEmployeeKpi.women,
-          total: newEmployeeKpi.men + newEmployeeKpi.women,
         });
       } else {
         await this.employeesKpi.create({
           men: newEmployeeKpi.men,
           women: newEmployeeKpi.women,
-          total: newEmployeeKpi.men + newEmployeeKpi.women,
           organizationId,
           type: employeesKpiType,
         });

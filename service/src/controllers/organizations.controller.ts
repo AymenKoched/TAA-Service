@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Workbook } from 'exceljs';
 import { isUndefined } from 'lodash';
 
 import {
@@ -28,11 +40,14 @@ import {
   HasOrganizationAccess,
   HasRoleAccess,
 } from '../guards';
-import { OrganizationsService } from '../services';
+import { OrganizationImportService, OrganizationsService } from '../services';
 
 @Controller({ path: 'organizations' })
 export class OrganizationsController {
-  constructor(private readonly orgs: OrganizationsService) {}
+  constructor(
+    private readonly orgs: OrganizationsService,
+    private readonly orgImport: OrganizationImportService,
+  ) {}
 
   @Get()
   @HasAdminAccess()
@@ -51,6 +66,17 @@ export class OrganizationsController {
           : OrganizationActivityType.Primary,
       }),
     );
+  }
+
+  @Post('import')
+  @HasAdminAccess()
+  @UseInterceptors(FileInterceptor('file'))
+  @ConvertResponse(OrganizationResponse)
+  public async importOrganizations(@UploadedFile() file: Express.Multer.File) {
+    const workbook = new Workbook();
+    const content = await workbook.xlsx.load(file.buffer);
+    console.log({ content });
+    return this.orgImport.importOrganizations(content);
   }
 
   @Get(':organizationId/general')

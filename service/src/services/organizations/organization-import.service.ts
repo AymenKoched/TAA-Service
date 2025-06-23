@@ -61,10 +61,17 @@ export class OrganizationImportService {
 
     await Promise.all(
       map(basicItems, async (basic) => {
-        const org = await this.orgs.createOrganization(
-          omit(basic, 'orgIid') as OrganizationRequest,
-        );
-        const orgId = org.id;
+        const existingOrg = await this.orgs.findOne({ email: basic.email });
+        let orgId: string;
+
+        if (existingOrg) {
+          orgId = existingOrg.id;
+        } else {
+          const org = await this.orgs.createOrganization(
+            omit(basic, 'orgIid') as OrganizationRequest,
+          );
+          orgId = org.id;
+        }
 
         const generalMatch = find(generalItems, { orgIid: basic.orgIid });
         if (generalMatch) {

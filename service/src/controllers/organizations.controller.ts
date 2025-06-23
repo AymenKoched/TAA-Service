@@ -75,7 +75,6 @@ export class OrganizationsController {
   public async importOrganizations(@UploadedFile() file: Express.Multer.File) {
     const workbook = new Workbook();
     const content = await workbook.xlsx.load(file.buffer);
-    console.log({ content });
     return this.orgImport.importOrganizations(content);
   }
 

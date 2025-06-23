@@ -1310,6 +1310,9 @@ export class OrganizationsService extends CrudService<Organization> {
   }
 
   private checkSum(payload: { count: number }[]) {
+    if (payload.length === 0) {
+      return;
+    }
     const total = sumBy(payload, (item) => Number(item.count));
     if (Math.abs(total - 100) >= 0.0001) {
       throw new BadRequestException(

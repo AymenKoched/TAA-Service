@@ -600,13 +600,11 @@ export class OrganizationsService extends CrudService<Organization> {
         await this.employeesKpi.update(existingEmployeeKpi.id, {
           men: newEmployeeKpi.men,
           women: newEmployeeKpi.women,
-          total: newEmployeeKpi.men + newEmployeeKpi.women,
         });
       } else {
         await this.employeesKpi.create({
           men: newEmployeeKpi.men,
           women: newEmployeeKpi.women,
-          total: newEmployeeKpi.men + newEmployeeKpi.women,
           organizationId,
           type: employeesKpiType,
         });
@@ -1312,6 +1310,9 @@ export class OrganizationsService extends CrudService<Organization> {
   }
 
   private checkSum(payload: { count: number }[]) {
+    if (payload.length === 0) {
+      return;
+    }
     const total = sumBy(payload, (item) => Number(item.count));
     if (Math.abs(total - 100) >= 0.0001) {
       throw new BadRequestException(

@@ -13,6 +13,7 @@ import {
 
 import { BaseEntity, UserType } from '../common';
 import { Organization } from './organization.entity';
+import { UserReclamation } from './user-reclamation.entity';
 import { UserRole } from './user-role.entity';
 import { UserToken } from './user-token.entity';
 
@@ -127,4 +128,26 @@ export class Adherent extends User {
     default: false,
   })
   adherence!: boolean;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    name: 'modification_start_date',
+    nullable: false,
+  })
+  modificationStartDate!: Date;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    name: 'modification_end_date',
+    nullable: false,
+  })
+  modificationEndDate!: Date;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => UserReclamation)
+  @OneToMany(() => UserReclamation, (reclamation) => reclamation.adherent)
+  reclamations?: UserReclamation[];
 }

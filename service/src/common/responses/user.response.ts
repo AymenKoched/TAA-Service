@@ -95,11 +95,27 @@ export class AdherentResponse extends UserResponse {
   @ApiProperty()
   adherence!: boolean;
 
+  @ApiProperty()
+  modificationStartDate!: Date;
+
+  @ApiProperty()
+  modificationEndDate!: Date;
+
   @Expose()
   @ApiProperty()
   get isSuperAdmin(): boolean {
     return some(this.roles, (role) =>
       includes(role.accesses, RoleAccess.SuperAdminAccess),
+    );
+  }
+
+  @Expose()
+  @ApiProperty()
+  get isWithinModificationWindow(): boolean {
+    const now = new Date();
+    return (
+      now >= new Date(this.modificationStartDate) &&
+      now <= new Date(this.modificationEndDate)
     );
   }
 }

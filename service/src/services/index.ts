@@ -35,6 +35,7 @@ import {
   AdherentsService,
   AdminsService,
   ClientsService,
+  UserReclamationsService,
   UsersService,
   UserTokensService,
 } from './users';
@@ -85,4 +86,5 @@ export const services = [
   S3Service,
   OrganizationViewsService,
   OrganizationImportService,
+  UserReclamationsService,
 ];

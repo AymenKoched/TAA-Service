@@ -33,7 +33,7 @@ export class ReclamationsController {
   @HasUserTypeAccess({ types: [UserType.Admin] })
   @ConvertResponse(UserReclamationResponse)
   public async getReclamations(@Query() filters: UserReclamationsSearchFilter) {
-    return this.reclamations.search(filters);
+    return this.reclamations.search({ ...filters, expands: ['adherent'] });
   }
 
   @Post()

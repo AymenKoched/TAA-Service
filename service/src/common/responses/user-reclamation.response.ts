@@ -1,3 +1,5 @@
+import { Transform, Type } from 'class-transformer';
+
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
 import {
@@ -5,6 +7,8 @@ import {
   UserReclamationState,
   UserReclamationType,
 } from '../enums';
+import { ModelTransformer } from '../transformers';
+import { AdherentResponse } from './user.response';
 
 export class UserReclamationResponse extends BaseResponseModel {
   @ApiProperty()
@@ -27,4 +31,9 @@ export class UserReclamationResponse extends BaseResponseModel {
 
   @ApiPropertyOptional()
   fileUrl?: string;
+
+  @ApiPropertyOptional()
+  @Type(() => AdherentResponse)
+  @Transform(ModelTransformer(() => AdherentResponse))
+  adherent?: AdherentResponse;
 }

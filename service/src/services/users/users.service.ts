@@ -8,6 +8,7 @@ import {
   AuthErrors,
   CrudService,
   getRandomString,
+  MODIFICATION_WINDOW_DAYS,
   SALT_ROUNDS,
   UpdateUserAdherenceRequest,
   UpdateUserRequest,
@@ -47,10 +48,14 @@ export class UsersService extends CrudService<User> {
     const finalPassword = payload.password ?? getRandomString(8);
     const hashedPassword = await bcrypt.hash(finalPassword, SALT_ROUNDS);
 
+    const now = new Date();
+    const endDate = new Date(now);
+    endDate.setDate(now.getDate() + MODIFICATION_WINDOW_DAYS);
+
     const userPayload = {
       ...payload,
       password: hashedPassword,
-      inscriptionDate: payload.inscriptionDate ?? new Date(),
+      inscriptionDate: payload.inscriptionDate ?? now,
     };
 
     let user: User;
@@ -71,6 +76,8 @@ export class UsersService extends CrudService<User> {
         user = await this.adherents.create({
           ...userPayload,
           userType: UserType.Adherent,
+          modificationStartDate: now,
+          modificationEndDate: endDate,
         });
         break;
       default:

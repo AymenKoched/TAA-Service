@@ -24,4 +24,5 @@ export * from './send-email.request';
 export * from './sign-in.request';
 export * from './tag.request';
 export * from './user.request';
+export * from './user-reclamation.request';
 export * from './user-token.request';

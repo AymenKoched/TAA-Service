@@ -29,6 +29,7 @@ import {
   AdherentsRepository,
   AdminsRepository,
   ClientsRepository,
+  UserReclamationsRepository,
   UsersRepository,
   UserTokensRepository,
 } from './users';
@@ -69,4 +70,5 @@ export const repositories = [
   OrganizationQuestionsRepository,
   OrganizationOpportunitiesRepository,
   OrganizationViewsRepository,
+  UserReclamationsRepository,
 ];

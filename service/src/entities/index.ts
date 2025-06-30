@@ -24,6 +24,7 @@ import { OrganizationWasteDistribution } from './organization-waste-distribution
 import { Product } from './product.entity';
 import { Role } from './role.entity';
 import { Adherent, Admin, Client, User } from './user.entity';
+import { UserReclamation } from './user-reclamation.entity';
 import { UserRole } from './user-role.entity';
 import { UserToken } from './user-token.entity';
 
@@ -53,6 +54,7 @@ export * from './organization-waste-distribution.entity';
 export * from './product.entity';
 export * from './role.entity';
 export * from './user.entity';
+export * from './user-reclamation.entity';
 export * from './user-role.entity';
 export * from './user-token.entity';
 
@@ -88,4 +90,5 @@ export const entities = [
   OrganizationQuestion,
   OrganizationOpportunity,
   OrganizationView,
+  UserReclamation,
 ];

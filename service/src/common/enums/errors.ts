@@ -1,6 +1,7 @@
 export enum AuthErrors {
   UserNotFound = 'user_not_found',
   UserRoleNotFound = 'user_role_not_found',
+  UserReclamationNotFound = 'user_reclamation_not_found',
   UnsupportedUserType = 'unsupported_user_type',
   RoleNotFound = 'role_not_found',
   OrganizationNotFound = 'organization_not_found',

@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Put } from '@nestjs/common';
+import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
 
 import {
   AdherentResponse,
@@ -8,10 +8,11 @@ import {
   UpdateUserRequest,
   UserResponse,
 } from '../common';
-import { HasRoleAccess, HasUserAccess } from '../guards';
+import { HasRoleAccess, HasUserAccess, JwtAuthGuard } from '../guards';
 import { UsersService } from '../services';
 
 @Controller({ path: 'users' })
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly users: UsersService) {}
 

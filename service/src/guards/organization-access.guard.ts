@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
-import { OrganizationsService } from '../services';
+import { AdherentResponse } from '../common';
+import { AdherentsService, OrganizationsService } from '../services';
 import { JwtAuthGuard } from './auth.guard';
 import {
   AccessContext,
@@ -16,7 +17,9 @@ import {
   BaseAccessOptions,
 } from './base-access.guard';
 
-export type OrganizationAccessOptions = BaseAccessOptions;
+export type OrganizationAccessOptions = BaseAccessOptions & {
+  update?: boolean;
+};
 
 export const ORG_ACCESS_CONFIG_METADATA = 'org_access_config';
 
@@ -37,6 +40,7 @@ export class OrganizationAccessGuard extends BaseAccessGuard<OrganizationAccessO
     moduleRef: ModuleRef,
     @Inject(Reflector) reflector: Reflector,
     private readonly orgs: OrganizationsService,
+    private readonly adherents: AdherentsService,
   ) {
     super(moduleRef, reflector, ORG_ACCESS_CONFIG_METADATA);
   }
@@ -45,25 +49,33 @@ export class OrganizationAccessGuard extends BaseAccessGuard<OrganizationAccessO
     selectorValue,
     user,
     organization,
+    options,
   }: AccessContext<OrganizationAccessOptions>): Promise<boolean> {
-    if (!organization) {
-      return false;
-    }
+    if (!organization) return false;
 
     const selectedOrg = await this.orgs.getById(selectorValue);
+    if (!selectedOrg) return false;
 
-    if (!selectedOrg) {
-      return false;
+    if (options?.update) {
+      if (
+        selectedOrg.id !== organization.id ||
+        selectedOrg.adherentId !== user.id
+      ) {
+        return false;
+      }
+
+      const adh = await this.adherents.findOne(
+        { organizationId: selectedOrg.id },
+        { silent: true },
+      );
+      if (!adh) return false;
+
+      const adherent = new AdherentResponse(adh);
+      return adherent.isWithinModificationWindow;
     }
 
-    if (selectedOrg.id === organization.id) {
-      return true;
-    }
-
-    if (selectedOrg.adherentId === user.id) {
-      return true;
-    }
-
-    return false;
+    return (
+      selectedOrg.id === organization.id || selectedOrg.adherentId === user.id
+    );
   }
 }

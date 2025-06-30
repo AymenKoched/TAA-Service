@@ -1,10 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 
 import { ActivityResponse, ConvertResponse, RoleAccess } from '../common';
-import { HasRoleAccess } from '../guards';
+import { HasRoleAccess, JwtAuthGuard } from '../guards';
 import { ActivitiesService } from '../services';
 
 @Controller({ path: 'activities' })
+@UseGuards(JwtAuthGuard)
 export class ActivitiesController {
   constructor(private readonly activities: ActivitiesService) {}
 

@@ -34,11 +34,12 @@ import {
   UpdateOrganizationOthersRequest,
   UpdateOrganizationProductsRequest,
   UpdateOrganizationRevenuesRequest,
+  UserType,
 } from '../common';
 import {
-  HasAdminAccess,
   HasOrganizationAccess,
   HasRoleAccess,
+  HasUserTypeAccess,
 } from '../guards';
 import { OrganizationImportService, OrganizationsService } from '../services';
 
@@ -50,7 +51,7 @@ export class OrganizationsController {
   ) {}
 
   @Get()
-  @HasAdminAccess()
+  @HasUserTypeAccess({ types: [UserType.Admin] })
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationResponse)
   public async searchOrganizations(
@@ -69,7 +70,7 @@ export class OrganizationsController {
   }
 
   @Post('import')
-  @HasAdminAccess()
+  @HasUserTypeAccess({ types: [UserType.Admin] })
   @UseInterceptors(FileInterceptor('file'))
   @ConvertResponse(OrganizationResponse)
   public async importOrganizations(@UploadedFile() file: Express.Multer.File) {
@@ -157,7 +158,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/general')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationGeneralResponse)
   public async updateOrganizationGeneral(
@@ -168,7 +169,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/products')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationProductsResponse)
   public async updateOrganizationProducts(
@@ -179,7 +180,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/human-resources')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationHumanResourcesResponse)
   public async updateOrganizationHumanResources(
@@ -190,7 +191,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/revenues')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationRevenuesResponse)
   public async updateOrganizationRevenues(
@@ -201,7 +202,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/extras')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationExtrasResponse)
   public async updateOrganizationExtras(
@@ -212,7 +213,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/others')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationOthersResponse)
   public async updateOrganizationOthers(
@@ -223,7 +224,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/opportunities')
-  @HasOrganizationAccess()
+  @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationOpportunitiesResponse)
   public async updateOrganizationOpportunities(

@@ -38,6 +38,16 @@ export class ReclamationsController {
     return this.reclamations.search({ ...filters, expands: ['adherent'] });
   }
 
+  @Get(':reclamationId')
+  @HasUserTypeAccess({ types: [UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.ViewReclamation })
+  @ConvertResponse(UserReclamationResponse)
+  public async getReclamation(@Param('reclamationId') reclamationId: string) {
+    return this.reclamations.getById(reclamationId, {
+      search: { expands: ['logs', 'adherent'] },
+    });
+  }
+
   @Post()
   @HasUserTypeAccess({ types: [UserType.Adherent] })
   @HasRoleAccess({ accesses: RoleAccess.CreateReclamation })

@@ -8,6 +8,7 @@ import {
   UserReclamationType,
 } from '../enums';
 import { ModelTransformer } from '../transformers';
+import { OrganizationLogResponse } from './organization-log.response';
 import { AdherentResponse } from './user.response';
 
 export class UserReclamationResponse extends BaseResponseModel {
@@ -36,4 +37,9 @@ export class UserReclamationResponse extends BaseResponseModel {
   @Type(() => AdherentResponse)
   @Transform(ModelTransformer(() => AdherentResponse))
   adherent?: AdherentResponse;
+
+  @ApiPropertyOptional()
+  @Type(() => OrganizationLogResponse)
+  @Transform(ModelTransformer(() => OrganizationLogResponse))
+  logs?: OrganizationLogResponse[];
 }

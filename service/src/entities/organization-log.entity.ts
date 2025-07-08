@@ -40,6 +40,6 @@ export class Log extends BaseEntity {
   @Expose()
   @Type(() => UserReclamation)
   @ManyToOne(() => UserReclamation, (reclamation) => reclamation.logs)
-  @JoinColumn({ name: 'organization_id' })
+  @JoinColumn({ name: 'reclamation_id' })
   reclamation!: UserReclamation;
 }

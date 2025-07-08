@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity, ProductType } from '../common';
+import { BaseEntity } from '../common';
+import { ProductType } from '../common/enums/product-type.enum';
 import { Organization } from './organization.entity';
 
 @Index('unique_product_name_organization', ['name', 'organizationId'], {

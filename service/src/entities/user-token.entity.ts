@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity, UserTokenType } from '../common';
+import { BaseEntity } from '../common';
+import { UserTokenType } from '../common/enums/user-token-type.enum';
 import { User } from './user.entity';
 
 @Entity({ name: 'users_tokens' })

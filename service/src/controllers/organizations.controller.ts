@@ -71,6 +71,7 @@ export class OrganizationsController {
 
   @Post('import')
   @HasUserTypeAccess({ types: [UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.ImportOrg })
   @UseInterceptors(FileInterceptor('file'))
   @ConvertResponse(OrganizationResponse)
   public async importOrganizations(@UploadedFile() file: Express.Multer.File) {

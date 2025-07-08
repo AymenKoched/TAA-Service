@@ -53,7 +53,9 @@ export class OrganizationAccessGuard extends BaseAccessGuard<OrganizationAccessO
   }: AccessContext<OrganizationAccessOptions>): Promise<boolean> {
     if (!organization) return false;
 
-    const selectedOrg = await this.orgs.getById(selectorValue);
+    const selectedOrg = await this.orgs.getById(selectorValue, {
+      silent: true,
+    });
     if (!selectedOrg) return false;
 
     if (options?.update) {

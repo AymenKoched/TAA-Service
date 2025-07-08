@@ -2,13 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity, OrganizationSiteType } from '../common';
+import { BaseEntity } from '../common';
+import { OrganizationSiteType } from '../common/enums/organization-site-type.enum';
 import { Organization } from './organization.entity';
 
-@Index('unique_name_organization-type', ['name', 'organizationId', 'type'], {
-  unique: true,
-  where: `deleted_at is null and name <> ''`,
-})
+@Index(
+  'unique_name_organization-type',
+  ['name', 'organizationId', 'type', 'deletedAt'],
+  { unique: true },
+)
 @Entity({ name: 'organization_sites' })
 export class OrganizationSite extends BaseEntity {
   keyPrefix = 'org_ste_';

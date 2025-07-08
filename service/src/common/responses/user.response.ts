@@ -101,6 +101,9 @@ export class AdherentResponse extends UserResponse {
   @ApiProperty()
   modificationEndDate!: Date;
 
+  @ApiPropertyOptional()
+  lastReclamationId?: string;
+
   @Expose()
   @ApiProperty()
   get isSuperAdmin(): boolean {

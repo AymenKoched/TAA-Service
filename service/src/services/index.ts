@@ -14,6 +14,7 @@ import {
   OrganizationFormationsService,
   OrganizationImportService,
   OrganizationInitiativesService,
+  OrganizationLogsService,
   OrganizationOpportunitiesService,
   OrganizationQuestionsService,
   OrganizationRdProjectsService,
@@ -87,4 +88,5 @@ export const services = [
   OrganizationViewsService,
   OrganizationImportService,
   UserReclamationsService,
+  OrganizationLogsService,
 ];

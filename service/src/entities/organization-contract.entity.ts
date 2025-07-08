@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity, OrganizationContractType } from '../common';
+import { BaseEntity } from '../common';
+import { OrganizationContractType } from '../common/enums/organization-contract-type.enum';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_contracts' })

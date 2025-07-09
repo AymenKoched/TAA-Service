@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-import { BaseEntity, OrganizationAttributeType } from '../common';
+import { BaseEntity } from '../common';
+import { OrganizationAttributeType } from '../common/enums/organization-attribute-type.enum';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_attributes' })

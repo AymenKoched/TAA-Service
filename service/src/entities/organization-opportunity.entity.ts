@@ -2,11 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-import {
-  BaseEntity,
-  OrganizationOpportunityCategory,
-  OrganizationOpportunityPriority,
-} from '../common';
+import { BaseEntity } from '../common';
+import { OrganizationOpportunityCategory } from '../common/enums/organization-opportunity-category.enum';
+import { OrganizationOpportunityPriority } from '../common/enums/organization-opportunity-priority.enum';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'organization_opportunities' })

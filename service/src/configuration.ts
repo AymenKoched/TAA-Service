@@ -95,9 +95,11 @@ function loadFromDirectory<T extends AppConfig = AppConfig>(
   if (myConf.environment === Environment.Production) {
     myConf.database.entities = ['dist/entities/**/*.js'];
     myConf.database.migrations = ['dist/db/migrations/**/*.js'];
+    myConf.database.subscribers = ['dist/db/subscribers/**/*.js'];
   } else {
     myConf.database.entities = ['src/entities/**/*.ts'];
     myConf.database.migrations = ['src/db/migrations/**/*.ts'];
+    myConf.database.subscribers = ['src/db/subscribers/**/*.ts'];
   }
 
   return Object.assign(myConf, {

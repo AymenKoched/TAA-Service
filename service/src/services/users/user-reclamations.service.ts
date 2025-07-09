@@ -55,6 +55,7 @@ export class UserReclamationsService extends CrudService<UserReclamation> {
       await this.adherents.updateById(updatedReclamation.adherentId, {
         modificationStartDate: startDate,
         modificationEndDate: endDate,
+        lastReclamationId: reclamationId,
       });
     }
 

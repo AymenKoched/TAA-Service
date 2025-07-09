@@ -10,6 +10,7 @@ export * from './organization-employee-kpi.response';
 export * from './organization-environment.response';
 export * from './organization-formation.response';
 export * from './organization-initiative.response';
+export * from './organization-log.response';
 export * from './organization-opportunity.response';
 export * from './organization-question.response';
 export * from './organization-rd-project.response';

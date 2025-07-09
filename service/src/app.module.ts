@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { BaseModule, filters, getDatabaseModule, interceptors } from './common';
 import { conf } from './configuration';
 import { controllers } from './controllers';
+import { subscribers } from './db';
 import { guards } from './guards';
 import { repositories } from './repositories';
 import { services } from './services';
@@ -21,6 +22,7 @@ import { services } from './services';
   providers: [
     ...services,
     ...repositories,
+    ...subscribers,
     ...guards,
     ...interceptors.map((interceptor) => ({
       provide: 'APP_INTERCEPTOR',

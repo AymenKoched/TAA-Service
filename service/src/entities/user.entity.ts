@@ -11,7 +11,8 @@ import {
   TableInheritance,
 } from 'typeorm';
 
-import { BaseEntity, UserType } from '../common';
+import { BaseEntity } from '../common';
+import { UserType } from '../common/enums/user-type.enum';
 import { Organization } from './organization.entity';
 import { UserReclamation } from './user-reclamation.entity';
 import { UserRole } from './user-role.entity';
@@ -144,6 +145,14 @@ export class Adherent extends User {
     nullable: false,
   })
   modificationEndDate!: Date;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
+    name: 'last_reclamation_id',
+    nullable: true,
+  })
+  lastReclamationId?: string;
 
   @ApiProperty()
   @Expose()

@@ -287,17 +287,14 @@ export class OrganizationsService extends CrudService<Organization> {
       await createTags(payload.rAndDSites, OrganizationTagType.RAndD);
     }
 
+    const adherentRole = await this.roles.findOne({ name: ADHERENT_ROLE_NAME });
+
     const adherent = await this.users.createUser({
       name: org.email.split('@')[0],
       email: org.email,
       type: UserType.Adherent,
       organizationId: org.id,
     });
-
-    const adherentRole = await this.roles.findOne(
-      { name: ADHERENT_ROLE_NAME },
-      { silent: true },
-    );
 
     await this.userRoles.create({
       userId: adherent.id,

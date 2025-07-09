@@ -11,6 +11,7 @@ import {
 
 import {
   ConvertResponse,
+  RoleAccess,
   UserReclamationRequest,
   UserReclamationResponse,
   UserReclamationsSearchFilter,
@@ -21,7 +22,7 @@ import {
   UserType,
 } from '../common';
 import { CurrentUser } from '../decorators';
-import { HasUserTypeAccess, JwtAuthGuard } from '../guards';
+import { HasRoleAccess, HasUserTypeAccess, JwtAuthGuard } from '../guards';
 import { UserReclamationsService } from '../services';
 
 @Controller({ path: 'reclamations' })
@@ -31,13 +32,25 @@ export class ReclamationsController {
 
   @Get()
   @HasUserTypeAccess({ types: [UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.ViewReclamation })
   @ConvertResponse(UserReclamationResponse)
   public async getReclamations(@Query() filters: UserReclamationsSearchFilter) {
     return this.reclamations.search({ ...filters, expands: ['adherent'] });
   }
 
+  @Get(':reclamationId')
+  @HasUserTypeAccess({ types: [UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.ViewReclamation })
+  @ConvertResponse(UserReclamationResponse)
+  public async getReclamation(@Param('reclamationId') reclamationId: string) {
+    return this.reclamations.getById(reclamationId, {
+      search: { expands: ['logs', 'adherent'] },
+    });
+  }
+
   @Post()
   @HasUserTypeAccess({ types: [UserType.Adherent] })
+  @HasRoleAccess({ accesses: RoleAccess.CreateReclamation })
   @ConvertResponse(UserReclamationResponse)
   public async createReclamation(
     @CurrentUser() user: UserResponse,
@@ -52,6 +65,7 @@ export class ReclamationsController {
 
   @Put(':reclamationId')
   @HasUserTypeAccess({ types: [UserType.Adherent, UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.UpdateReclamation })
   @ConvertResponse(UserReclamationResponse)
   public async updateReclamation(
     @Param('reclamationId') reclamationId: string,
@@ -63,6 +77,7 @@ export class ReclamationsController {
 
   @Put(':reclamationId/state')
   @HasUserTypeAccess({ types: [UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.UpdateReclamation })
   @ConvertResponse(UserReclamationResponse)
   public async updateReclamationState(
     @Param('reclamationId') reclamationId: string,

@@ -10,6 +10,7 @@ import {
   OrganizationEnvironmentsRepository,
   OrganizationFormationsRepository,
   OrganizationInitiativesRepository,
+  OrganizationLogsRepository,
   OrganizationOpportunitiesRepository,
   OrganizationQuestionsRepository,
   OrganizationRdProjectsRepository,
@@ -71,4 +72,5 @@ export const repositories = [
   OrganizationOpportunitiesRepository,
   OrganizationViewsRepository,
   UserReclamationsRepository,
+  OrganizationLogsRepository,
 ];

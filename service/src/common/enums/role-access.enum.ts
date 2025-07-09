@@ -7,6 +7,7 @@ export enum OrganizationAccess {
   UpdateOrg = 'update_org',
   DeleteOrg = 'delete_org',
   ViewOrg = 'view_org',
+  ImportOrg = 'import_org',
 }
 
 export enum UserAccess {
@@ -20,6 +21,13 @@ export enum ActivityAccess {
   ViewActivity = 'view_activity',
 }
 
+export enum ReclamationAccess {
+  CreateReclamation = 'create_reclamation',
+  UpdateReclamation = 'update_reclamation',
+  DeleteReclamation = 'delete_reclamation',
+  ViewReclamation = 'view_reclamation',
+}
+
 export enum RoleAccess {
   SuperAdminAccess = SuperAdminRoleAccess.SuperAdminAccess,
 
@@ -27,11 +35,17 @@ export enum RoleAccess {
   UpdateOrg = OrganizationAccess.UpdateOrg,
   DeleteOrg = OrganizationAccess.DeleteOrg,
   ViewOrg = OrganizationAccess.ViewOrg,
+  ImportOrg = OrganizationAccess.ImportOrg,
 
   CreateUser = UserAccess.CreateUser,
   UpdateUser = UserAccess.UpdateUser,
   DeleteUser = UserAccess.DeleteUser,
   ViewUser = UserAccess.ViewUser,
+
+  CreateReclamation = ReclamationAccess.CreateReclamation,
+  UpdateReclamation = ReclamationAccess.UpdateReclamation,
+  DeleteReclamation = ReclamationAccess.DeleteReclamation,
+  ViewReclamation = ReclamationAccess.ViewReclamation,
 
   ViewActivity = ActivityAccess.ViewActivity,
 }
@@ -39,7 +53,11 @@ export enum RoleAccess {
 export const AdherentAccessList = [
   RoleAccess.ViewOrg,
   RoleAccess.UpdateOrg,
+
   RoleAccess.ViewActivity,
 
   RoleAccess.UpdateUser,
+
+  RoleAccess.CreateReclamation,
+  RoleAccess.UpdateReclamation,
 ];

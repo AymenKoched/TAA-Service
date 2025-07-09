@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
-import {
-  BaseEntity,
-  UserReclamationPriority,
-  UserReclamationState,
-  UserReclamationType,
-} from '../common';
+import { BaseEntity } from '../common';
+import { UserReclamationPriority } from '../common/enums/user-reclamation-priority.enum';
+import { UserReclamationState } from '../common/enums/user-reclamation-state.enum';
+import { UserReclamationType } from '../common/enums/user-reclamation-type.enum';
+import { Log } from './organization-log.entity';
 import { Adherent } from './user.entity';
 
 @Entity({ name: 'users_reclamations' })
@@ -73,4 +72,10 @@ export class UserReclamation extends BaseEntity {
   @ManyToOne(() => Adherent, (adherent) => adherent.reclamations)
   @JoinColumn({ name: 'adherent_id' })
   adherent!: Adherent;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => Log)
+  @OneToMany(() => Log, (log) => log.reclamation)
+  logs?: Log[];
 }

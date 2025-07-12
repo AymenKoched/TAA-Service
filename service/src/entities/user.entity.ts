@@ -16,6 +16,7 @@ import { UserType } from '../common/enums/user-type.enum';
 import { Organization } from './organization.entity';
 import { UserReclamation } from './user-reclamation.entity';
 import { UserRole } from './user-role.entity';
+import { UserSubscription } from './user-subscription.entity';
 import { UserToken } from './user-token.entity';
 
 @Entity({ name: 'users' })
@@ -93,6 +94,15 @@ export class Admin extends User {
 @ChildEntity(UserType.Client)
 export class Client extends User {
   keyPrefix = 'clt_';
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => UserSubscription)
+  @OneToMany(
+    () => UserSubscription,
+    (userSubscription) => userSubscription.client,
+  )
+  subscriptions?: UserSubscription[];
 }
 
 @ChildEntity(UserType.Adherent)

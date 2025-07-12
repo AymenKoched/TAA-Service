@@ -29,9 +29,12 @@ import { RolesRepository, UserRolesRepository } from './roles';
 import {
   AdherentsRepository,
   AdminsRepository,
+  ClientRequestsRepository,
   ClientsRepository,
+  SubscriptionsRepository,
   UserReclamationsRepository,
   UsersRepository,
+  UserSubscriptionsRepository,
   UserTokensRepository,
 } from './users';
 
@@ -73,4 +76,7 @@ export const repositories = [
   OrganizationViewsRepository,
   UserReclamationsRepository,
   OrganizationLogsRepository,
+  SubscriptionsRepository,
+  UserSubscriptionsRepository,
+  ClientRequestsRepository,
 ];

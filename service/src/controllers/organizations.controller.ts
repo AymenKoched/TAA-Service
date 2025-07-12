@@ -51,7 +51,6 @@ export class OrganizationsController {
   ) {}
 
   @Get()
-  @HasUserTypeAccess({ types: [UserType.Admin] })
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationResponse)
   public async searchOrganizations(

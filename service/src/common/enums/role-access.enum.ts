@@ -28,6 +28,15 @@ export enum ReclamationAccess {
   ViewReclamation = 'view_reclamation',
 }
 
+export enum RolesAccess {
+  ViewRole = 'view_role',
+}
+
+export enum SubscriptionAccess {
+  ViewSubscriptionRequest = 'view_subscription_request',
+  AcceptOrDeclineSubscriptionRequest = 'accept_or_decline_subscription_request',
+}
+
 export enum RoleAccess {
   SuperAdminAccess = SuperAdminRoleAccess.SuperAdminAccess,
 
@@ -48,6 +57,11 @@ export enum RoleAccess {
   ViewReclamation = ReclamationAccess.ViewReclamation,
 
   ViewActivity = ActivityAccess.ViewActivity,
+
+  ViewRole = RolesAccess.ViewRole,
+
+  ViewSubscriptionRequest = SubscriptionAccess.ViewSubscriptionRequest,
+  AcceptOrDeclineSubscriptionRequest = SubscriptionAccess.AcceptOrDeclineSubscriptionRequest,
 }
 
 export const AdherentAccessList = [

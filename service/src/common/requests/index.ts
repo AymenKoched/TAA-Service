@@ -1,5 +1,7 @@
+export * from './accept-subscription.request';
 export * from './attribute.request';
 export * from './change-password.request';
+export * from './client-request.request';
 export * from './country-participation.request';
 export * from './forgot-password.request';
 export * from './organization.request';

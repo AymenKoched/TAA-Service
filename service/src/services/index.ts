@@ -35,9 +35,12 @@ import { SeedService } from './seed.service';
 import {
   AdherentsService,
   AdminsService,
+  ClientRequestsService,
   ClientsService,
+  SubscriptionsService,
   UserReclamationsService,
   UsersService,
+  UserSubscriptionsService,
   UserTokensService,
 } from './users';
 
@@ -46,6 +49,7 @@ export * from './auth';
 export * from './mailer.service';
 export * from './organizations';
 export * from './roles';
+export * from './s3.service';
 export * from './seed.service';
 export * from './users';
 
@@ -89,4 +93,7 @@ export const services = [
   OrganizationImportService,
   UserReclamationsService,
   OrganizationLogsService,
+  SubscriptionsService,
+  UserSubscriptionsService,
+  ClientRequestsService,
 ];

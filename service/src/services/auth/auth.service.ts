@@ -94,7 +94,7 @@ export class AuthService {
     switch (user.userType) {
       case UserType.Client:
         client = await this.clients.getById(user.id, {
-          search: { expands: ['userRoles.role'] },
+          search: { expands: ['userRoles.role', 'subscriptions.subscription'] },
         });
         break;
       case UserType.Admin:
@@ -104,7 +104,9 @@ export class AuthService {
         break;
       case UserType.Adherent:
         adherent = await this.adherents.getById(user.id, {
-          search: { expands: ['userRoles.role'] },
+          search: {
+            expands: ['userRoles.role', 'reclamations'],
+          },
         });
         break;
       default:

@@ -57,9 +57,9 @@ export class UserRequest extends BaseModel {
   inscriptionDate?: Date;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'errors:field.required' })
   @IsEnum(UserType, { message: 'errors:field.invalid' })
-  type!: UserType;
+  @IsOptional()
+  type?: UserType;
 
   @ApiPropertyOptional()
   @Matches(PASSWORD_REGEX, { message: 'errors:field.invalid' })

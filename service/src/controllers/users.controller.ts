@@ -23,6 +23,8 @@ import {
   UserRequest,
   UserResponse,
   UsersSearchFilter,
+  UserSubscriptionResponse,
+  UserSubscriptionSearchFilter,
   UserType,
 } from '../common';
 import {
@@ -36,6 +38,7 @@ import {
   AdminsService,
   ClientsService,
   UsersService,
+  UserSubscriptionsService,
 } from '../services';
 
 @Controller({ path: 'users' })
@@ -46,6 +49,7 @@ export class UsersController {
     private readonly admins: AdminsService,
     private readonly adherents: AdherentsService,
     private readonly clients: ClientsService,
+    private readonly userSubscriptions: UserSubscriptionsService,
   ) {}
 
   @Get('admin')
@@ -103,6 +107,20 @@ export class UsersController {
       ...filters,
       expands: ['userRoles.role', 'subscriptions.subscription'],
     });
+  }
+
+  @Get('client/:clientId/subscriptions')
+  @HasUserTypeAccess({ types: [UserType.Admin] })
+  @HasRoleAccess({ accesses: RoleAccess.ViewUser })
+  @ConvertResponse(UserSubscriptionResponse)
+  public async getClientSubscriptions(@Param('clientId') clientId: string) {
+    return this.userSubscriptions.search(
+      new UserSubscriptionSearchFilter({
+        clientId,
+        expands: ['subscription'],
+        withDeleted: true,
+      }),
+    );
   }
 
   @Delete('client/:clientId')

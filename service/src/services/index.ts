@@ -28,6 +28,7 @@ import {
   OrganizationViewsService,
   OrganizationWasteDistributionsService,
   ProductsService,
+  PublicOrganizationService,
 } from './organizations';
 import { RolesService, UserRolesService } from './roles';
 import { S3Service } from './s3.service';
@@ -96,4 +97,5 @@ export const services = [
   SubscriptionsService,
   UserSubscriptionsService,
   ClientRequestsService,
+  PublicOrganizationService,
 ];

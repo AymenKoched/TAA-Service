@@ -382,7 +382,7 @@ export class OrganizationExtrasResponse extends OrganizationResponse {
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => ProductResponse))
   @Type(() => ProductResponse)
-  products?: ProductResponse[];
+  newProducts?: ProductResponse[];
 
   @ApiPropertyOptional()
   @Transform(ModelTransformer(() => AttributeResponse))
@@ -479,7 +479,7 @@ export class OrganizationExtrasResponse extends OrganizationResponse {
   @Expose()
   get completion(): number {
     return computeCompletion([
-      this.products,
+      this.newProducts,
       this.investments,
       this.rAndDProjects,
       this.researchDevelopment,

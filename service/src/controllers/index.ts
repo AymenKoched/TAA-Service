@@ -2,6 +2,7 @@ import { ActivitiesController } from './activities.controller';
 import { AppController } from './app.controller';
 import { AuthController } from './auth.controller';
 import { OrganizationsController } from './organizations.controller';
+import { PublicOrganizationsController } from './public-organizations.controller';
 import { ReclamationsController } from './reclamations.controller';
 import { RolesController } from './roles.controller';
 import { S3Controller } from './s3.controller';
@@ -14,6 +15,7 @@ export * from './activities.controller';
 export * from './app.controller';
 export * from './auth.controller';
 export * from './organizations.controller';
+export * from './public-organizations.controller';
 export * from './reclamations.controller';
 export * from './roles.controller';
 export * from './s3.controller';
@@ -34,4 +36,5 @@ export const controllers = [
   ReclamationsController,
   RolesController,
   SubscriptionsController,
+  PublicOrganizationsController,
 ];

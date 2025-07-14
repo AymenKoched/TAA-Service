@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { BaseEntity, OrganizationFieldsAccess } from '../common';
 import { ClientRequest } from './client-request.entity';
 import { UserSubscription } from './user-subscription.entity';
 
+@Index('unique_subscription_name', ['name', 'deletedAt'], { unique: true })
 @Entity({ name: 'subscriptions' })
 export class Subscription extends BaseEntity {
   keyPrefix = 'subs_';

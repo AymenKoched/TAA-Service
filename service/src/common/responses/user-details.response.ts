@@ -1,10 +1,9 @@
 import { Transform, Type } from 'class-transformer';
 
 import { BaseModel } from '../base';
-import { ApiProperty, ApiPropertyOptional } from '../decorators';
+import { ApiProperty } from '../decorators';
 import { UserType } from '../enums';
 import { ModelTransformer } from '../transformers';
-import { OrganizationResponse } from './organization.response';
 import {
   AdherentResponse,
   AdminResponse,
@@ -43,9 +42,4 @@ export class UserDetailsResponse extends BaseModel {
 
   @ApiProperty()
   userType!: UserType;
-
-  @ApiPropertyOptional()
-  @Transform(ModelTransformer(() => OrganizationResponse))
-  @Type(() => OrganizationResponse)
-  organization?: OrganizationResponse;
 }

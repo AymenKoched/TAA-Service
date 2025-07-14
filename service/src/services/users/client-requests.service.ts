@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { filter, map } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -6,6 +7,8 @@ import {
   AuthErrors,
   CrudService,
   UserResponse,
+  UserSubscriptionResponse,
+  UserSubscriptionSearchFilter,
   UserType,
 } from '../../common';
 import { ClientRequest } from '../../entities';
@@ -37,9 +40,15 @@ export class ClientRequestsService extends CrudService<ClientRequest> {
       { silent: true },
     );
 
-    let client = new UserResponse(clientData);
+    if (clientData && clientData.userType !== UserType.Client) {
+      throw new BadRequestException(
+        AuthErrors.EmailAlreadyExists,
+        'The email you attempt to use is already taken',
+      );
+    }
 
-    if (!client) {
+    let client: UserResponse;
+    if (!clientData) {
       client = await this.users.createUser({
         name: request.name,
         email: request.email,
@@ -47,6 +56,8 @@ export class ClientRequestsService extends CrudService<ClientRequest> {
         location: request?.location,
         type: UserType.Client,
       });
+    } else {
+      client = new UserResponse(clientData);
     }
 
     const subscription = await this.subscriptions.getById(
@@ -54,6 +65,22 @@ export class ClientRequestsService extends CrudService<ClientRequest> {
     );
 
     const now = new Date();
+
+    const existingUserSubscriptions = await this.userSubscriptions.search(
+      new UserSubscriptionSearchFilter({
+        clientId: client.id,
+      }),
+    );
+
+    const activeUserSubscriptionsIds = map(
+      filter(
+        map(existingUserSubscriptions, (s) => new UserSubscriptionResponse(s)),
+        (subs) => subs.isActive,
+      ),
+      'id',
+    );
+
+    await this.userSubscriptions.deleteByIds(activeUserSubscriptionsIds);
 
     await this.userSubscriptions.create({
       clientId: client.id,

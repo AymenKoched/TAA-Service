@@ -1,159 +1,161 @@
 export enum OrganizationGeneralFields {
-  FullName = 'full_name',
-  LegalStatus = 'legal_status',
-  FoundingYear = 'founding_year',
-  GroupAffiliation = 'group_affiliation',
+  fullName = 'fullName',
+  legalStatus = 'legalStatus',
+  foundingYear = 'foundingYear',
+  groupAffiliation = 'groupAffiliation',
 
-  HeadOffice = 'head_office',
-  PostalCode = 'postal_code',
-  RAndDSites = 'r_and_d_sites',
-  OtherLocations = 'other_locations',
-  City = 'city',
-  Country = 'country',
+  headOffice = 'headOffice',
+  postalCode = 'postalCode',
+  rAndDSites = 'rAndDSites',
+  otherLocations = 'otherLocations',
+  city = 'city',
+  country = 'country',
 
-  Phone = 'phone',
-  Adherent = 'adherent',
-  Linkedin = 'linkedin',
-  Facebook = 'facebook',
-  Twitter = 'twitter',
-  WebsiteUrl = 'website_url',
-  Email = 'email',
+  phone = 'phone',
+  adherent = 'adherent',
+  linkedin = 'linkedin',
+  facebook = 'facebook',
+  twitter = 'twitter',
+  websiteUrl = 'website_url',
+  email = 'email',
 
-  ExternalViews = 'external_views',
-  InternalViews = 'internal_views',
+  externalViews = 'externalViews',
+  InternalViews = 'internalViews',
 }
 
 export enum OrganizationProductsFields {
-  LocalSites = 'local_sites',
-  ForeignImplantationSites = 'foreign_implantationSites',
-  ForeignExportationSites = 'foreign_exportationSites',
+  localSites = 'localSites',
+  foreignImplantationSites = 'foreignImplantationSites',
+  foreignExportationSites = 'foreignExportationSites',
 
-  PrimaryActivities = 'primary_activities',
-  SecondaryActivities = 'secondary_activities',
+  primaryActivities = 'primaryActivities',
+  secondaryActivities = 'secondaryActivities',
 
-  Products = 'products',
-  Products_NGP = 'products_ngp',
+  products = 'products',
+  products_ngp = 'products_ngp',
 }
 
 export enum OrganizationHumanResourcesFields {
-  DirectEmployees = 'direct_employees',
-  IndirectEmployees = 'indirect_employees',
+  directEmployees = 'directEmployees',
+  indirectEmployees = 'indirectEmployees',
 
-  Contracts = 'contracts',
+  contracts = 'contracts',
 
-  RevenueKpis = 'revenue_kpis',
+  revenueKpis = 'revenueKpis',
 
-  AgeKpis = 'age_kpis',
+  ageKpis = 'ageKpis',
 
-  FormationKpi = 'formation_kpi',
+  formationKpi = 'formationKpi',
 }
 
 export enum OrganizationRevenuesFields {
-  TurnoverDistribution = 'turnover_distribution',
+  turnoverDistribution = 'turnoverDistribution',
 
-  ClientsTypes = 'clients_types',
+  clientsTypes = 'clientsTypes',
 
-  Turnover = 'turnover',
+  turnover = 'turnover',
 
-  CountriesParticipation = 'countries_participation',
+  countriesParticipation = 'countriesParticipation',
 }
 
 export enum OrganizationExtrasFields {
-  NewProducts = 'new_products',
+  newProducts = 'newProducts',
 
-  Investments = 'investments',
-  Esgs = 'esgs',
-  Partnerships = 'partnerships',
-  Technologies = 'technologies',
+  investments = 'investments',
+  esgs = 'esgs',
+  partnerships = 'partnerships',
+  technologies = 'technologies',
 
-  ResearchDevelopment = 'research_development',
+  researchDevelopment = 'researchDevelopment',
 
-  Certifications = 'certifications',
+  certifications = 'certifications',
 
-  RAndDProjects = 'r_and_d_projects',
+  rAndDProjects = 'rAndDProjects',
 
-  Initiatives = 'initiatives',
+  initiatives = 'initiatives',
 }
 
 export enum OrganizationOthersFields {
-  Environment = 'environment',
-  WasteDistribution = 'waste_distribution',
-  Questions = 'questions',
+  environment = 'environment',
+  environment_electricity = 'environment_electricity',
+  wasteDistribution = 'wasteDistribution',
+  questions = 'questions',
 }
 
 export enum OrganizationOpportunitiesFields {
-  Opportunities = 'opportunities',
+  opportunities = 'opportunities',
 }
 
 export enum OrganizationFieldsAccess {
   // General
-  FullName = OrganizationGeneralFields.FullName,
-  LegalStatus = OrganizationGeneralFields.LegalStatus,
-  FoundingYear = OrganizationGeneralFields.FoundingYear,
-  GroupAffiliation = OrganizationGeneralFields.GroupAffiliation,
-  HeadOffice = OrganizationGeneralFields.HeadOffice,
-  PostalCode = OrganizationGeneralFields.PostalCode,
-  RAndDSites = OrganizationGeneralFields.RAndDSites,
-  OtherLocations = OrganizationGeneralFields.OtherLocations,
-  City = OrganizationGeneralFields.City,
-  Country = OrganizationGeneralFields.Country,
-  Phone = OrganizationGeneralFields.Phone,
-  Adherent = OrganizationGeneralFields.Adherent,
-  Linkedin = OrganizationGeneralFields.Linkedin,
-  Facebook = OrganizationGeneralFields.Facebook,
-  Twitter = OrganizationGeneralFields.Twitter,
-  WebsiteUrl = OrganizationGeneralFields.WebsiteUrl,
-  Email = OrganizationGeneralFields.Email,
-  ExternalViews = OrganizationGeneralFields.ExternalViews,
-  InternalViews = OrganizationGeneralFields.InternalViews,
+  fullName = OrganizationGeneralFields.fullName,
+  legalStatus = OrganizationGeneralFields.legalStatus,
+  foundingYear = OrganizationGeneralFields.foundingYear,
+  groupAffiliation = OrganizationGeneralFields.groupAffiliation,
+  headOffice = OrganizationGeneralFields.headOffice,
+  postalCode = OrganizationGeneralFields.postalCode,
+  rAndDSites = OrganizationGeneralFields.rAndDSites,
+  otherLocations = OrganizationGeneralFields.otherLocations,
+  city = OrganizationGeneralFields.city,
+  country = OrganizationGeneralFields.country,
+  phone = OrganizationGeneralFields.phone,
+  adherent = OrganizationGeneralFields.adherent,
+  linkedin = OrganizationGeneralFields.linkedin,
+  facebook = OrganizationGeneralFields.facebook,
+  twitter = OrganizationGeneralFields.twitter,
+  websiteUrl = OrganizationGeneralFields.websiteUrl,
+  email = OrganizationGeneralFields.email,
+  externalViews = OrganizationGeneralFields.externalViews,
+  internalViews = OrganizationGeneralFields.InternalViews,
 
   // Products
-  LocalSites = OrganizationProductsFields.LocalSites,
-  ForeignImplantationSites = OrganizationProductsFields.ForeignImplantationSites,
-  ForeignExportationSites = OrganizationProductsFields.ForeignExportationSites,
-  PrimaryActivities = OrganizationProductsFields.PrimaryActivities,
-  SecondaryActivities = OrganizationProductsFields.SecondaryActivities,
-  Products = OrganizationProductsFields.Products,
-  Products_NGP = OrganizationProductsFields.Products_NGP,
+  localSites = OrganizationProductsFields.localSites,
+  foreignImplantationSites = OrganizationProductsFields.foreignImplantationSites,
+  foreignExportationSites = OrganizationProductsFields.foreignExportationSites,
+  primaryActivities = OrganizationProductsFields.primaryActivities,
+  secondaryActivities = OrganizationProductsFields.secondaryActivities,
+  products = OrganizationProductsFields.products,
+  products_ngp = OrganizationProductsFields.products_ngp,
 
   // Human Resources
-  DirectEmployees = OrganizationHumanResourcesFields.DirectEmployees,
-  IndirectEmployees = OrganizationHumanResourcesFields.IndirectEmployees,
-  Contracts = OrganizationHumanResourcesFields.Contracts,
-  RevenueKpis = OrganizationHumanResourcesFields.RevenueKpis,
-  AgeKpis = OrganizationHumanResourcesFields.AgeKpis,
-  FormationKpi = OrganizationHumanResourcesFields.FormationKpi,
+  directEmployees = OrganizationHumanResourcesFields.directEmployees,
+  indirectEmployees = OrganizationHumanResourcesFields.indirectEmployees,
+  contracts = OrganizationHumanResourcesFields.contracts,
+  revenueKpis = OrganizationHumanResourcesFields.revenueKpis,
+  ageKpis = OrganizationHumanResourcesFields.ageKpis,
+  formationKpi = OrganizationHumanResourcesFields.formationKpi,
 
   // Revenues
-  TurnoverDistribution = OrganizationRevenuesFields.TurnoverDistribution,
-  ClientsTypes = OrganizationRevenuesFields.ClientsTypes,
-  Turnover = OrganizationRevenuesFields.Turnover,
-  CountriesParticipation = OrganizationRevenuesFields.CountriesParticipation,
+  turnoverDistribution = OrganizationRevenuesFields.turnoverDistribution,
+  clientsTypes = OrganizationRevenuesFields.clientsTypes,
+  turnover = OrganizationRevenuesFields.turnover,
+  countriesParticipation = OrganizationRevenuesFields.countriesParticipation,
 
   // Extras
-  NewProducts = OrganizationExtrasFields.NewProducts,
-  Investments = OrganizationExtrasFields.Investments,
-  Esgs = OrganizationExtrasFields.Esgs,
-  Partnerships = OrganizationExtrasFields.Partnerships,
-  Technologies = OrganizationExtrasFields.Technologies,
-  ResearchDevelopment = OrganizationExtrasFields.ResearchDevelopment,
-  Certifications = OrganizationExtrasFields.Certifications,
-  RAndDProjects = OrganizationExtrasFields.RAndDProjects,
-  Initiatives = OrganizationExtrasFields.Initiatives,
+  newProducts = OrganizationExtrasFields.newProducts,
+  investments = OrganizationExtrasFields.investments,
+  esgs = OrganizationExtrasFields.esgs,
+  partnerships = OrganizationExtrasFields.partnerships,
+  technologies = OrganizationExtrasFields.technologies,
+  researchDevelopment = OrganizationExtrasFields.researchDevelopment,
+  certifications = OrganizationExtrasFields.certifications,
+  rAndDProjects = OrganizationExtrasFields.rAndDProjects,
+  initiatives = OrganizationExtrasFields.initiatives,
 
   // Others
-  Environment = OrganizationOthersFields.Environment,
-  WasteDistribution = OrganizationOthersFields.WasteDistribution,
-  Questions = OrganizationOthersFields.Questions,
+  environment = OrganizationOthersFields.environment,
+  environment_electricity = OrganizationOthersFields.environment_electricity,
+  wasteDistribution = OrganizationOthersFields.wasteDistribution,
+  questions = OrganizationOthersFields.questions,
 
   // Opportunities
-  Opportunities = OrganizationOpportunitiesFields.Opportunities,
+  opportunities = OrganizationOpportunitiesFields.opportunities,
 }
 
 export const StandardSubscription = [
-  OrganizationFieldsAccess.Products_NGP,
-  OrganizationFieldsAccess.FormationKpi,
-  OrganizationFieldsAccess.Opportunities,
+  OrganizationFieldsAccess.products_ngp,
+  OrganizationFieldsAccess.formationKpi,
+  OrganizationFieldsAccess.opportunities,
 ];
 
 export const PremiumSubscription = [];

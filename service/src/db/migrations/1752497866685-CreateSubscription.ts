@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateSubscription1752328683630 implements MigrationInterface {
-  name = 'CreateSubscription1752328683630';
+export class CreateSubscription1752497866685 implements MigrationInterface {
+  name = 'CreateSubscription1752497866685';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE \`client_requests\` (\`id\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, \`name\` varchar(100) NOT NULL, \`email\` varchar(200) NOT NULL, \`phone\` varchar(100) NULL, \`location\` varchar(100) NULL, \`subscription_id\` varchar(255) NOT NULL, \`duration_days\` int NULL, UNIQUE INDEX \`IDX_e8446e44e28d64c0fde3078624\` (\`phone\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`subscriptions\` (\`id\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, \`name\` varchar(100) NOT NULL, \`description\` text NULL, \`price\` int NULL, \`organizationHiddenFields\` text NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`subscriptions\` (\`id\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, \`name\` varchar(100) NOT NULL, \`description\` text NULL, \`price\` int NULL, \`organizationHiddenFields\` text NOT NULL, UNIQUE INDEX \`unique_subscription_name\` (\`name\`, \`deleted_at\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`user_subscriptions\` (\`id\` varchar(255) NOT NULL, \`created_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`deleted_at\` datetime(6) NULL, \`client_id\` varchar(255) NOT NULL, \`subscription_id\` varchar(255) NOT NULL, \`activation_date\` datetime NOT NULL, \`duration_days\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
@@ -41,6 +41,9 @@ export class CreateSubscription1752328683630 implements MigrationInterface {
       `ALTER TABLE \`roles\` DROP COLUMN \`isAdminRole\``,
     );
     await queryRunner.query(`DROP TABLE \`user_subscriptions\``);
+    await queryRunner.query(
+      `DROP INDEX \`unique_subscription_name\` ON \`subscriptions\``,
+    );
     await queryRunner.query(`DROP TABLE \`subscriptions\``);
     await queryRunner.query(
       `DROP INDEX \`IDX_e8446e44e28d64c0fde3078624\` ON \`client_requests\``,

@@ -1,4 +1,5 @@
-import { Transform, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
+import { addDays, isBefore } from 'date-fns';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty } from '../decorators';
@@ -7,6 +8,9 @@ import { SubscriptionResponse } from './subscription.response';
 import { ClientResponse } from './user.response';
 
 export class UserSubscriptionResponse extends BaseResponseModel {
+  @ApiProperty()
+  deletedAt?: Date;
+
   @ApiProperty()
   clientId!: string;
 
@@ -28,4 +32,13 @@ export class UserSubscriptionResponse extends BaseResponseModel {
 
   @ApiProperty()
   durationDays!: number;
+
+  @ApiProperty()
+  @Expose()
+  get isActive(): boolean {
+    const expiry = addDays(this.activationDate, this.durationDays);
+    return (
+      isBefore(new Date(), expiry) && !isBefore(new Date(), this.activationDate)
+    );
+  }
 }

@@ -240,7 +240,7 @@ export class OrganizationsService extends CrudService<Organization> {
     );
     return new OrganizationExtrasResponse({
       ...organization,
-      products: filter(organization.products, { type: ProductType.New }),
+      newProducts: filter(organization.products, { type: ProductType.New }),
       certifications: filter(organization.tags, {
         type: OrganizationTagType.Certification,
       }),

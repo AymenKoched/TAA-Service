@@ -51,9 +51,9 @@ export class OrganizationAccessGuard extends BaseAccessGuard<OrganizationAccessO
     organization,
     options,
   }: AccessContext<OrganizationAccessOptions>): Promise<boolean> {
-    if (user?.userType !== UserType.Adherent) return true;
+    if (user?.userType === UserType.Admin) return true;
 
-    if (!organization) return false;
+    if (!organization || !selectorValue) return false;
 
     const selectedOrg = await this.orgs.getById(selectorValue, {
       silent: true,

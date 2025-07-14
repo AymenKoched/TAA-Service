@@ -51,7 +51,6 @@ export class OrganizationsController {
   ) {}
 
   @Get()
-  @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationResponse)
   public async searchOrganizations(
     @Query() filters: OrganizationsSearchFilter,
@@ -80,6 +79,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/general')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationGeneralResponse)
@@ -90,6 +90,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/products')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationProductsResponse)
@@ -100,6 +101,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/human-resources')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationHumanResourcesResponse)
@@ -110,6 +112,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/revenues')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationRevenuesResponse)
@@ -120,6 +123,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/extras')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationExtrasResponse)
@@ -130,6 +134,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/others')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationOthersResponse)
@@ -140,6 +145,7 @@ export class OrganizationsController {
   }
 
   @Get(':organizationId/opportunities')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess()
   @HasRoleAccess({ accesses: RoleAccess.ViewOrg })
   @ConvertResponse(OrganizationOpportunitiesResponse)
@@ -158,6 +164,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/general')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationGeneralResponse)
@@ -169,6 +176,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/products')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationProductsResponse)
@@ -180,6 +188,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/human-resources')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationHumanResourcesResponse)
@@ -191,6 +200,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/revenues')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationRevenuesResponse)
@@ -202,6 +212,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/extras')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationExtrasResponse)
@@ -213,6 +224,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/others')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationOthersResponse)
@@ -224,6 +236,7 @@ export class OrganizationsController {
   }
 
   @Put(':organizationId/opportunities')
+  @HasUserTypeAccess({ types: [UserType.Admin, UserType.Adherent] })
   @HasOrganizationAccess({ update: true })
   @HasRoleAccess({ accesses: RoleAccess.UpdateOrg })
   @ConvertResponse(OrganizationOpportunitiesResponse)

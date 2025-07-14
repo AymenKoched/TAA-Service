@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { includes, map, some } from 'lodash';
+import { find, includes, map, some } from 'lodash';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
@@ -77,6 +77,17 @@ export class ClientResponse extends UserResponse {
   @Type(() => UserSubscriptionResponse)
   @Transform(ModelTransformer(() => UserSubscriptionResponse))
   subscriptions?: UserSubscriptionResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => UserSubscriptionResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      UserSubscriptionResponse,
+      find(obj.subscriptions, { isActive: true }) || null,
+    ]),
+  )
+  activeSubscription?: UserSubscriptionResponse;
 
   @Expose()
   @ApiProperty()

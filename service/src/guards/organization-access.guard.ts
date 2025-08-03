@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
-import { AdherentResponse } from '../common';
+import { AdherentResponse, UserType } from '../common';
 import { AdherentsService, OrganizationsService } from '../services';
 import { JwtAuthGuard } from './auth.guard';
 import {
@@ -51,7 +51,9 @@ export class OrganizationAccessGuard extends BaseAccessGuard<OrganizationAccessO
     organization,
     options,
   }: AccessContext<OrganizationAccessOptions>): Promise<boolean> {
-    if (!organization) return false;
+    if (user?.userType === UserType.Admin) return true;
+
+    if (!organization || !selectorValue) return false;
 
     const selectedOrg = await this.orgs.getById(selectorValue, {
       silent: true,

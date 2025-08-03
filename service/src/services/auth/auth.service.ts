@@ -15,9 +15,8 @@ import {
   UserTokenType,
   UserType,
 } from '../../common';
-import { Adherent, Admin, Client, Organization } from '../../entities';
+import { Adherent, Admin, Client } from '../../entities';
 import { MailerService } from '../mailer.service';
-import { OrganizationsService } from '../organizations';
 import {
   AdherentsService,
   AdminsService,
@@ -36,7 +35,6 @@ export class AuthService {
     private readonly admins: AdminsService,
     private readonly clients: ClientsService,
     private readonly adherents: AdherentsService,
-    private readonly organizations: OrganizationsService,
   ) {}
 
   async signIn(payload: SignInRequest): Promise<SignInResponse> {
@@ -89,12 +87,11 @@ export class AuthService {
     let client: Client;
     let adherent: Adherent;
     let admin: Admin;
-    let organization: Organization;
 
     switch (user.userType) {
       case UserType.Client:
         client = await this.clients.getById(user.id, {
-          search: { expands: ['userRoles.role'] },
+          search: { expands: ['userRoles.role', 'subscriptions.subscription'] },
         });
         break;
       case UserType.Admin:
@@ -104,7 +101,9 @@ export class AuthService {
         break;
       case UserType.Adherent:
         adherent = await this.adherents.getById(user.id, {
-          search: { expands: ['userRoles.role'] },
+          search: {
+            expands: ['userRoles.role', 'reclamations', 'organization'],
+          },
         });
         break;
       default:
@@ -114,16 +113,9 @@ export class AuthService {
         );
     }
 
-    if (user.userType === UserType.Adherent && !!adherent?.organizationId) {
-      organization = await this.organizations.getOrganization(
-        adherent.organizationId,
-      );
-    }
-
     return new UserDetailsResponse({
       user: client || admin || adherent,
       userType: user.userType,
-      organization,
     });
   }
 

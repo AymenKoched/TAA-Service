@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
-import { S3Service } from '../services/s3.service';
+import { S3Service } from '../services';
 
 @Controller('s3')
 export class S3Controller {

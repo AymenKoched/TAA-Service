@@ -1,4 +1,5 @@
 import { Activity } from './activity.entity';
+import { ClientRequest } from './client-request.entity';
 import { CountryParticipation } from './country-participation.entity';
 import { Organization } from './organization.entity';
 import { OrganizationActivity } from './organization-activity.entity';
@@ -24,12 +25,15 @@ import { OrganizationView } from './organization-view.entity';
 import { OrganizationWasteDistribution } from './organization-waste-distribution.entity';
 import { Product } from './product.entity';
 import { Role } from './role.entity';
+import { Subscription } from './subscription.entity';
 import { Adherent, Admin, Client, User } from './user.entity';
 import { UserReclamation } from './user-reclamation.entity';
 import { UserRole } from './user-role.entity';
+import { UserSubscription } from './user-subscription.entity';
 import { UserToken } from './user-token.entity';
 
 export * from './activity.entity';
+export * from './client-request.entity';
 export * from './country-participation.entity';
 export * from './organization.entity';
 export * from './organization-activity.entity';
@@ -55,9 +59,11 @@ export * from './organization-view.entity';
 export * from './organization-waste-distribution.entity';
 export * from './product.entity';
 export * from './role.entity';
+export * from './subscription.entity';
 export * from './user.entity';
 export * from './user-reclamation.entity';
 export * from './user-role.entity';
+export * from './user-subscription.entity';
 export * from './user-token.entity';
 
 export const entities = [
@@ -94,4 +100,7 @@ export const entities = [
   OrganizationView,
   UserReclamation,
   Log,
+  Subscription,
+  UserSubscription,
+  ClientRequest,
 ];

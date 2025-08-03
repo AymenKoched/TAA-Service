@@ -4,13 +4,11 @@ import { difference, map, omit } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
-  AdherentResponse,
   AuthErrors,
   CrudService,
   getRandomString,
   MODIFICATION_WINDOW_DAYS,
   SALT_ROUNDS,
-  UpdateUserAdherenceRequest,
   UpdateUserRequest,
   UserRequest,
   UserResponse,
@@ -95,9 +93,7 @@ export class UsersService extends CrudService<User> {
       );
     }
 
-    if (payload.type === UserType.Adherent || payload.type === UserType.Admin) {
-      await this.mailer.sendWelcomeEmail(new UserResponse(user), finalPassword);
-    }
+    await this.mailer.sendWelcomeEmail(new UserResponse(user), finalPassword);
 
     return new UserResponse(user);
   }
@@ -154,13 +150,6 @@ export class UsersService extends CrudService<User> {
     });
 
     return new UserResponse(updatedUser);
-  }
-
-  async updateAdherence(userId: string, payload: UpdateUserAdherenceRequest) {
-    await this.adherents.updateById(userId, payload);
-    const user = await this.adherents.getById(userId);
-
-    return new AdherentResponse(user);
   }
 
   private async checkEmail(email?: string, id?: string) {

@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { AuthErrors, CrudService } from '../../common';
+import {
+  AdherentResponse,
+  AuthErrors,
+  CrudService,
+  UpdateUserAdherenceRequest,
+} from '../../common';
 import { Adherent } from '../../entities';
 import { AdherentsRepository } from '../../repositories';
 
@@ -11,5 +16,12 @@ export class AdherentsService extends CrudService<Adherent> {
 
   constructor(private adherents: AdherentsRepository) {
     super(adherents);
+  }
+
+  async updateAdherence(userId: string, payload: UpdateUserAdherenceRequest) {
+    await this.updateById(userId, payload);
+    const user = await this.getById(userId);
+
+    return new AdherentResponse(user);
   }
 }

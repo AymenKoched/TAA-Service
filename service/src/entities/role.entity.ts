@@ -20,6 +20,15 @@ export class Role extends BaseEntity {
   @ApiProperty()
   @Expose()
   @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  isAdminRole!: boolean;
+
+  @ApiProperty()
+  @Expose()
+  @Column({
     type: 'simple-array',
   })
   accesses!: RoleAccess[];

@@ -51,10 +51,6 @@ export class UserAccessGuard extends BaseAccessGuard<UserAccessOptions> {
       return false;
     }
 
-    if (selectedUser.id === user.id) {
-      return true;
-    }
-
-    return false;
+    return selectedUser.id === user.id;
   }
 }

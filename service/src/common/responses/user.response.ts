@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { includes, map, some } from 'lodash';
+import { find, includes, map, some } from 'lodash';
 
 import { BaseResponseModel } from '../base';
 import { ApiProperty, ApiPropertyOptional } from '../decorators';
@@ -8,6 +8,7 @@ import { ModelTransformer, PhoneTransformer } from '../transformers';
 import { OrganizationResponse } from './organization.response';
 import { RoleResponse } from './role.response';
 import { UserRoleResponse } from './user-role.response';
+import { UserSubscriptionResponse } from './user-subscription.response';
 import { UserTokenResponse } from './user-token.response';
 
 export class UserResponse extends BaseResponseModel {
@@ -71,6 +72,23 @@ export class AdminResponse extends UserResponse {
 }
 
 export class ClientResponse extends UserResponse {
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => UserSubscriptionResponse)
+  @Transform(ModelTransformer(() => UserSubscriptionResponse))
+  subscriptions?: UserSubscriptionResponse[];
+
+  @ApiPropertyOptional()
+  @Expose()
+  @Type(() => UserSubscriptionResponse)
+  @Transform(
+    ModelTransformer(({ obj }) => [
+      UserSubscriptionResponse,
+      find(obj.subscriptions, { isActive: true }) || null,
+    ]),
+  )
+  activeSubscription?: UserSubscriptionResponse;
+
   @Expose()
   @ApiProperty()
   get isSuperAdmin(): boolean {

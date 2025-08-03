@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import bcrypt from 'bcrypt';
-import { isEqual, map } from 'lodash';
+import { map } from 'lodash';
 import { Propagation, Transactional } from 'typeorm-transactional';
 
 import {
@@ -8,15 +8,19 @@ import {
   AdherentAccessList,
   DEFAULT_SUPER_ADMIN_EMAIL,
   DEFAULT_SUPER_ADMIN_PASSWORD,
+  PremiumSubscription,
   RoleAccess,
   SALT_ROUNDS,
+  StandardSubscription,
+  SUBSCRIPTION_PREMIUM,
+  SUBSCRIPTION_STANDARD,
   UserRolesSearchFilter,
   UserType,
 } from '../common';
 import { UserRole } from '../entities';
 import { ActivitiesService } from './organizations';
 import { RolesService, UserRolesService } from './roles';
-import { AdminsService } from './users';
+import { AdminsService, SubscriptionsService } from './users';
 
 const logger = new Logger('Seed');
 
@@ -27,6 +31,7 @@ export class SeedService {
     private readonly userRoles: UserRolesService,
     private readonly roles: RolesService,
     private readonly activities: ActivitiesService,
+    private readonly subscriptions: SubscriptionsService,
   ) {}
 
   @Transactional({ propagation: Propagation.REQUIRED })
@@ -36,7 +41,7 @@ export class SeedService {
     const superAdminAccesses = [RoleAccess.SuperAdminAccess];
 
     let role = await this.roles.findOne(
-      { name: 'super_admin' },
+      { name: 'SuperAdmin' },
       { silent: true },
     );
 
@@ -44,10 +49,12 @@ export class SeedService {
       role = await this.roles.create({
         name: 'SuperAdmin',
         accesses: superAdminAccesses,
+        isAdminRole: true,
       });
-    } else if (!isEqual(role.accesses, superAdminAccesses)) {
+    } else {
       await this.roles.updateById(role.id, {
         accesses: superAdminAccesses,
+        isAdminRole: true,
       });
     }
 
@@ -148,5 +155,42 @@ export class SeedService {
       }),
     );
     logger.log('activities seed ended.');
+  }
+
+  @Transactional({ propagation: Propagation.REQUIRED })
+  async seedSubscriptions(): Promise<void> {
+    logger.log('subscriptions seed started.');
+
+    const premiumSubscription = await this.subscriptions.findOne(
+      { name: SUBSCRIPTION_PREMIUM },
+      { silent: true },
+    );
+    if (!premiumSubscription) {
+      await this.subscriptions.create({
+        name: SUBSCRIPTION_PREMIUM,
+        organizationHiddenFields: PremiumSubscription,
+      });
+    } else {
+      await this.subscriptions.updateById(premiumSubscription.id, {
+        organizationHiddenFields: PremiumSubscription,
+      });
+    }
+
+    const standardSubscription = await this.subscriptions.findOne(
+      { name: SUBSCRIPTION_STANDARD },
+      { silent: true },
+    );
+    if (!standardSubscription) {
+      await this.subscriptions.create({
+        name: SUBSCRIPTION_STANDARD,
+        organizationHiddenFields: StandardSubscription,
+      });
+    } else {
+      await this.subscriptions.updateById(standardSubscription.id, {
+        organizationHiddenFields: StandardSubscription,
+      });
+    }
+
+    logger.log('subscriptions seed ended.');
   }
 }

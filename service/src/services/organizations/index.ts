@@ -24,3 +24,4 @@ export * from './organization-views.service';
 export * from './organization-waste-distributions.service';
 export * from './organizations.service';
 export * from './products.service';
+export * from './public-organization.service';

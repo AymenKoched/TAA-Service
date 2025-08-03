@@ -23,4 +23,10 @@ export class SeedController {
   public async seedActivities(): Promise<void> {
     return this.seedService.seedActivities();
   }
+
+  @Post('subscriptions')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async seedSubscriptions(): Promise<void> {
+    return this.seedService.seedSubscriptions();
+  }
 }
